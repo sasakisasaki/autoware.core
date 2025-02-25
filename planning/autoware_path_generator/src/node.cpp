@@ -114,6 +114,8 @@ void PathGenerator::set_planner_data(const InputData & input_data)
   if (input_data.route_ptr) {
     set_route(input_data.route_ptr);
   }
+
+  // TODO(sasakisasaki): Consider a way to initialize path_generator_parameters
 }
 
 void PathGenerator::set_route(const LaneletRoute::ConstSharedPtr & route_ptr)
