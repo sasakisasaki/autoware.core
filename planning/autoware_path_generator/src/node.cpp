@@ -46,6 +46,10 @@ namespace autoware::path_generator
 PathGenerator::PathGenerator(const rclcpp::NodeOptions & node_options)
 : Node("path_generator", node_options)
 {
+  // Initialize path_generator_parameters
+  planner_data_.path_generator_parameters.refine_goal_search_radius_range =
+    declare_parameter<double>("refine_goal_search_radius_range");
+
   param_listener_ =
     std::make_shared<::path_generator::ParamListener>(this->get_node_parameters_interface());
 
@@ -114,8 +118,6 @@ void PathGenerator::set_planner_data(const InputData & input_data)
   if (input_data.route_ptr) {
     set_route(input_data.route_ptr);
   }
-
-  // TODO(sasakisasaki): Consider a way to initialize path_generator_parameters
 }
 
 void PathGenerator::set_route(const LaneletRoute::ConstSharedPtr & route_ptr)
@@ -144,6 +146,8 @@ void PathGenerator::set_route(const LaneletRoute::ConstSharedPtr & route_ptr)
       }
     }
   }
+
+  planner_data_.goal_lane_id = route_ptr->segments.back().preferred_primitive.id;
 
   const auto set_lanelets_from_segment =
     [&](

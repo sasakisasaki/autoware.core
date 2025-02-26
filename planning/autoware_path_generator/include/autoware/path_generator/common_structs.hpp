@@ -16,7 +16,6 @@
 #define AUTOWARE__PATH_GENERATOR__COMMON_STRUCTS_HPP_
 
 #include <autoware_planning_msgs/msg/lanelet_route.hpp>
-#include <autoware/route_handler/route_handler.hpp>
 
 #include <lanelet2_routing/RoutingGraph.h>
 #include <lanelet2_traffic_rules/TrafficRules.h>
@@ -28,7 +27,7 @@ namespace autoware::path_generator
 
 struct PathGeneratorParameters
 {
-  double refine_goal_search_radius_range{10.0};
+  double refine_goal_search_radius_range;
 };
 
 struct PlannerData
@@ -36,7 +35,6 @@ struct PlannerData
   lanelet::LaneletMapPtr lanelet_map_ptr{nullptr};
   lanelet::traffic_rules::TrafficRulesPtr traffic_rules_ptr{nullptr};
   lanelet::routing::RoutingGraphPtr routing_graph_ptr{nullptr};
-  autoware::route_handler::RouteHandler route_handler_ptr{nullptr};
 
   std::string route_frame_id{};
   geometry_msgs::msg::Pose goal_pose{};
@@ -47,6 +45,8 @@ struct PlannerData
   lanelet::ConstLanelets goal_lanelets{};
 
   PathGeneratorParameters path_generator_parameters{};
+
+  lanelet::Id goal_lane_id{};
 };
 }  // namespace autoware::path_generator
 

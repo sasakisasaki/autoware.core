@@ -155,6 +155,40 @@ PathWithLaneId refine_path_for_goal(
   const geometry_msgs::msg::Pose & goal, const int64_t goal_lane_id);
 
 /**
+ * @brief Extract lanelets from the path.
+ * @param path Input path.
+ * @param planner_data Planner data.
+ * @return Extracted lanelets
+ */
+lanelet::ConstLanelets extract_lanelets_from_path(
+  const PathWithLaneId & refined_path, const std::shared_ptr<const PlannerData> & planner_data);
+
+/**
+ * @brief Get the goal lanelet.
+ * @param planner_data Planner data.
+ * @param goal_lanelet Goal lanelet.
+ * @return True if the goal lanelet is found, false otherwise
+ */
+bool get_goal_lanelet(const PlannerData & planner_data, lanelet::ConstLanelet * goal_lanelet);
+
+/**
+ * @brief Check if the pose is in the lanelets.
+ * @param pose Pose.
+ * @param lanes Lanelets.
+ * @return True if the pose is in the lanelets, false otherwise
+ */
+bool is_in_lanelets(const geometry_msgs::msg::Pose & pose, const lanelet::ConstLanelets & lanes);
+
+/**
+ * @brief Check if the path is valid.
+ * @param refined_path Input path.
+ * @param planner_data Planner data.
+ * @return True if the path is valid, false otherwise
+ */
+bool is_path_valid(
+  const PathWithLaneId & refined_path, const std::shared_ptr<const PlannerData> & planner_data);
+
+/**
  * @brief Modify the path to connect smoothly to the goal.
  * @param path Input path.
  * @param planner_data Planner data.
