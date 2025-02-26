@@ -201,7 +201,11 @@ std::optional<PathWithLaneId> PathGenerator::plan_path(const InputData & input_d
     return std::nullopt;
   }
 
-  return path;
+  // Make the path smooth
+  auto planner_data_ptr = std::make_shared<const PlannerData>(planner_data_);
+  const auto smooth_path = utils::modify_path_for_smooth_goal_connection(*path, planner_data_ptr);
+
+  return smooth_path;
 }
 
 std::optional<PathWithLaneId> PathGenerator::generate_path(
@@ -249,12 +253,6 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
       const auto goal_arc_coordinates =
         lanelet::utils::getArcCoordinates(lanelets, planner_data_.goal_pose);
       s_end = std::min(s_end, goal_arc_coordinates.length);
-    }
-
-    if (
-      const auto s_intersection =
-        utils::get_first_self_intersection_arc_length(lanelet_sequence, s_start, s_end)) {
-      s_end = std::clamp(s_end, 0.0, *s_intersection - vehicle_info_.max_longitudinal_offset_m);
     }
 
     return s_end;
