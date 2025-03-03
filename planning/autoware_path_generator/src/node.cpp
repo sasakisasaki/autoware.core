@@ -378,22 +378,22 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
   }
 
   //// Make the path smooth
-  //auto planner_data_ptr = std::make_shared<const PlannerData>(planner_data_);
+  auto planner_data_ptr = std::make_shared<const PlannerData>(planner_data_);
 
-  //// Compose path with lane id
-  //PathWithLaneId path_with_lane_id;
-  //path_with_lane_id.header.frame_id = planner_data_.route_frame_id;
-  //path_with_lane_id.header.stamp = now();
-  //path_with_lane_id.points = std::move(path_points_with_lane_id);
+  // Compose path with lane id
+  PathWithLaneId path_with_lane_id;
+  path_with_lane_id.header.frame_id = planner_data_.route_frame_id;
+  path_with_lane_id.header.stamp = now();
+  path_with_lane_id.points = std::move(path_points_with_lane_id);
 
-  //const auto smooth_path = utils::modify_path_for_smooth_goal_connection(
-  //  path_with_lane_id, planner_data_ptr);
+  const auto smooth_path = utils::modify_path_for_smooth_goal_connection(
+    path_with_lane_id, planner_data_ptr);
 
-  //// Debug print the size of points
-  //RCLCPP_INFO(get_logger(), "Smooth path points size: %zu", smooth_path.points.size());
+  // Debug print the size of points
+  RCLCPP_INFO(get_logger(), "Smooth path points size: %zu", smooth_path.points.size());
 
-  auto trajectory = Trajectory::Builder().build(path_points_with_lane_id);
-  //auto trajectory = Trajectory::Builder().build(smooth_path.points);
+  //auto trajectory = Trajectory::Builder().build(path_points_with_lane_id);
+  auto trajectory = Trajectory::Builder().build(smooth_path.points);
   if (!trajectory) {
     return std::nullopt;
   }
@@ -408,8 +408,8 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
     s_offset + s_start -
       get_arc_length_along_centerline(
         extended_lanelet_sequence, lanelet::utils::conversion::toLaneletPoint(
-                                     path_points_with_lane_id.front().point.pose.position)),
-                                     //smooth_path.points.front().point.pose.position)),
+                                     //path_points_with_lane_id.front().point.pose.position)),
+                                     smooth_path.points.front().point.pose.position)),
     s_end - s_start);
 
   PathWithLaneId path{};
@@ -418,7 +418,7 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
   path.points = trajectory->restore();
 
   // insertOrientation
-  //autoware::motion_utils::insertOrientation(path.points, true);
+  autoware::motion_utils::insertOrientation(path.points, true);
 
   // Debug: print all points of path
   for (const auto & point : path.points) {
