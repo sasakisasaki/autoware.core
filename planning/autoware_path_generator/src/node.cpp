@@ -223,11 +223,7 @@ std::optional<PathWithLaneId> PathGenerator::plan_path(
     return std::nullopt;
   }
 
-  // Make the path smooth
-  auto planner_data_ptr = std::make_shared<const PlannerData>(planner_data_);
-  const auto smooth_path = utils::modify_path_for_smooth_goal_connection(*path, planner_data_ptr);
-
-  return smooth_path;
+  return path;
 }
 
 std::optional<PathWithLaneId> PathGenerator::generate_path(
@@ -300,6 +296,8 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
     path_point_with_lane_id.lane_ids.push_back(lanelet.id());
     path_point_with_lane_id.point.pose.position =
       lanelet::utils::conversion::toGeomMsgPt(path_point);
+    // Debug: print path_point_with_lane_id
+    RCLCPP_INFO(get_logger(), "Path point (after toGeomMsgPt): %f, %f, %f, %f, %f, %f", path_point_with_lane_id.point.pose.position.x, path_point_with_lane_id.point.pose.position.y, path_point_with_lane_id.point.pose.position.z, path_point_with_lane_id.point.pose.orientation.x, path_point_with_lane_id.point.pose.orientation.y, path_point_with_lane_id.point.pose.orientation.z);
     path_point_with_lane_id.point.longitudinal_velocity_mps =
       planner_data_.traffic_rules_ptr->speedLimit(lanelet).speedLimit.value();
     path_points_with_lane_id.push_back(std::move(path_point_with_lane_id));
@@ -379,10 +377,31 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
     }
   }
 
+  //// Make the path smooth
+  //auto planner_data_ptr = std::make_shared<const PlannerData>(planner_data_);
+
+  //// Compose path with lane id
+  //PathWithLaneId path_with_lane_id;
+  //path_with_lane_id.header.frame_id = planner_data_.route_frame_id;
+  //path_with_lane_id.header.stamp = now();
+  //path_with_lane_id.points = std::move(path_points_with_lane_id);
+
+  //const auto smooth_path = utils::modify_path_for_smooth_goal_connection(
+  //  path_with_lane_id, planner_data_ptr);
+
+  //// Debug print the size of points
+  //RCLCPP_INFO(get_logger(), "Smooth path points size: %zu", smooth_path.points.size());
+
   auto trajectory = Trajectory::Builder().build(path_points_with_lane_id);
+  //auto trajectory = Trajectory::Builder().build(smooth_path.points);
   if (!trajectory) {
     return std::nullopt;
   }
+
+  // Debug: print all points of trajectory
+  //for (const auto & point : trajectory->points()) {
+  //  RCLCPP_INFO(get_logger(), "Trajectory point: %f, %f, %f, %f, %f, %f", point.pose.position.x, point.pose.position.y, point.pose.position.z, point.pose.orientation.x, point.pose.orientation.y, point.pose.orientation.z);
+  //}
 
   trajectory->align_orientation_with_trajectory_direction();
   trajectory->crop(
@@ -390,12 +409,21 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
       get_arc_length_along_centerline(
         extended_lanelet_sequence, lanelet::utils::conversion::toLaneletPoint(
                                      path_points_with_lane_id.front().point.pose.position)),
+                                     //smooth_path.points.front().point.pose.position)),
     s_end - s_start);
 
   PathWithLaneId path{};
   path.header.frame_id = planner_data_.route_frame_id;
   path.header.stamp = now();
   path.points = trajectory->restore();
+
+  // insertOrientation
+  //autoware::motion_utils::insertOrientation(path.points, true);
+
+  // Debug: print all points of path
+  for (const auto & point : path.points) {
+    RCLCPP_INFO(get_logger(), "Path point: %f, %f, %f, %f, %f, %f", point.point.pose.position.x, point.point.pose.position.y, point.point.pose.position.z, point.point.pose.orientation.x, point.point.pose.orientation.y, point.point.pose.orientation.z);
+  }
 
   const auto get_path_bound = [&](const lanelet::CompoundLineString2d & lanelet_bound) {
     const auto s_bound_start =
@@ -407,6 +435,9 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
   };
   path.left_bound = get_path_bound(extended_lanelet_sequence.leftBound2d());
   path.right_bound = get_path_bound(extended_lanelet_sequence.rightBound2d());
+
+  // Debug print the size of path
+  RCLCPP_INFO(get_logger(), "Path points size: %zu", path.points.size());
 
   return path;
 }
