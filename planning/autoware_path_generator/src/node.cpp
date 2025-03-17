@@ -279,12 +279,12 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
     return s_end;
   }();
 
-  return generate_path(lanelet_sequence, s_start, s_end, params);
+  return generate_path(lanelet_sequence, s_start, s_end, current_pose, params);
 }
 
 std::optional<PathWithLaneId> PathGenerator::generate_path(
   const lanelet::LaneletSequence & lanelet_sequence, const double s_start, const double s_end,
-  const Params & params) const
+  const geometry_msgs::msg::Pose & current_pose, const Params & params) const
 {
   std::vector<PathPointWithLaneId> path_points_with_lane_id{};
 
@@ -428,7 +428,8 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
     const auto params = param_listener_->get_params();
 
     finalized_path_with_lane_id = utils::modify_path_for_smooth_goal_connection(
-      std::move(preprocessed_path), planner_data_, params.refine_goal_search_radius_range);
+      std::move(preprocessed_path), planner_data_, params.refine_goal_search_radius_range,
+      current_pose);
   } else {
     finalized_path_with_lane_id = std::move(preprocessed_path);
   }

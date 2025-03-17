@@ -351,16 +351,30 @@ const geometry_msgs::msg::Pose refine_goal(
 // See the link below for more details:
 //   https://autowarefoundation.github.io/autoware.universe/main/planning/behavior_path_planner/autoware_behavior_path_goal_planner_module/#fixed_goal_planner
 PathPointWithLaneId prepare_pre_goal(
-  const geometry_msgs::msg::Pose & goal, const lanelet::ConstLanelets & lanes)
+  const geometry_msgs::msg::Pose & goal, const lanelet::ConstLanelets & lanes,
+  const geometry_msgs::msg::Pose & current_ego_pose)
 {
   PathPointWithLaneId pre_refined_goal{};
 
-  // -1.0 is to prepare the point before the goal point. See the link above for more details.
-  constexpr double goal_to_pre_goal_distance = -1.0;
+  // Calculate the distance from the current ego pose to the pre_goal point
+  const double distance_to_pre_goal = autoware_utils::calc_distance2d(
+    pre_refined_goal.point.pose, current_ego_pose);
 
-  // First, calculate the pose of the pre_goal point
-  pre_refined_goal.point.pose =
-    autoware_utils::calc_offset_pose(goal, goal_to_pre_goal_distance, 0.0, 0.0);
+  // Offset from the goal to the pre_goal point
+  constexpr double offset_from_goal_to_pre_goal = 1.0;
+
+  // If the distance is less than the offset from the goal to the pre_goal, let's use the distance
+  // between the goal and the current ego pose.
+  if (distance_to_pre_goal < offset_from_goal_to_pre_goal) {
+    // Calculate the pose of the pre_goal point with the distance between the goal and the current
+    // ego pose not to cause a inverted pose.
+    pre_refined_goal.point.pose =
+      autoware_utils::calc_offset_pose(goal, -distance_to_pre_goal, 0.0, 0.0);
+  } else {
+    // Calculate the pose of the pre_goal point with the offset from the goal to the pre_goal point
+    pre_refined_goal.point.pose =
+      autoware_utils::calc_offset_pose(goal, -offset_from_goal_to_pre_goal, 0.0, 0.0);
+  }
 
   // Second, find and set the lane_id that the pre_goal point belongs to
   for (const auto & lane : lanes) {
@@ -455,7 +469,8 @@ std::optional<PathWithLaneId> get_path_up_to_just_before_pre_goal(
 // Function to refine the path for the goal
 PathWithLaneId refine_path_for_goal(
   const PathWithLaneId & input, const geometry_msgs::msg::Pose & goal,
-  const PlannerData & planner_data, const double refine_goal_search_radius_range)
+  const PlannerData & planner_data, const double refine_goal_search_radius_range,
+  const geometry_msgs::msg::Pose & current_ego_pose)
 {
   PathWithLaneId filtered_path = input;
 
@@ -486,7 +501,7 @@ PathWithLaneId refine_path_for_goal(
   const auto lanes = lanes_opt.value();
 
   // Prepare pre_goal which is just before the goal
-  PathPointWithLaneId pre_goal = prepare_pre_goal(goal, lanes);
+  PathPointWithLaneId pre_goal = prepare_pre_goal(goal, lanes, current_ego_pose);
 
   // Insert pre_goal to the path. As this pre_goal has the role that of the point just before the
   // goal, we set the velocity that of the point just before the tail of the input path (size - 2).
@@ -586,7 +601,7 @@ bool is_path_valid(const PathWithLaneId & refined_path, const PlannerData & plan
 
 PathWithLaneId modify_path_for_smooth_goal_connection(
   const PathWithLaneId & path, const PlannerData & planner_data,
-  const double refine_goal_search_radius_range)
+  const double refine_goal_search_radius_range, const geometry_msgs::msg::Pose & current_ego_pose)
 {
   const auto goal = planner_data.goal_pose;
 
@@ -594,7 +609,8 @@ PathWithLaneId modify_path_for_smooth_goal_connection(
     refine_goal(goal, planner_data.preferred_lanelets.back());
 
   const PathWithLaneId refined_path =
-    refine_path_for_goal(path, refined_goal, planner_data, refine_goal_search_radius_range);
+    refine_path_for_goal(path, refined_goal, planner_data, refine_goal_search_radius_range,
+                         current_ego_pose);
   return is_path_valid(refined_path, planner_data) ? refined_path : path;
 }
 
