@@ -607,9 +607,8 @@ PathWithLaneId modify_path_for_smooth_goal_connection(
   const geometry_msgs::msg::Pose refined_goal =
     refine_goal(goal, planner_data.preferred_lanelets.back());
 
-  const PathWithLaneId refined_path =
-    refine_path_for_goal(path, refined_goal, planner_data, refine_goal_search_radius_range,
-                         current_ego_pose);
+  const PathWithLaneId refined_path = refine_path_for_goal(
+    path, refined_goal, planner_data, refine_goal_search_radius_range, current_ego_pose);
   return is_path_valid(refined_path, planner_data) ? refined_path : path;
 }
 
