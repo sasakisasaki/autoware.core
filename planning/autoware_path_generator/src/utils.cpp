@@ -357,8 +357,7 @@ PathPointWithLaneId prepare_pre_goal(
   PathPointWithLaneId pre_refined_goal{};
 
   // Calculate the distance from the current ego pose to the pre_goal point
-  const double distance_to_pre_goal = autoware_utils::calc_distance2d(
-    pre_refined_goal.point.pose, current_ego_pose);
+  const double distance_to_pre_goal = autoware_utils::calc_distance2d(goal, current_ego_pose);
 
   // Offset from the goal to the pre_goal point
   constexpr double offset_from_goal_to_pre_goal = 1.0;
