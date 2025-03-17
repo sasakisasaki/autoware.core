@@ -60,10 +60,9 @@ PathGenerator::PathGenerator(const rclcpp::NodeOptions & node_options)
 
   const auto params = param_listener_->get_params();
 
-  // Ensure that the refine_goal_search_radius_range and search_radius_decrement must be positive
-  if (params.refine_goal_search_radius_range <= 0 || params.search_radius_decrement <= 0) {
-    throw std::runtime_error(
-      "refine_goal_search_radius_range and search_radius_decrement must be positive");
+  // Ensure that the refine_goal_search_radius_range must be positive
+  if (params.refine_goal_search_radius_range <= 0) {
+    throw std::runtime_error("refine_goal_search_radius_range must be positive");
   }
 
   timer_ = rclcpp::create_timer(
