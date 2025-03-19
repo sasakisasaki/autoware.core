@@ -162,12 +162,14 @@ const geometry_msgs::msg::Pose refine_goal(
 
 /**
  * @brief Prepare the point before the goal point.
+ * @param input Input path.
  * @param goal Goal pose.
  * @param lanes Lanelets.
  * @param current_ego_pose Current pose of ego vehicle.
- * @return Pre-goal point.
+ * @return Pre-goal point (std::nullopt if no pre-goal point is found).
  */
-PathPointWithLaneId prepare_pre_goal(
+std::optional<PathPointWithLaneId> prepare_pre_goal(
+  const PathWithLaneId & input,
   const geometry_msgs::msg::Pose & goal, const lanelet::ConstLanelets & lanes,
   const geometry_msgs::msg::Pose & current_ego_pose);
 
