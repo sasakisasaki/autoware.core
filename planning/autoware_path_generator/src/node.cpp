@@ -404,7 +404,7 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
   // Attach orientation for all the points
   trajectory->align_orientation_with_trajectory_direction();
 
-  // Refine the trajectory by cropping
+  // Crop the path to the goal point: center line after the goal points are removed
   trajectory->crop(
     s_offset + s_start -
       get_arc_length_along_centerline(
