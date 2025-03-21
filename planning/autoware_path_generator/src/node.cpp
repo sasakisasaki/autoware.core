@@ -420,18 +420,25 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
 
   // Check if the goal point is in the search range
   // Note: We only see if the goal is approaching the tail of the path.
-  const auto distance_to_goal = autoware_utils::calc_distance2d(
+  const auto distance_between_goal_and_path_end = autoware_utils::calc_distance2d(
     preprocessed_path.points.back().point.pose, planner_data_.goal_pose);
 
-  if (distance_to_goal < params.refine_goal_search_radius_range) {
+  // Check if the ego vehicle is over the goal point
+  const bool is_goal_over = autoware_utils::inverse_transform_point(planner_data_.goal_pose.position, current_pose).x < 0;
+
+  // Check if the goal is approaching the tail of the path and the goal is not over the path
+  if (distance_between_goal_and_path_end < params.refine_goal_search_radius_range && !is_goal_over) {
     // Perform smooth goal connection
     const auto params = param_listener_->get_params();
-
     finalized_path_with_lane_id = utils::modify_path_for_smooth_goal_connection(
       std::move(preprocessed_path), planner_data_, params.refine_goal_search_radius_range,
       current_pose);
   } else {
+    // Use the original path
     finalized_path_with_lane_id = std::move(preprocessed_path);
+
+    // But set the velocity of the goal point to 0 for safety
+    finalized_path_with_lane_id.points.back().point.longitudinal_velocity_mps = 0.0;
   }
 
   // check if the path is empty
