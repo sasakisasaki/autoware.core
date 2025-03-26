@@ -379,15 +379,10 @@ std::optional<PathPointWithLaneId> prepare_pre_goal(
     }
   }
 
-  // Check if the input path has the point just before the goal
-  if (input.points.size() < 2) {
-    // But not empty?
-    if (input.points.empty()) {
-      // Really hard to interpolate the velocity of the pre_goal point
-      return std::nullopt;
-    }
-    // Set the velocity of the pre_goal to the velocity of the last point
-    pre_refined_goal.point.longitudinal_velocity_mps = input.points.back().point.longitudinal_velocity_mps;
+  // Check if the input path has the point
+  if (input.points.empty()) {
+    // Really hard to interpolate the velocity of the pre_goal point
+    return std::nullopt;
   } else {
     // First, find the nearest index of the point that is the closest to the pre_goal point
     const auto nearest_index = autoware::motion_utils::findNearestIndex(input.points, pre_refined_goal.point.pose);
