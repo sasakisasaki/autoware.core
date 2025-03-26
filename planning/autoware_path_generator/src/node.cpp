@@ -406,19 +406,9 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
   // Attach orientation for all the points
   trajectory->align_orientation_with_trajectory_direction();
 
-  // Crop the path to the goal point: center line after the goal points are removed
-  trajectory->crop(
-    s_offset + s_start -
-      get_arc_length_along_centerline(
-        extended_lanelet_sequence, lanelet::utils::conversion::toLaneletPoint(
-                                     path_points_with_lane_id.front().point.pose.position)),
-    s_end - s_start);
-
   // Compose the polished path
   PathWithLaneId preprocessed_path{};
   preprocessed_path.points = trajectory->restore();
-
-  PathWithLaneId finalized_path_with_lane_id{};
 
   // Check if the goal point is in the search range
   // Note: We only see if the goal is approaching the tail of the path.
@@ -427,6 +417,8 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
 
   // Check if the ego vehicle is over the goal point
   const bool is_goal_over = autoware_utils::inverse_transform_point(planner_data_.goal_pose.position, current_pose).x < 0;
+
+  PathWithLaneId finalized_path_with_lane_id{};
 
   // Check if the goal is approaching the tail of the path and the goal is not over the path
   if (distance_between_goal_and_path_end < params.refine_goal_search_radius_range && !is_goal_over) {
@@ -448,9 +440,22 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
     return std::nullopt;
   }
 
+
   // Set header which is needed to engage
   finalized_path_with_lane_id.header.frame_id = planner_data_.route_frame_id;
   finalized_path_with_lane_id.header.stamp = now();
+
+
+  // Crop the path to the goal point: center line after the goal points are removed
+  trajectory->crop(
+    s_offset + s_start -
+      get_arc_length_along_centerline(
+        extended_lanelet_sequence, lanelet::utils::conversion::toLaneletPoint(
+                                     finalized_path_with_lane_id.points.front().point.pose.position)),
+    s_end - s_start);
+
+  // Then insert the cleaned path to the finalized path
+  finalized_path_with_lane_id.points = trajectory->restore();
 
   const auto [left_bound, right_bound] = utils::get_path_bounds(
     extended_lanelet_sequence, std::max(0., s_offset + s_bound_start),
