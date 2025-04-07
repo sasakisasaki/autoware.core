@@ -3899,13 +3899,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#nomenclature" class="md-nav__link">
-    Nomenclature
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#overview" class="md-nav__link">
     Overview
   </a>
@@ -3920,8 +3913,22 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#trajectory-class" class="md-nav__link">
+    Trajectory class
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nomenclature" class="md-nav__link">
+    Nomenclature
+  </a>
   
 </li>
       
@@ -3936,6 +3943,13 @@
           <li class="md-nav__item">
   <a href="#interpolators_1" class="md-nav__link">
     Interpolators
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trajectory-class_1" class="md-nav__link">
+    Trajectory class
   </a>
   
 </li>
@@ -3972,14 +3986,20 @@
 
 <div><h1 id="autoware-trajectory">Autoware Trajectory<a class="headerlink" href="#autoware-trajectory" title="Permanent link">#</a></h1>
 <p>This package provides classes to manage/manipulate Trajectory.</p>
-<h2 id="nomenclature">Nomenclature<a class="headerlink" href="#nomenclature" title="Permanent link">#</a></h2>
-<p>TODO</p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">#</a></h2>
 <h3 id="interpolators">Interpolators<a class="headerlink" href="#interpolators" title="Permanent link">#</a></h3>
-<p><img alt="interpolators" src="images/interpolators.drawio.svg">
-<a href="https://app.diagrams.net/?lightbox=1#Uhttps%3A%2F%2Fautowarefoundation.github.io%2Fautoware_core%2Flatest%2Fcommon%2Fautoware_trajectory%2Fimages%2Finterpolators.drawio.svg">View in Drawio</a></p>
-<p>Given <code>bases</code> and <code>values</code>, the builder internally executes interpolation and return the result in the form of <code>expected&lt;T, E&gt;</code>. If successful, it contains the interpolator object.</p>
-<div class="highlight"><span class="filename">./examples/example_readme.cpp:43:62</span><pre><span></span><code><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">,</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span><span class="w"> </span><span class="mf">5.0</span><span class="p">};</span>
+<p>The interpolator class interpolates given <code>bases</code> and <code>values</code>. Following interpolators are implemented.</p>
+<ul>
+<li>Linear</li>
+<li>AkimaSpline</li>
+<li>CubicSpline</li>
+<li>NearestNeighbor</li>
+<li>Stairstep</li>
+</ul>
+<p><img alt="interpolators" src="images/overview/interpolators.drawio.svg">
+<a href="https://app.diagrams.net/?lightbox=1#Uhttps%3A%2F%2Fautowarefoundation.github.io%2Fautoware_core%2Flatest%2Fcommon%2Fautoware_trajectory%2Fimages%2Foverview%2Finterpolators.drawio.svg">View in Drawio</a></p>
+<p>The builder internally executes interpolation and return the result in the form of <code>expected&lt;T, E&gt;</code>. If successful, it contains the interpolator object.</p>
+<div class="highlight"><span class="filename">./examples/example_readme.cpp:48:67</span><pre><span></span><code><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">,</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span><span class="w"> </span><span class="mf">5.0</span><span class="p">};</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mf">0.0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">noise</span><span class="p">(),</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">noise</span><span class="p">(),</span><span class="w"> </span><span class="mf">2.0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">noise</span><span class="p">(),</span>
 <span class="w">                            </span><span class="mf">3.0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">noise</span><span class="p">(),</span><span class="w"> </span><span class="mf">4.0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">noise</span><span class="p">(),</span><span class="w"> </span><span class="mf">5.0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">noise</span><span class="p">()};</span>
 
@@ -4000,7 +4020,7 @@
 <span class="w">  </span><span class="c1">// In this case the cubic spline coefficients are calculated.</span>
 </code></pre></div>
 <p>Otherwise it contains the error object representing the failure reason. In the below snippet, cubic spline interpolation fails because the number of input points is 3, which is below the <code>minimum_required_points() = 4</code> of <code>CubicSpline</code>.</p>
-<div class="highlight"><span class="filename">./examples/example_readme.cpp:104:114</span><pre><span></span><code><span class="w">  </span><span class="c1">// You need to use the `Builder` to try to construct the interpolator</span>
+<div class="highlight"><span class="filename">./examples/example_readme.cpp:109:119</span><pre><span></span><code><span class="w">  </span><span class="c1">// You need to use the `Builder` to try to construct the interpolator</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">tl</span><span class="o">::</span><span class="n">expected</span><span class="o">&lt;</span><span class="n">CubicSpline</span><span class="p">,</span><span class="w"> </span><span class="n">InterpolationFailure</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span>
 <span class="w">    </span><span class="n">CubicSpline</span><span class="o">::</span><span class="n">Builder</span><span class="p">()</span>
 <span class="w">      </span><span class="p">.</span><span class="n">set_bases</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span><span class="w">   </span><span class="c1">// set the base</span>
@@ -4013,6 +4033,74 @@
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">error</span><span class="p">().</span><span class="n">what</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 </code></pre></div>
 <p>In such cases the result <code>expected</code> object contains <code>InterpolationFailure</code> type with an error message like <strong>"base size 3 is less than minimum required 4"</strong>.</p>
+<h3 id="trajectory-class">Trajectory class<a class="headerlink" href="#trajectory-class" title="Permanent link">#</a></h3>
+<p>The <em>Trajectory</em> class provides mathematical continuous representation and object oriented interface for discrete array of following point types</p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked><span class="task-list-indicator"></span></label> <code>geometry_msgs::Point</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked><span class="task-list-indicator"></span></label> <code>geometry_msgs::Pose</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked><span class="task-list-indicator"></span></label> <code>autoware_planning_msgs::PathPoint</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked><span class="task-list-indicator"></span></label> <code>autoware_planning_msgs::PathPointWithLaneId</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked><span class="task-list-indicator"></span></label> <code>autoware_planning_msgs::TrajectoryPoint</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled><span class="task-list-indicator"></span></label> <code>lanelet::ConstPoint3d</code></li>
+</ul>
+<p>by interpolating the given <em>underlying</em> points. Once built, arbitrary point on the curve is continuously parametrized by a single <code>s</code> coordinate.</p>
+<div class="highlight"><span class="filename">./examples/example_readme.cpp:547:562</span><pre><span></span><code><span class="w">    </span><span class="n">pose</span><span class="p">(</span><span class="mf">8.16</span><span class="p">,</span><span class="w"> </span><span class="mf">6.52</span><span class="p">),</span><span class="w"> </span><span class="n">pose</span><span class="p">(</span><span class="mf">8.68</span><span class="p">,</span><span class="w"> </span><span class="mf">8.45</span><span class="p">),</span><span class="w"> </span><span class="n">pose</span><span class="p">(</span><span class="mf">8.96</span><span class="p">,</span><span class="w"> </span><span class="mf">8.96</span><span class="p">),</span><span class="w"> </span><span class="n">pose</span><span class="p">(</span><span class="mf">9.32</span><span class="p">,</span><span class="w"> </span><span class="mf">9.36</span><span class="p">)};</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Trajectory</span><span class="o">&lt;</span><span class="n">geometry_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">Point</span><span class="o">&gt;::</span><span class="n">Builder</span><span class="p">{}.</span><span class="n">build</span><span class="p">(</span><span class="n">underlying_points</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">result</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">error</span><span class="p">().</span><span class="n">what</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">trajectory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">value</span><span class="p">();</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trajectory</span><span class="p">.</span><span class="n">base_arange</span><span class="p">(</span><span class="mf">0.05</span><span class="p">);</span><span class="w">  </span><span class="c1">// like numpy.arange</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trajectory</span><span class="p">.</span><span class="n">compute</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">Cx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">transform</span><span class="p">([</span><span class="o">&amp;</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">x</span><span class="p">;</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">to</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">Cy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">transform</span><span class="p">([</span><span class="o">&amp;</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">y</span><span class="p">;</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">to</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">th</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trajectory</span><span class="p">.</span><span class="n">azimuth</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">cos_th</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">th</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">transform</span><span class="p">([</span><span class="o">&amp;</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mf">1.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">cos</span><span class="p">(</span><span class="n">s</span><span class="p">);</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">to</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">sin_th</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">th</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">transform</span><span class="p">([</span><span class="o">&amp;</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mf">1.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">sin</span><span class="p">(</span><span class="n">s</span><span class="p">);</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">to</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&gt;</span><span class="p">();</span>
+</code></pre></div>
+<p><img alt="overview_trajectory" src="images/overview/trajectory.drawio.svg">
+<a href="https://app.diagrams.net/?lightbox=1#Uhttps%3A%2F%2Fautowarefoundation.github.io%2Fautoware_core%2Flatest%2Fcommon%2Fautoware_trajectory%2Fimages%2Foverview%2Ftrajectory.drawio.svg">View in Drawio</a></p>
+<h2 id="nomenclature">Nomenclature<a class="headerlink" href="#nomenclature" title="Permanent link">#</a></h2>
+<p>This section introduces strict definition of several words used in this package to clarify the description of API and help the developers understand and grasp the geometric meaning of algorithms.</p>
+<table>
+<thead>
+<tr>
+<th>Word</th>
+<th>Meaning</th>
+<th>Illustration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>curve</code></td>
+<td><code>curve</code> is an oriented bounded curve denoted as <code>(x(s), y(s), z(s))</code> with additional properties, parameterized by <code>s</code> (<code>s = 0</code> at the start).</td>
+<td><img alt="curve" src="images/nomenclature/curve.drawio.svg"><br><a href="https://app.diagrams.net/?lightbox=1#Uhttps%3A%2F%2Fautowarefoundation.github.io%2Fautoware_core%2Flatest%2Fcommon%2Fautoware_trajectory%2Fimages%2Fnomenclature%2Fcurve.drawio.svg">View in Drawio</a><br>There are 5 <code>underlying</code> points<br><span class="arithmatex">\(\mathrm{P0} = (0, 0, 0)\)</span><br><span class="arithmatex">\(\mathrm{P1} = (1/ \sqrt{2}, 1/ \sqrt{2}, 0)\)</span><br><span class="arithmatex">\(\mathrm{P2} = (1/ \sqrt{2}, 1+1/ \sqrt{2}, 0)\)</span><br><span class="arithmatex">\(\mathrm{P3} = (2/ \sqrt{2}, 1+2/ \sqrt{2}, 0)\)</span><br><span class="arithmatex">\(\mathrm{P4} = (2/ \sqrt{2} + 1/ \sqrt{6}, 1+2/ \sqrt{2} + 1 / \sqrt{3}, 1 / \sqrt{2})\)</span><br>and the <code>arc length</code> between each interval is <span class="arithmatex">\(1, 2, 1, 1\)</span> respectively, so <span class="arithmatex">\(\mathrm{start} = 0\)</span> and <span class="arithmatex">\(\mathrm{end} = 5\)</span>.</td>
+</tr>
+<tr>
+<td><code>underlying</code></td>
+<td><code>underlying</code> points of a curve refers to the list of 3D points from which the curve was interpolated.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>arc length</code>[m]</td>
+<td><code>arc length</code> denotes the approximate <strong>3D</strong> length of of a curve and is computed based on the discrete <code>underlying</code> points.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>s</code>[m]</td>
+<td><code>s</code> denotes the <strong>3D</strong> <code>arc length</code> coordinate starting from the base point (mostly the start point) of the curve and a point is identified by <code>trajectory(s)</code>.<br>Due to this definition, the actual <em>curve length</em> and <code>arc length</code> have subtle difference as illustrated.</td>
+<td><img alt="approximation" src="images/nomenclature/approximation.drawio.svg"><br><a href="https://app.diagrams.net/?lightbox=1#Uhttps%3A%2F%2Fautowarefoundation.github.io%2Fautoware_core%2Flatest%2Fcommon%2Fautoware_trajectory%2Fimages%2Fnomenclature%2Fapproximation.drawio.svg">View in Drawio</a><br>The point for <span class="arithmatex">\(s = 0.5\)</span> is the purple dot, but the <em>curve length</em> from <span class="arithmatex">\(\mathrm{P0}\)</span> to this point does not equal to <span class="arithmatex">\(0.5\)</span>.<br>The exact <em>curve length</em> is <span class="arithmatex">\(\int \sqrt{(\frac{dx}{dt})^2 + (\frac{dy}{dt})^2 + (\frac{dz}{dt})^2} dt\)</span>, which cannot be obtained in an analytical closed form.</td>
+</tr>
+<tr>
+<td><code>curvature</code></td>
+<td><code>curvature</code> is computed <strong>using only X-Y 2D coordinate</strong>. This is based on the normal and natural assumption that <em>roads are flat</em>. Mathematically, it asserts that <a href="https://en.wikipedia.org/wiki/Gaussian_curvature">Gaussian curvature</a> of road is uniformly 0.<br>The sign of curvature is positive if the center of turning circle is on the left side, otherwise negative.</td>
+<td><img alt="curvature" src="images/nomenclature/curvature.drawio.svg"><br><a href="https://app.diagrams.net/?lightbox=1#Uhttps%3A%2F%2Fautowarefoundation.github.io%2Fautoware_core%2Flatest%2Fcommon%2Fautoware_trajectory%2Fimages%2Fnomenclature%2Fcurvature.drawio.svg">View in Drawio</a></td>
+</tr>
+</tbody>
+</table>
 <h2 id="api">API<a class="headerlink" href="#api" title="Permanent link">#</a></h2>
 <h3 id="interpolators_1">Interpolators<a class="headerlink" href="#interpolators_1" title="Permanent link">#</a></h3>
 <table>
@@ -4052,7 +4140,7 @@
 </tbody>
 </table>
 <p><code>AkimaSpline</code> requires at least <strong>5</strong> points to interpolate.</p>
-<div class="highlight"><span class="filename">./examples/example_readme.cpp:132:146</span><pre><span></span><code><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">,</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span><span class="w"> </span><span class="mf">5.0</span><span class="p">};</span>
+<div class="highlight"><span class="filename">./examples/example_readme.cpp:137:151</span><pre><span></span><code><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">,</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span><span class="w"> </span><span class="mf">5.0</span><span class="p">};</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mf">0.0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">noise</span><span class="p">(),</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">noise</span><span class="p">(),</span><span class="w"> </span><span class="mf">2.0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">noise</span><span class="p">(),</span>
 <span class="w">                            </span><span class="mf">3.0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">noise</span><span class="p">(),</span><span class="w"> </span><span class="mf">4.0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">noise</span><span class="p">(),</span><span class="w"> </span><span class="mf">5.0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">noise</span><span class="p">()};</span>
 
@@ -4070,7 +4158,7 @@
 <p><img alt="akima_spline" src="images/akima_spline.drawio.svg">
 <a href="https://app.diagrams.net/?lightbox=1#Uhttps%3A%2F%2Fautowarefoundation.github.io%2Fautoware_core%2Flatest%2Fcommon%2Fautoware_trajectory%2Fimages%2Fakima_spline.drawio.svg">View in Drawio</a></p>
 <p><code>CubicSpline</code> requires at least <strong>4</strong> points to interpolate.</p>
-<div class="highlight"><span class="filename">./examples/example_readme.cpp:187:196</span><pre><span></span><code><span class="w">  </span><span class="c1">// You need to use the `Builder` to try to construct the interpolator</span>
+<div class="highlight"><span class="filename">./examples/example_readme.cpp:192:201</span><pre><span></span><code><span class="w">  </span><span class="c1">// You need to use the `Builder` to try to construct the interpolator</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">tl</span><span class="o">::</span><span class="n">expected</span><span class="o">&lt;</span><span class="n">CubicSpline</span><span class="p">,</span><span class="w"> </span><span class="n">InterpolationFailure</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span>
 <span class="w">    </span><span class="n">CubicSpline</span><span class="o">::</span><span class="n">Builder</span><span class="p">()</span>
 <span class="w">      </span><span class="p">.</span><span class="n">set_bases</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span><span class="w">   </span><span class="c1">// set the base</span>
@@ -4084,7 +4172,7 @@
 <p><img alt="cubic_spline" src="images/cubic_spline.drawio.svg">
 <a href="https://app.diagrams.net/?lightbox=1#Uhttps%3A%2F%2Fautowarefoundation.github.io%2Fautoware_core%2Flatest%2Fcommon%2Fautoware_trajectory%2Fimages%2Fcubic_spline.drawio.svg">View in Drawio</a></p>
 <p><code>Linear</code> requires at least <strong>2</strong> points to interpolate.</p>
-<div class="highlight"><span class="filename">./examples/example_readme.cpp:237:245</span><pre><span></span><code><span class="w">  </span><span class="c1">// You need to use the `Builder` to try to construct the interpolator</span>
+<div class="highlight"><span class="filename">./examples/example_readme.cpp:242:250</span><pre><span></span><code><span class="w">  </span><span class="c1">// You need to use the `Builder` to try to construct the interpolator</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">tl</span><span class="o">::</span><span class="n">expected</span><span class="o">&lt;</span><span class="n">Linear</span><span class="p">,</span><span class="w"> </span><span class="n">InterpolationFailure</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Linear</span><span class="o">::</span><span class="n">Builder</span><span class="p">()</span>
 <span class="w">                                                              </span><span class="p">.</span><span class="n">set_bases</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span><span class="w">   </span><span class="c1">// set the base</span>
 <span class="w">                                                              </span><span class="p">.</span><span class="n">set_values</span><span class="p">(</span><span class="n">ys</span><span class="p">)</span><span class="w">  </span><span class="c1">// set the value</span>
@@ -4097,7 +4185,7 @@
 <p><img alt="linear" src="images/linear.drawio.svg">
 <a href="https://app.diagrams.net/?lightbox=1#Uhttps%3A%2F%2Fautowarefoundation.github.io%2Fautoware_core%2Flatest%2Fcommon%2Fautoware_trajectory%2Fimages%2Flinear.drawio.svg">View in Drawio</a></p>
 <p><code>StairStep</code> requires at least <strong>2</strong> points to interpolate.</p>
-<div class="highlight"><span class="filename">./examples/example_readme.cpp:286:295</span><pre><span></span><code><span class="w">  </span><span class="c1">// You need to use the `Builder` to try to construct the interpolator</span>
+<div class="highlight"><span class="filename">./examples/example_readme.cpp:291:300</span><pre><span></span><code><span class="w">  </span><span class="c1">// You need to use the `Builder` to try to construct the interpolator</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">tl</span><span class="o">::</span><span class="n">expected</span><span class="o">&lt;</span><span class="n">Stairstep</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">InterpolationFailure</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span>
 <span class="w">    </span><span class="n">Stairstep</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;::</span><span class="n">Builder</span><span class="p">()</span>
 <span class="w">      </span><span class="p">.</span><span class="n">set_bases</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span><span class="w">   </span><span class="c1">// set the base</span>
@@ -4110,48 +4198,82 @@
 </code></pre></div>
 <p><img alt="stairstep" src="images/stairstep.drawio.svg">
 <a href="https://app.diagrams.net/?lightbox=1#Uhttps%3A%2F%2Fautowarefoundation.github.io%2Fautoware_core%2Flatest%2Fcommon%2Fautoware_trajectory%2Fimages%2Fstairstep.drawio.svg">View in Drawio</a></p>
+<h3 id="trajectory-class_1">Trajectory class<a class="headerlink" href="#trajectory-class_1" title="Permanent link">#</a></h3>
+<p>Several <code>Trajectory&lt;T&gt;</code> are defined in the following inheritance hierarchy according to the sub object relationships.</p>
+<p><img alt="hierarchy" src="images/nomenclature/trajectory_hierarchy.drawio.svg">
+<a href="https://app.diagrams.net/?lightbox=1#Uhttps%3A%2F%2Fautowarefoundation.github.io%2Fautoware_core%2Flatest%2Fcommon%2Fautoware_trajectory%2Fimages%2Fnomenclature%2Ftrajectory_hierarchy.drawio.svg">View in Drawio</a></p>
+<p>Each derived class in the diagram inherits the methods of all of its descending subclasses. For example, all of the classes have the methods like <code>length()</code>, <code>curvature()</code> in common.</p>
+<table>
+<thead>
+<tr>
+<th>Header/Class</th>
+<th>method</th>
+<th>description</th>
+<th>illustration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;autoware/trajectory/point.hpp&gt;</code><br><ul><li><code>Trajectory&lt;geometry_msgs::msg::Point&gt;::Builder</code></li></ul></td>
+<td><code>Builder()</code></td>
+<td>set default interpolator setting as follows.<br><ul><li><code>x, y</code>: Cubic</li><li><code>z</code>: Linear</li></ul></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>set_xy_interpolator&lt;InterpolatorType&gt;()</code></td>
+<td>set custom interpolator for <code>x, y</code>.</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>set_z_interpolator&lt;InterpolatorType&gt;()</code></td>
+<td>set custom interpolator for <code>z</code>.</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>build(const vector&lt;Point&gt; &amp;)</code></td>
+<td>return <code>expected&lt;Trajectory&lt;Point&gt;, InterpolationFailure&gt;</code> object.</td>
+<td></td>
+</tr>
+<tr>
+<td><ul><li><code>Trajectory&lt;Point&gt;</code></li></ul></td>
+<td><code>base_arange(const double step)</code></td>
+<td>return vector of <code>s</code> values starting from <code>start</code>, with the interval of <code>step</code>, including <code>end</code>. Thus the return value has at least the size of 2.</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>length()</code></td>
+<td>return the total <code>arc length</code> of the trajectory.</td>
+<td><img alt="curve" src="images/nomenclature/curve.drawio.svg"><br><a href="https://app.diagrams.net/?lightbox=1#Uhttps%3A%2F%2Fautowarefoundation.github.io%2Fautoware_core%2Flatest%2Fcommon%2Fautoware_trajectory%2Fimages%2Fnomenclature%2Fcurve.drawio.svg">View in Drawio</a><br><code>length()</code> is <span class="arithmatex">\(5.0\)</span> because it computes the sum of the length of dotted lines.</td>
+</tr>
+<tr>
+<td></td>
+<td><code>azimuth(const double s)</code></td>
+<td>return the tangent angle at given <code>s</code> coordinate using <code>std::atan2</code>.</td>
+<td><img alt="azimuth_angle" src="images/overview/trajectory.drawio.svg"><br><a href="https://app.diagrams.net/?lightbox=1#Uhttps%3A%2F%2Fautowarefoundation.github.io%2Fautoware_core%2Flatest%2Fcommon%2Fautoware_trajectory%2Fimages%2Foverview%2Ftrajectory.drawio.svg">View in Drawio</a></td>
+</tr>
+<tr>
+<td></td>
+<td><code>curvature(const double s)</code></td>
+<td>return the <code>curvature</code> at given <code>s</code> coordinate.</td>
+<td>See above</td>
+</tr>
+</tbody>
+</table>
 <h2 id="example-usage">Example Usage<a class="headerlink" href="#example-usage" title="Permanent link">#</a></h2>
 <p>This section describes Example Usage of <code>Trajectory&lt;autoware_planning_msgs::msg::PathPoint&gt;</code></p>
 <ul>
 <li>
-<p>Load Trajectory from point array</p>
-<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">"autoware/trajectory/path_point.hpp"</span>
-
-<span class="p">...</span>
-
-<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">autoware_planning_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">PathPoint</span><span class="o">&gt;</span><span class="w"> </span><span class="n">points</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="c1">// Load points from somewhere</span>
-
-<span class="k">using</span><span class="w"> </span><span class="n">autoware</span><span class="o">::</span><span class="n">trajectory</span><span class="o">::</span><span class="n">Trajectory</span><span class="p">;</span>
-
-<span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">Trajectory</span><span class="o">&lt;</span><span class="n">autoware_planning_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">PathPoint</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">trajectory</span><span class="w"> </span><span class="o">=</span>
-<span class="w">  </span><span class="n">Trajectory</span><span class="o">&lt;</span><span class="n">autoware_planning_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">PathPoint</span><span class="o">&gt;::</span><span class="n">Builder</span><span class="p">{}</span>
-<span class="w">    </span><span class="p">.</span><span class="n">build</span><span class="p">(</span><span class="n">points</span><span class="p">);</span>
-</code></pre></div>
-</li>
-</ul>
-<ul>
-<li>
-<p>You can also specify interpolation method</p>
+<p>You can also specify interpolation method to <code>Builder{}</code> before calling <code>.build(points)</code></p>
 <div class="highlight"><pre><span></span><code><span class="k">using</span><span class="w"> </span><span class="n">autoware</span><span class="o">::</span><span class="n">trajectory</span><span class="o">::</span><span class="n">interpolator</span><span class="o">::</span><span class="n">CubicSpline</span><span class="p">;</span>
 
 <span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">Trajectory</span><span class="o">&lt;</span><span class="n">autoware_planning_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">PathPoint</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">trajectory</span><span class="w"> </span><span class="o">=</span>
 <span class="w">  </span><span class="n">Trajectory</span><span class="o">&lt;</span><span class="n">autoware_planning_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">PathPoint</span><span class="o">&gt;::</span><span class="n">Builder</span><span class="p">{}</span>
 <span class="w">    </span><span class="p">.</span><span class="n">set_xy_interpolator</span><span class="o">&lt;</span><span class="n">CubicSpline</span><span class="o">&gt;</span><span class="p">()</span><span class="w">  </span><span class="c1">// Set interpolator for x-y plane</span>
 <span class="w">    </span><span class="p">.</span><span class="n">build</span><span class="p">(</span><span class="n">points</span><span class="p">);</span>
-</code></pre></div>
-</li>
-</ul>
-<ul>
-<li>
-<p>Access point on Trajectory</p>
-<div class="highlight"><pre><span></span><code><span class="n">autoware_planning_msgs</span><span class="o">::</span><span class="n">msg</span><span class="o">::</span><span class="n">PathPoint</span><span class="w"> </span><span class="n">point</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trajectory</span><span class="o">-&gt;</span><span class="n">compute</span><span class="p">(</span><span class="mf">1.0</span><span class="p">);</span><span class="w">  </span><span class="c1">// Get point at s=0.0. s is distance from start point on Trajectory.</span>
-</code></pre></div>
-</li>
-</ul>
-<ul>
-<li>
-<p>Get length of Trajectory</p>
-<div class="highlight"><pre><span></span><code><span class="kt">double</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trajectory</span><span class="o">-&gt;</span><span class="n">length</span><span class="p">();</span>
 </code></pre></div>
 </li>
 </ul>
