@@ -181,9 +181,8 @@ const geometry_msgs::msg::Pose refine_goal(
  * @return Pre-goal point (std::nullopt if no pre-goal point is found).
  */
 std::optional<PathPointWithLaneId> prepare_pre_goal(
-  const PathWithLaneId & input,
-  const geometry_msgs::msg::Pose & goal, const lanelet::ConstLanelets & lanes,
-  const geometry_msgs::msg::Pose & current_ego_pose);
+  const PathWithLaneId & input, const geometry_msgs::msg::Pose & goal,
+  const lanelet::ConstLanelets & lanes, const geometry_msgs::msg::Pose & current_ego_pose);
 
 /**
  * @brief Get the index of the point closest to the circumference of the circle whose center is the

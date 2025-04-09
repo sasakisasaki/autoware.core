@@ -548,15 +548,15 @@ const geometry_msgs::msg::Pose refine_goal(
 // See the link below for more details:
 //   https://autowarefoundation.github.io/autoware.universe/main/planning/behavior_path_planner/autoware_behavior_path_goal_planner_module/#fixed_goal_planner
 std::optional<PathPointWithLaneId> prepare_pre_goal(
-  const PathWithLaneId & input,
-  const geometry_msgs::msg::Pose & goal, const lanelet::ConstLanelets & lanes,
-  const geometry_msgs::msg::Pose & current_ego_pose)
+  const PathWithLaneId & input, const geometry_msgs::msg::Pose & goal,
+  const lanelet::ConstLanelets & lanes, const geometry_msgs::msg::Pose & current_ego_pose)
 {
   PathPointWithLaneId pre_refined_goal{};
 
   // Calculate the distance from the current ego pose to the pre_goal point
   const double distance_to_goal = autoware_utils::calc_distance2d(goal, current_ego_pose);
-  const bool is_goal_over = autoware_utils::inverse_transform_point(goal.position, current_ego_pose).x < 0;
+  const bool is_goal_over =
+    autoware_utils::inverse_transform_point(goal.position, current_ego_pose).x < 0;
 
   // Offset from the goal to the pre_goal point
   constexpr double offset_from_goal_to_pre_goal = 1.0;
@@ -582,7 +582,8 @@ std::optional<PathPointWithLaneId> prepare_pre_goal(
     return std::nullopt;
   } else {
     // First, find the nearest index of the point that is the closest to the pre_goal point
-    const auto nearest_index = autoware::motion_utils::findNearestIndex(input.points, pre_refined_goal.point.pose);
+    const auto nearest_index =
+      autoware::motion_utils::findNearestIndex(input.points, pre_refined_goal.point.pose);
 
     if (!nearest_index.has_value()) {
       return std::nullopt;
@@ -735,7 +736,10 @@ PathWithLaneId refine_path_for_goal(
     // Ensure that the direction is not inverted
     if (final_path.points.size() >= 1) {
       // Check if the direction is inverted
-      const bool is_pre_goal_inverted = autoware_utils::inverse_transform_point(pre_goal.point.pose.position, final_path.points.back().point.pose).x < 0;
+      const bool is_pre_goal_inverted =
+        autoware_utils::inverse_transform_point(
+          pre_goal.point.pose.position, final_path.points.back().point.pose)
+          .x < 0;
       if (!is_pre_goal_inverted) {
         final_path.points.push_back(pre_goal);
       }
@@ -754,7 +758,7 @@ PathWithLaneId refine_path_for_goal(
   final_path.points.back().point.longitudinal_velocity_mps = 0.0;
 
   // TODO(sasakisasaki): Ask if this is problematic
-  //final_path.points.back().point.lateral_velocity_mps = 0.0;
+  // final_path.points.back().point.lateral_velocity_mps = 0.0;
 
   // Also set the left/right bound
   final_path.left_bound = input.left_bound;
