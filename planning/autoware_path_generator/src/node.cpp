@@ -404,6 +404,15 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
   // Attach orientation for all the points
   trajectory->align_orientation_with_trajectory_direction();
 
+  // Crop the path to the goal point: center line after the goal points are removed
+  trajectory->crop(
+    s_offset + s_start -
+      get_arc_length_along_centerline(
+        extended_lanelet_sequence,
+        lanelet::utils::conversion::toLaneletPoint(
+          path_points_with_lane_id.front().point.pose.position)),
+    s_end - s_start);
+
   // Compose the polished path
   PathWithLaneId preprocessed_path{};
   preprocessed_path.points = trajectory->restore();
@@ -427,12 +436,6 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
     finalized_path_with_lane_id = utils::modify_path_for_smooth_goal_connection(
       std::move(preprocessed_path), planner_data_, params.refine_goal_search_radius_range,
       current_pose);
-  } else {
-    // Use the original path
-    finalized_path_with_lane_id = std::move(preprocessed_path);
-
-    // But set the velocity of the goal point to 0 for safety
-    finalized_path_with_lane_id.points.back().point.longitudinal_velocity_mps = 0.0;
   }
 
   // check if the path is empty
@@ -443,18 +446,6 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
   // Set header which is needed to engage
   finalized_path_with_lane_id.header.frame_id = planner_data_.route_frame_id;
   finalized_path_with_lane_id.header.stamp = now();
-
-  // Crop the path to the goal point: center line after the goal points are removed
-  trajectory->crop(
-    s_offset + s_start -
-      get_arc_length_along_centerline(
-        extended_lanelet_sequence,
-        lanelet::utils::conversion::toLaneletPoint(
-          finalized_path_with_lane_id.points.front().point.pose.position)),
-    s_end - s_start);
-
-  // Then insert the cleaned path to the finalized path
-  finalized_path_with_lane_id.points = trajectory->restore();
 
   const auto [left_bound, right_bound] = utils::get_path_bounds(
     extended_lanelet_sequence, std::max(0., s_offset + s_bound_start),
