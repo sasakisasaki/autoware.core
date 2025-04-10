@@ -408,9 +408,8 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
   trajectory->crop(
     s_offset + s_start -
       get_arc_length_along_centerline(
-        extended_lanelet_sequence,
-        lanelet::utils::conversion::toLaneletPoint(
-          path_points_with_lane_id.front().point.pose.position)),
+        extended_lanelet_sequence, lanelet::utils::conversion::toLaneletPoint(
+                                     path_points_with_lane_id.front().point.pose.position)),
     s_end - s_start);
 
   // Compose the polished path
