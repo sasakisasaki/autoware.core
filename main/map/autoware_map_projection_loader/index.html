@@ -4010,6 +4010,7 @@ This is necessary information especially when you want to convert from global (g
 <div class="highlight"><pre><span></span><code><span class="c1"># map_projector_info.yaml</span>
 <span class="nt">projector_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Local</span>
 </code></pre></div>
+<p>Note that even if you input scale_factor, it will be overwritten to 1.0.</p>
 <h4 id="limitation">Limitation<a class="headerlink" href="#limitation" title="Permanent link">#</a></h4>
 <p>The functionality that requires latitude and longitude will become unavailable.</p>
 <p>The currently identified unavailable functionalities are:</p>
@@ -4024,6 +4025,7 @@ This is necessary information especially when you want to convert from global (g
 <span class="nt">vertical_datum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">WGS84</span>
 <span class="nt">mgrs_grid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">54SUE</span>
 </code></pre></div>
+<p>Note that even if you input scale_factor, it will be overwritten to 0.9996.</p>
 <h4 id="limitation_1">Limitation<a class="headerlink" href="#limitation_1" title="Permanent link">#</a></h4>
 <p>It cannot be used with maps that span across two or more MGRS grids. Please use it only when it falls within the scope of a single MGRS grid.</p>
 <h3 id="using-localcartesianutm">Using LocalCartesianUTM<a class="headerlink" href="#using-localcartesianutm" title="Permanent link">#</a></h3>
@@ -4034,8 +4036,8 @@ This is necessary information especially when you want to convert from global (g
 <span class="nt">map_origin</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">latitude</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">35.6762</span><span class="w"> </span><span class="c1"># [deg]</span>
 <span class="w">  </span><span class="nt">longitude</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">139.6503</span><span class="w"> </span><span class="c1"># [deg]</span>
-<span class="w">  </span><span class="nt">altitude</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span><span class="w"> </span><span class="c1"># [m]</span>
 </code></pre></div>
+<p>Note that even if you input scale_factor, it will be overwritten to 0.9996.</p>
 <h3 id="using-localcartesian">Using LocalCartesian<a class="headerlink" href="#using-localcartesian" title="Permanent link">#</a></h3>
 <p>If you want to use local cartesian WGS84, please specify the map origin as well.</p>
 <p>Currently LocalCartesian can only be used in lanelet2_map_loader, packages like gnss_poser doesn't support it right now.</p>
@@ -4045,17 +4047,18 @@ This is necessary information especially when you want to convert from global (g
 <span class="nt">map_origin</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">latitude</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">35.6762</span><span class="w"> </span><span class="c1"># [deg]</span>
 <span class="w">  </span><span class="nt">longitude</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">139.6503</span><span class="w"> </span><span class="c1"># [deg]</span>
-<span class="w">  </span><span class="nt">altitude</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span><span class="w"> </span><span class="c1"># [m]</span>
 </code></pre></div>
+<p>Note that even if you input scale_factor, it will be overwritten to 1.0.</p>
 <h3 id="using-transversemercator">Using TransverseMercator<a class="headerlink" href="#using-transversemercator" title="Permanent link">#</a></h3>
-<p>If you want to use Transverse Mercator projection, please specify the map origin as well.</p>
+<p>If you want to use Transverse Mercator projection, please specify the map origin as well.
+And specify the scale_factor of the map. If you didn't specify the scale_factor, it will be set 0.9996 as default value.</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># map_projector_info.yaml</span>
 <span class="nt">projector_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TransverseMercator</span>
 <span class="nt">vertical_datum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">WGS84</span>
 <span class="nt">map_origin</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">latitude</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">35.6762</span><span class="w"> </span><span class="c1"># [deg]</span>
 <span class="w">  </span><span class="nt">longitude</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">139.6503</span><span class="w"> </span><span class="c1"># [deg]</span>
-<span class="w">  </span><span class="nt">altitude</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span><span class="w"> </span><span class="c1"># [m]</span>
+<span class="nt">scale_factor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.9996</span>
 </code></pre></div>
 <h2 id="published-topics">Published Topics<a class="headerlink" href="#published-topics" title="Permanent link">#</a></h2>
 <ul>
