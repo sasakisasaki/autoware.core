@@ -14,6 +14,7 @@
 
 #include <autoware/lanelet2_utils/conversion.hpp>
 #include <autoware_lanelet2_extension/projection/mgrs_projector.hpp>
+#include <autoware_lanelet2_extension/utility/utilities.hpp>
 
 #include <lanelet2_core/LaneletMap.h>
 #include <lanelet2_core/primitives/Lanelet.h>
@@ -27,11 +28,22 @@
 namespace autoware::experimental::lanelet2_utils
 {
 
-lanelet::LaneletMapConstPtr load_mgrs_coordinate_map(const std::string & path)
+lanelet::LaneletMapConstPtr load_mgrs_coordinate_map(
+  const std::string & path, const double centerline_resolution)
 {
   lanelet::ErrorMessages errors{};
   lanelet::projection::MGRSProjector projector;
   auto lanelet_map_ptr_mut = lanelet::load(path, projector, &errors);
+
+  for (auto & lanelet_obj : lanelet_map_ptr_mut->laneletLayer) {
+    if (lanelet_obj.hasCustomCenterline()) {
+      const auto & centerline = lanelet_obj.centerline();
+      lanelet_obj.setAttribute("waypoints", centerline.id());
+    }
+    const auto fine_center_line =
+      lanelet::utils::generateFineCenterline(lanelet_obj, centerline_resolution);
+    lanelet_obj.setCenterline(fine_center_line);
+  }
   return lanelet::LaneletMapConstPtr{std::move(lanelet_map_ptr_mut)};
 }
 

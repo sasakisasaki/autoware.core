@@ -28,7 +28,8 @@ namespace autoware::experimental::lanelet2_utils
 /**
  * @brief load a map file from the given path and return LaneletMap object
  */
-lanelet::LaneletMapConstPtr load_mgrs_coordinate_map(const std::string & path);
+lanelet::LaneletMapConstPtr load_mgrs_coordinate_map(
+  const std::string & path, const double centerline_resolution = 5.0);
 
 /**
  * @brief instantiate RoutingGraph from given LaneletMap only from "road" lanes
