@@ -27,13 +27,25 @@
 
 namespace autoware::experimental::trajectory
 {
+
+/**
+ * @brief create Trajectory which is backward_length backward and forward_length forward from ego's
+ * s coordinate in terms of s coordinate
+ * @param connected_lane_sequence consecutive lanelet sequence. it is ok that it intersects with
+ * itself
+ * @param current_lanelet the lanelet where ego_pose is driving, which is given in order to
+ * disambiguate if route_lanelets have self-intersection
+ * @param ego_pose ego's current pose
+ * @return the s coordinate of start/end is relative from ego by backward_length/forward_length. the
+ * length of Trajectory does not match backward_length + forward_length
+ */
 std::optional<Trajectory<autoware_internal_planning_msgs::msg::PathPointWithLaneId>>
 build_reference_path(
-  const lanelet::ConstLanelets & route_lanelets, const lanelet::ConstLanelet & current_lanelet,
-  const geometry_msgs::msg::Pose & ego_pose, const lanelet::LaneletMapConstPtr lanelet_map,
+  const lanelet::ConstLanelets & connected_lane_sequence,
+  const lanelet::ConstLanelet & current_lanelet, const geometry_msgs::msg::Pose & ego_pose,
+  const lanelet::LaneletMapConstPtr lanelet_map,
   const lanelet::routing::RoutingGraphConstPtr routing_graph,
-  lanelet::traffic_rules::TrafficRulesPtr traffic_rules, const double group_separation_distance,
-  const double connection_from_default_point_gradient, const double forward_length,
+  lanelet::traffic_rules::TrafficRulesPtr traffic_rules, const double forward_length,
   const double backward_length);
 
 }  // namespace autoware::experimental::trajectory
