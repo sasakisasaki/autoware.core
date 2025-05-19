@@ -37,9 +37,8 @@
 namespace fs = std::filesystem;
 using namespace autoware::experimental;  // NOLINT
 
-int main()
+int main1()
 {
-  pybind11::scoped_interpreter guard{};
   auto plt = autoware::pyplot::import();
   auto [fig, axes] = plt.subplots(2, 2);
 
@@ -66,6 +65,7 @@ int main()
   const auto lanelet_map_ptr = lanelet2_utils::load_mgrs_coordinate_map(map_path.string());
   const auto [routing_graph, traffic_rules] =
     lanelet2_utils::instantiate_routing_graph_and_traffic_rules(lanelet_map_ptr);
+  const auto current_lanelet = lanelet_map_ptr->laneletLayer.get(140);
 
   const auto lanelet_sequence = ids | ranges::views::transform([&](const auto & id) {
                                   return lanelet_map_ptr->laneletLayer.get(id);
@@ -77,8 +77,8 @@ int main()
     const double backward_length = 0.0;
     auto & ax = axes[0];
     const auto reference_path_opt = trajectory::build_reference_path(
-      lanelet_sequence, lanelet_sequence.front(), ego_pose, lanelet_map_ptr, routing_graph,
-      traffic_rules, forward_length, backward_length);
+      lanelet_sequence, current_lanelet, ego_pose, lanelet_map_ptr, routing_graph, traffic_rules,
+      forward_length, backward_length);
     if (reference_path_opt) {
       const auto & reference_path = reference_path_opt.value();
       autoware_internal_planning_msgs::msg::PathWithLaneId path;
@@ -101,8 +101,8 @@ int main()
     const double backward_length = 100.0;
     auto & ax = axes[1];
     const auto reference_path_opt = trajectory::build_reference_path(
-      lanelet_sequence, lanelet_sequence.front(), ego_pose, lanelet_map_ptr, routing_graph,
-      traffic_rules, forward_length, backward_length);
+      lanelet_sequence, current_lanelet, ego_pose, lanelet_map_ptr, routing_graph, traffic_rules,
+      forward_length, backward_length);
     if (reference_path_opt) {
       const auto & reference_path = reference_path_opt.value();
       autoware_internal_planning_msgs::msg::PathWithLaneId path;
@@ -125,8 +125,8 @@ int main()
     const double backward_length = 10.0;
     auto & ax = axes[2];
     const auto reference_path_opt = trajectory::build_reference_path(
-      lanelet_sequence, lanelet_sequence.front(), ego_pose, lanelet_map_ptr, routing_graph,
-      traffic_rules, forward_length, backward_length);
+      lanelet_sequence, current_lanelet, ego_pose, lanelet_map_ptr, routing_graph, traffic_rules,
+      forward_length, backward_length);
     if (reference_path_opt) {
       const auto & reference_path = reference_path_opt.value();
       autoware_internal_planning_msgs::msg::PathWithLaneId path;
@@ -149,8 +149,8 @@ int main()
     const double backward_length = 0.0;
     auto & ax = axes[3];
     const auto reference_path_opt = trajectory::build_reference_path(
-      lanelet_sequence, lanelet_sequence.front(), ego_pose, lanelet_map_ptr, routing_graph,
-      traffic_rules, forward_length, backward_length);
+      lanelet_sequence, current_lanelet, ego_pose, lanelet_map_ptr, routing_graph, traffic_rules,
+      forward_length, backward_length);
     if (reference_path_opt) {
       const auto & reference_path = reference_path_opt.value();
       autoware_internal_planning_msgs::msg::PathWithLaneId path;
@@ -171,4 +171,137 @@ int main()
   plt.show();
 
   return 0;
+}
+
+int main2()
+{
+  auto plt = autoware::pyplot::import();
+  auto [fig, axes] = plt.subplots(2, 2);
+
+  const auto sample_map_dir =
+    fs::path(ament_index_cpp::get_package_share_directory("autoware_test_utils")) /
+    "test_map/overlap";
+  const std::vector<lanelet::Id> ids = {609, 610, 612, 611, 613};
+  const auto ego_pose =
+    geometry_msgs::build<geometry_msgs::msg::Pose>()
+      .position(autoware_utils_geometry::create_point(1573.68, 389.857, 100.0))
+      .orientation(autoware_utils_geometry::create_quaternion(0.0, 0.0, 0.999997, 0.00250111));
+  const auto map_path = sample_map_dir / "lanelet2_map.osm";
+
+  const auto lanelet_map_ptr = lanelet2_utils::load_mgrs_coordinate_map(map_path.string());
+  const auto [routing_graph, traffic_rules] =
+    lanelet2_utils::instantiate_routing_graph_and_traffic_rules(lanelet_map_ptr);
+  const auto current_lanelet = lanelet_map_ptr->laneletLayer.get(609);
+
+  const auto lanelet_sequence = ids | ranges::views::transform([&](const auto & id) {
+                                  return lanelet_map_ptr->laneletLayer.get(id);
+                                }) |
+                                ranges::to<std::vector>();
+
+  {
+    const double forward_length = 200;
+    const double backward_length = 0.0;
+    auto & ax = axes[0];
+    const auto reference_path_opt = trajectory::build_reference_path(
+      lanelet_sequence, current_lanelet, ego_pose, lanelet_map_ptr, routing_graph, traffic_rules,
+      forward_length, backward_length);
+    if (reference_path_opt) {
+      const auto & reference_path = reference_path_opt.value();
+      autoware_internal_planning_msgs::msg::PathWithLaneId path;
+      path.points = reference_path.restore();
+      autoware::test_utils::plot_autoware_object(path, ax);
+      ax.set_title(Args(
+        "forward = 200, backward = 0 (actual length = " + std::to_string(reference_path.length()) +
+        ")"));
+    }
+    for (const auto & route_lanelet : lanelet_sequence) {
+      autoware::test_utils::plot_lanelet2_object(route_lanelet, ax);
+    }
+    ax.scatter(Args(ego_pose.position.x, ego_pose.position.y), Kwargs("label"_a = "ego position"));
+    ax.set_aspect(Args("equal"));
+    ax.legend();
+    ax.grid();
+  }
+  {
+    const double forward_length = 0;
+    const double backward_length = 100.0;
+    auto & ax = axes[1];
+    const auto reference_path_opt = trajectory::build_reference_path(
+      lanelet_sequence, current_lanelet, ego_pose, lanelet_map_ptr, routing_graph, traffic_rules,
+      forward_length, backward_length);
+    if (reference_path_opt) {
+      const auto & reference_path = reference_path_opt.value();
+      autoware_internal_planning_msgs::msg::PathWithLaneId path;
+      path.points = reference_path.restore();
+      autoware::test_utils::plot_autoware_object(path, ax);
+      ax.set_title(Args(
+        "forward = 0, backward = 100 (actual length = " + std::to_string(reference_path.length()) +
+        ")"));
+    }
+    for (const auto & route_lanelet : lanelet_sequence) {
+      autoware::test_utils::plot_lanelet2_object(route_lanelet, ax);
+    }
+    ax.scatter(Args(ego_pose.position.x, ego_pose.position.y), Kwargs("label"_a = "ego position"));
+    ax.set_aspect(Args("equal"));
+    ax.legend();
+    ax.grid();
+  }
+  {
+    const double forward_length = 50;
+    const double backward_length = 10.0;
+    auto & ax = axes[2];
+    const auto reference_path_opt = trajectory::build_reference_path(
+      lanelet_sequence, current_lanelet, ego_pose, lanelet_map_ptr, routing_graph, traffic_rules,
+      forward_length, backward_length);
+    if (reference_path_opt) {
+      const auto & reference_path = reference_path_opt.value();
+      autoware_internal_planning_msgs::msg::PathWithLaneId path;
+      path.points = reference_path.restore();
+      autoware::test_utils::plot_autoware_object(path, ax);
+      ax.set_title(Args(
+        "forward = 50, backward = 10 (actual length = " + std::to_string(reference_path.length()) +
+        ")"));
+    }
+    for (const auto & route_lanelet : lanelet_sequence) {
+      autoware::test_utils::plot_lanelet2_object(route_lanelet, ax);
+    }
+    ax.scatter(Args(ego_pose.position.x, ego_pose.position.y), Kwargs("label"_a = "ego position"));
+    ax.set_aspect(Args("equal"));
+    ax.legend();
+    ax.grid();
+  }
+  {
+    const double forward_length = 0.0;
+    const double backward_length = 0.0;
+    auto & ax = axes[3];
+    const auto reference_path_opt = trajectory::build_reference_path(
+      lanelet_sequence, current_lanelet, ego_pose, lanelet_map_ptr, routing_graph, traffic_rules,
+      forward_length, backward_length);
+    if (reference_path_opt) {
+      const auto & reference_path = reference_path_opt.value();
+      autoware_internal_planning_msgs::msg::PathWithLaneId path;
+      path.points = reference_path.restore();
+      autoware::test_utils::plot_autoware_object(path, ax);
+      ax.set_title(Args(
+        "forward = 0, backward = 0 (actual length = " + std::to_string(reference_path.length()) +
+        ")"));
+    }
+    for (const auto & route_lanelet : lanelet_sequence) {
+      autoware::test_utils::plot_lanelet2_object(route_lanelet, ax);
+    }
+    ax.scatter(Args(ego_pose.position.x, ego_pose.position.y), Kwargs("label"_a = "ego position"));
+    ax.set_aspect(Args("equal"));
+    ax.legend();
+    ax.grid();
+  }
+  plt.show();
+
+  return 0;
+}
+
+int main()
+{
+  pybind11::scoped_interpreter guard{};
+  main1();
+  main2();
 }

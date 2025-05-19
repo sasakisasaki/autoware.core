@@ -403,7 +403,7 @@ static std::vector<Waypoint> consolidate_user_defined_waypoints_and_native_cente
       }
       if (
         !points_to_add_chunk.empty() && current_overlapped_chunk_iter != waypoints_chunks.end() &&
-        current_overlapped_chunk_iter->start_s >= s_start) {
+        current_overlapped_chunk_iter->start_s <= native_s) {
         append_reference_points(points_to_add_chunk);
       }
     }
