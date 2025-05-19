@@ -44,13 +44,12 @@ The _Trajectory_ class provides mathematical continuous representation and objec
 - [x] `autoware_planning_msgs::PathPoint`
 - [x] `autoware_planning_msgs::PathPointWithLaneId`
 - [x] `autoware_planning_msgs::TrajectoryPoint`
-- [ ] `lanelet::ConstPoint3d`
 
 by interpolating the given _underlying_ points. Once built, arbitrary point on the curve is continuously parametrized by a single `s` coordinate.
 
-```cpp title="./examples/example_readme.cpp:547:562"
+```cpp title="./examples/example_readme.cpp:549:561"
 --8<--
-common/autoware_trajectory/examples/example_readme.cpp:547:562
+common/autoware_trajectory/examples/example_readme.cpp:549:561
 --8<--
 ```
 
@@ -85,9 +84,9 @@ This section introduces strict definition of several words used in this package 
 
 `AkimaSpline` requires at least **5** points to interpolate.
 
-```cpp title="./examples/example_readme.cpp:137:151"
+```cpp title="./examples/example_readme.cpp:142:152"
 --8<--
-common/autoware_trajectory/examples/example_readme.cpp:137:151
+common/autoware_trajectory/examples/example_readme.cpp:142:152
 --8<--
 ```
 
