@@ -78,7 +78,7 @@ struct Parameter_Map_Waypoint_Straight_00  // NOLINT
   const double ego_z;
   const std::array<double, 4> ego_quat;
   const bool expect_success;
-  const double expected_approximiate_length_lower_bound;
+  const double expected_approximate_length_lower_bound;
 };
 
 void PrintTo(const Parameter_Map_Waypoint_Straight_00 & param, ::std::ostream * os)  // NOLINT
@@ -93,7 +93,7 @@ TEST_P(TestCase_Map_Waypoint_Straight_00, test_path_validity)
 {
   auto
     [FORWARD_LENGTH, BACKWARD_LENGTH, ids, current_id, x, y, z, quat, expect_success,
-     expected_approximiate_length_lower_bound] = GetParam();
+     expected_approximate_length_lower_bound] = GetParam();
 
   const auto lanelet_sequence =
     ids |
@@ -110,9 +110,9 @@ TEST_P(TestCase_Map_Waypoint_Straight_00, test_path_validity)
   if (expect_success) {
     ASSERT_TRUE(reference_path_opt.has_value());
     const auto & reference_path = reference_path_opt.value();
-    EXPECT_TRUE(reference_path.length() > expected_approximiate_length_lower_bound)
-      << "length of reference_path / expected_approximiate_length_lower_bound = "
-      << reference_path.length() << ", " << expected_approximiate_length_lower_bound;
+    EXPECT_TRUE(reference_path.length() > expected_approximate_length_lower_bound)
+      << "length of reference_path / expected_approximate_length_lower_bound = "
+      << reference_path.length() << ", " << expected_approximate_length_lower_bound;
     /*
     // TODO(soblin): if waypoints are contained, trajectory length does not match with s_end -
     // s_start
@@ -213,7 +213,7 @@ struct Parameter_Map_Waypoint_Curve_00  // NOLINT
   const double ego_z;
   const std::array<double, 4> ego_quat;
   const bool expect_success;
-  const double expected_approximiate_length_lower_bound;
+  const double expected_approximate_length_lower_bound;
 };
 
 void PrintTo(const Parameter_Map_Waypoint_Curve_00 & param, ::std::ostream * os)  // NOLINT
@@ -228,7 +228,7 @@ TEST_P(TestCase_Map_Waypoint_Curve_00, test_path_validity)
 {
   auto
     [FORWARD_LENGTH, BACKWARD_LENGTH, ids, current_id, x, y, z, quat, expect_success,
-     expected_approximiate_length_lower_bound] = GetParam();
+     expected_approximate_length_lower_bound] = GetParam();
 
   const auto lanelet_sequence =
     ids |
@@ -245,9 +245,9 @@ TEST_P(TestCase_Map_Waypoint_Curve_00, test_path_validity)
   if (expect_success) {
     ASSERT_TRUE(reference_path_opt.has_value());
     const auto & reference_path = reference_path_opt.value();
-    EXPECT_TRUE(reference_path.length() > expected_approximiate_length_lower_bound)
-      << "length of reference_path / expected_approximiate_length_lower_bound = "
-      << reference_path.length() << ", " << expected_approximiate_length_lower_bound;
+    EXPECT_TRUE(reference_path.length() > expected_approximate_length_lower_bound)
+      << "length of reference_path / expected_approximate_length_lower_bound = "
+      << reference_path.length() << ", " << expected_approximate_length_lower_bound;
     /*
     // TODO(soblin): if waypoints are contained, trajectory length does not match with s_end -
     // s_start
