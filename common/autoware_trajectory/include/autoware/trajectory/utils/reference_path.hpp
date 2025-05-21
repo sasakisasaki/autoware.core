@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef AUTOWARE__TRAJECTORY__REFERENCE_PATH_HPP_
-#define AUTOWARE__TRAJECTORY__REFERENCE_PATH_HPP_
+#ifndef AUTOWARE__TRAJECTORY__UTILS__REFERENCE_PATH_HPP_
+#define AUTOWARE__TRAJECTORY__UTILS__REFERENCE_PATH_HPP_
 
 #include "autoware/trajectory/forward.hpp"
 
@@ -50,4 +50,4 @@ build_reference_path(
 
 }  // namespace autoware::experimental::trajectory
 
-#endif  // AUTOWARE__TRAJECTORY__REFERENCE_PATH_HPP_
+#endif  // AUTOWARE__TRAJECTORY__UTILS__REFERENCE_PATH_HPP_

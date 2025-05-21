@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #include "autoware/trajectory/path_point_with_lane_id.hpp"
-#include "autoware/trajectory/reference_path.hpp"
 #include "autoware/trajectory/threshold.hpp"
+#include "autoware/trajectory/utils/reference_path.hpp"
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
 #include <autoware/lanelet2_utils/conversion.hpp>

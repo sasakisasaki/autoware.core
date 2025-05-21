@@ -13,7 +13,6 @@ ament_auto_add_library(autoware_trajectory SHARED
   src/path_point.cpp
   src/path_point_with_lane_id.cpp
   src/trajectory_point.cpp
-  src/reference_path.cpp
   src/detail/logging.cpp
   src/detail/types.cpp
   src/detail/util.cpp
@@ -27,6 +26,7 @@ ament_auto_add_library(autoware_trajectory SHARED
   src/utils/find_intervals.cpp
   src/utils/pretty_build.cpp
   src/utils/shift.cpp
+  src/utils/reference_path.cpp
 )
 
 if(BUILD_TESTING)

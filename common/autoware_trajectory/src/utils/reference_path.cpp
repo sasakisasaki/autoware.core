@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "autoware/trajectory/reference_path.hpp"
+#include "autoware/trajectory/utils/reference_path.hpp"
 
 #include "autoware/trajectory/threshold.hpp"
 #include "autoware/trajectory/utils/pretty_build.hpp"
