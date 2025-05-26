@@ -183,44 +183,6 @@ std::optional<lanelet::ConstLanelet> get_next_lanelet_within_route(
   return *next_lanelet_itr;
 }
 
-std::vector<WaypointGroup> get_waypoint_groups(
-  const lanelet::LaneletSequence & lanelet_sequence, const lanelet::LaneletMap & lanelet_map,
-  const double group_separation_threshold, const double interval_margin_ratio)
-{
-  std::vector<WaypointGroup> waypoint_groups{};
-
-  const auto get_interval_bound =
-    [&](const lanelet::ConstPoint3d & point, const double lateral_distance_factor) {
-      const auto arc_coordinates = lanelet::geometry::toArcCoordinates(
-        lanelet_sequence.centerline2d(), lanelet::utils::to2D(point));
-      return arc_coordinates.length + lateral_distance_factor * std::abs(arc_coordinates.distance);
-    };
-
-  for (const auto & lanelet : lanelet_sequence) {
-    if (!lanelet.hasAttribute("waypoints")) {
-      continue;
-    }
-
-    const auto waypoints_id = lanelet.attribute("waypoints").asId().value();
-    const auto & waypoints = lanelet_map.lineStringLayer.get(waypoints_id);
-
-    if (
-      waypoint_groups.empty() ||
-      lanelet::geometry::distance2d(waypoint_groups.back().waypoints.back(), waypoints.front()) >
-        group_separation_threshold) {
-      waypoint_groups.emplace_back().interval.start =
-        get_interval_bound(waypoints.front(), -interval_margin_ratio);
-    }
-    waypoint_groups.back().interval.end =
-      get_interval_bound(waypoints.back(), interval_margin_ratio);
-
-    waypoint_groups.back().waypoints.insert(
-      waypoint_groups.back().waypoints.end(), waypoints.begin(), waypoints.end());
-  }
-
-  return waypoint_groups;
-}
-
 std::optional<double> get_first_intersection_arc_length(
   const lanelet::LaneletSequence & lanelet_sequence, const double s_start, const double s_end,
   const double vehicle_length)
