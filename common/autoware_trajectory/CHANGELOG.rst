@@ -50,8 +50,8 @@ Changelog for package autoware_trajectory
 * chore: include iostream and link yaml-cpp for Jazzy (`#351 <https://github.com/autowarefoundation/autoware_core/issues/351>`_)
 * Contributors: Mamoru Sobue, Tim Clephas, Yukinari Hisaki
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * feat(autoware_trajectory): add specialized LaneIdsInterpolator for lane ID handling (`#528 <https://github.com/autowarefoundation/autoware_core/issues/528>`_)
   * feat(autoware_trajectory): add specialized LaneIdsInterpolator for lane ID handling

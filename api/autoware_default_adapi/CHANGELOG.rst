@@ -2,8 +2,8 @@
 Changelog for package autoware_default_adapi
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * feat: release adapi v1.9.0 (`#550 <https://github.com/autowarefoundation/autoware_core/issues/550>`_)
 * feat: port autoware_default_adapi from Autoware Universe (`#543 <https://github.com/autowarefoundation/autoware_core/issues/543>`_)

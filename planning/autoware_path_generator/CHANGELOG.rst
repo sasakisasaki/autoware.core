@@ -63,8 +63,8 @@ Changelog for package autoware_path_generator
 * feat(autoware_path_generator): use autoware_trajectory for cropping bounds (`#349 <https://github.com/autowarefoundation/autoware_core/issues/349>`_)
 * Contributors: Kazunori-Nakajima, Mamoru Sobue, Mitsuhiro Sakamoto, Yukinari Hisaki
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * feat(path_generator): publish processing time (`#549 <https://github.com/autowarefoundation/autoware_core/issues/549>`_)
 * fix(path_generator): deal with short path (`#536 <https://github.com/autowarefoundation/autoware_core/issues/536>`_)

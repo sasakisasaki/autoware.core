@@ -13,8 +13,8 @@ Changelog for package autoware_motion_utils
 * refactor(autoware_motion_utils): rewrite using modern C++ without API breakage (`#348 <https://github.com/autowarefoundation/autoware_core/issues/348>`_)
 * Contributors: Arjun Jagdish Ram, Yutaka Kondo
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * feat(obstacle_stop_module): maintain larger stop distance for opposing traffic (`#451 <https://github.com/autowarefoundation/autoware_core/issues/451>`_)
   * Opposing traffic handling

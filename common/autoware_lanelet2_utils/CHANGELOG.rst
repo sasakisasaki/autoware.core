@@ -18,8 +18,8 @@ Changelog for package autoware_lanelet2_utils
   ---------
 * Contributors: Mamoru Sobue, Yutaka Kondo
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * feat(autoware_trajectory): implement a function to construct trajectory class for reference path (`#469 <https://github.com/autowarefoundation/autoware_core/issues/469>`_)
   Co-authored-by: Junya Sasaki <j2sasaki1990@gmail.com>

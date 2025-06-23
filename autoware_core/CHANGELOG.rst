@@ -5,8 +5,8 @@ Changelog for package autoware_core
 1.1.0 (2025-05-01)
 ------------------
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * feat: update autoware component launch files (`#496 <https://github.com/autowarefoundation/autoware_core/issues/496>`_)
   * feat(autoware_core_localization): add pointcloud based localization packages to launch file

@@ -9,8 +9,8 @@ Changelog for package autoware_component_interface_specs
 * docs(autoware_component_interface_specs): fix `README.md` (`#363 <https://github.com/autowarefoundation/autoware_core/issues/363>`_)
 * Contributors: Takagi, Isamu, Yutaka Kondo
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * feat(autoware_component_interface_specs): update planning and system interface (`#544 <https://github.com/autowarefoundation/autoware_core/issues/544>`_)
   Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>

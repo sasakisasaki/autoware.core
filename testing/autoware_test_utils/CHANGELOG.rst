@@ -27,8 +27,8 @@ Changelog for package autoware_test_utils
 * chore: include iostream and link yaml-cpp for Jazzy (`#351 <https://github.com/autowarefoundation/autoware_core/issues/351>`_)
 * Contributors: Mitsuhiro Sakamoto, Tim Clephas
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * feat(autoware_trajectory): implement a function to construct trajectory class for reference path (`#469 <https://github.com/autowarefoundation/autoware_core/issues/469>`_)
   Co-authored-by: Junya Sasaki <j2sasaki1990@gmail.com>

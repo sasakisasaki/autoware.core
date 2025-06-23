@@ -5,8 +5,8 @@ Changelog for package autoware_motion_velocity_obstacle_stop_module
 1.1.0 (2025-05-01)
 ------------------
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * feat(obstacle_stop): update parameter explanation (`#501 <https://github.com/autowarefoundation/autoware_core/issues/501>`_)
   * feat(obstacle_stop): update parameter explanation

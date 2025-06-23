@@ -5,8 +5,8 @@ Changelog for package autoware_planning_test_manager
 1.1.0 (2025-05-01)
 ------------------
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * feat!: remove obstacle_stop_planner and obstacle_cruise_planner (`#495 <https://github.com/autowarefoundation/autoware_core/issues/495>`_)
   * feat: remove obstacle_stop_planner and obstacle_cruise_planner

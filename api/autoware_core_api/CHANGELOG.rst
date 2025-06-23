@@ -2,8 +2,8 @@
 Changelog for package autoware_core_api
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * feat: add autoware_core_api package (`#551 <https://github.com/autowarefoundation/autoware_core/issues/551>`_)
   * feat: add autoware_core_api package

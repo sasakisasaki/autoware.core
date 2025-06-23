@@ -5,8 +5,8 @@ Changelog for package autoware_qp_interface
 1.1.0 (2025-05-01)
 ------------------
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * chore: bump up version to 1.1.0 (`#462 <https://github.com/autowarefoundation/autoware_core/issues/462>`_) (`#464 <https://github.com/autowarefoundation/autoware_core/issues/464>`_)
 * refactor(autoware_qp_interface): rewrite using modern C++ without API breakage (`#400 <https://github.com/autowarefoundation/autoware_core/issues/400>`_)

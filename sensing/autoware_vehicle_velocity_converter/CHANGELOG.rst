@@ -5,8 +5,8 @@ Changelog for package autoware_vehicle_velocity_converter
 1.1.0 (2025-05-01)
 ------------------
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * test(autoware_vehicle_velocity_converter): add unit tests (`#478 <https://github.com/autowarefoundation/autoware_core/issues/478>`_)
   * test(autoware_vehicle_velocity_converter): add unit tests

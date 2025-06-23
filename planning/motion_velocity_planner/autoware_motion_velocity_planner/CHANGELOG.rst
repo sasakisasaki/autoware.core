@@ -5,8 +5,8 @@ Changelog for package autoware_motion_velocity_planner
 1.1.0 (2025-05-01)
 ------------------
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * feat(motion_velocity_planner_node): update pcl coordinate transformation (`#519 <https://github.com/autowarefoundation/autoware_core/issues/519>`_)
   * update pcl coordinate transformation

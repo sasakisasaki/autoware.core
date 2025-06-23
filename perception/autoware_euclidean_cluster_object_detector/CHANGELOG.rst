@@ -2,8 +2,8 @@
 Changelog for package autoware_euclidean_cluster_object_detector
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * test(autoware_euclidean_cluster_object_detector): add test cases (`#488 <https://github.com/autowarefoundation/autoware_core/issues/488>`_)
   * test(autoware_euclidean_cluster_object_detector): add test cases

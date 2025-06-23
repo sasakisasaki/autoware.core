@@ -2,8 +2,8 @@
 Changelog for package autoware_ndt_scan_matcher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * feat(autoware_ndt_scan_matcher): port the package from Autoware Universe   (`#490 <https://github.com/autowarefoundation/autoware_core/issues/490>`_)
   Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>

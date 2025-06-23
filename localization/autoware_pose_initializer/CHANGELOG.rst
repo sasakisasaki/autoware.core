@@ -2,8 +2,8 @@
 Changelog for package autoware_pose_initializer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * fix(autoware_pose_initializer, autoware_adapi): fix documentation link (`#547 <https://github.com/autowarefoundation/autoware_core/issues/547>`_)
 * feat!: replace autoware_internal_localization_msgs with autoware_localization_msgs for InitializeLocalization service (`#542 <https://github.com/autowarefoundation/autoware_core/issues/542>`_)

@@ -2,8 +2,8 @@
 Changelog for package autoware_adapi_specs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * feat(adapi_specs): add mrm description (`#539 <https://github.com/autowarefoundation/autoware_core/issues/539>`_)
   * feat(adapi_specs): add mrm description

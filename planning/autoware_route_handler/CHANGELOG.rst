@@ -11,8 +11,8 @@ Changelog for package autoware_route_handler
   Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
 * Contributors: Mert Çolak
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * perf(route_handler): improve functions to get nearest route lanelet (`#532 <https://github.com/autowarefoundation/autoware_core/issues/532>`_)
 * fix(autoware_route_handler): fix deprecated autoware_utils header (`#446 <https://github.com/autowarefoundation/autoware_core/issues/446>`_)

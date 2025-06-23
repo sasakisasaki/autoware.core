@@ -5,8 +5,8 @@ Changelog for package autoware_objects_of_interest_marker_interface
 1.1.0 (2025-05-01)
 ------------------
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * fix(autoware_objects_of_interest_marker_interface): fix deprecated autoware_utils header (`#448 <https://github.com/autowarefoundation/autoware_core/issues/448>`_)
   fix autoware_utils header

@@ -10,8 +10,8 @@ Changelog for package autoware_pyplot
   ---------
 * Contributors: Mamoru Sobue
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * feat: support ROS 2 Jazzy (`#487 <https://github.com/autowarefoundation/autoware_core/issues/487>`_)
   * fix ekf_localizer

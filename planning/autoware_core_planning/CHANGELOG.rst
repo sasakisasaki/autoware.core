@@ -5,8 +5,8 @@ Changelog for package autoware_core_planning
 1.1.0 (2025-05-01)
 ------------------
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * feat: use component_interface_specs for mission_planner (`#546 <https://github.com/autowarefoundation/autoware_core/issues/546>`_)
 * chore(behavior_velocity_planner): remove unecessary stop_line_extend_length (`#515 <https://github.com/autowarefoundation/autoware_core/issues/515>`_)

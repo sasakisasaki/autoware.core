@@ -8,8 +8,8 @@ Changelog for package autoware_object_recognition_utils
   use autoware_utils\_*
 * Contributors: Yutaka Kondo
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * chore: no longer support ROS 2 Galactic (`#492 <https://github.com/autowarefoundation/autoware_core/issues/492>`_)
 * refactor(autoware_obect_recognition_utils): rewrite using modern C++ without API breakage (`#396 <https://github.com/autowarefoundation/autoware_core/issues/396>`_)

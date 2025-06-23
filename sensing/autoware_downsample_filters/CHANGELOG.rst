@@ -2,8 +2,8 @@
 Changelog for package autoware_downsample_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * feat(autoware_downsample_filters): re-implementation pointcloud downsample filters according to autoware_pointcloud_preprocessor in autoware_universe (`#459 <https://github.com/autowarefoundation/autoware_core/issues/459>`_)
   Co-authored-by: Ryohsuke Mitsudome <ryohsuke.mitsudome@tier4.jp>

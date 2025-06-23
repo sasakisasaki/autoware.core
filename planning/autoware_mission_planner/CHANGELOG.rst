@@ -5,8 +5,8 @@ Changelog for package autoware_mission_planner
 1.1.0 (2025-05-01)
 ------------------
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * feat: use component_interface_specs for mission_planner (`#546 <https://github.com/autowarefoundation/autoware_core/issues/546>`_)
 * fix(mission_planner): fix check if goal footprint is inside route (`#534 <https://github.com/autowarefoundation/autoware_core/issues/534>`_)

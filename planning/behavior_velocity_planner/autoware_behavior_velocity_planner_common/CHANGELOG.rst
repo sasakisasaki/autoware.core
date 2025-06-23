@@ -5,8 +5,8 @@ Changelog for package autoware_behavior_velocity_planner_common
 1.1.0 (2025-05-01)
 ------------------
 
-Forthcoming
------------
+1.3.0 (2025-06-23)
+------------------
 * fix: to be consistent version in all package.xml(s)
 * fix(behavior_velocity_planner): fix registered module ids log (`#535 <https://github.com/autowarefoundation/autoware_core/issues/535>`_)
 * fix(behavior_velocity_planner): validate extedned line (`#527 <https://github.com/autowarefoundation/autoware_core/issues/527>`_)
