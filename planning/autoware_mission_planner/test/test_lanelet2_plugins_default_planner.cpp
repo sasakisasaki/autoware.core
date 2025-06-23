@@ -113,7 +113,7 @@ TEST_F(DefaultPlannerTest, checkGoalInsideLane)
   lanelet::ConstLanelet goal_lanelet{lanelet::InvalId, left_bound, right_bound};
 
   // simple case where the footprint is completely inside the lane
-  autoware_utils::Polygon2d goal_footprint;
+  autoware_utils_geometry::Polygon2d goal_footprint;
   goal_footprint.outer().emplace_back(0, 0);
   goal_footprint.outer().emplace_back(0, 0.5);
   goal_footprint.outer().emplace_back(0.5, 0.5);
@@ -392,7 +392,7 @@ TEST_F(DefaultPlannerTest, visualizeDebugFootprint)
   DefaultPlanner planner;
   planner_.set_default_test_map();
 
-  autoware_utils::LinearRing2d footprint;
+  autoware_utils_geometry::LinearRing2d footprint;
   footprint.push_back({1.0, 1.0});
   footprint.push_back({1.0, -1.0});
   footprint.push_back({0.0, -1.0});

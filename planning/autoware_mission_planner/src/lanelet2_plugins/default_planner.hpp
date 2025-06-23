@@ -53,7 +53,7 @@ public:
   void clearRoute() override;
   [[nodiscard]] MarkerArray visualize(const LaneletRoute & route) const override;
   [[nodiscard]] static MarkerArray visualize_debug_footprint(
-    autoware_utils::LinearRing2d goal_footprint);
+    autoware_utils_geometry::LinearRing2d goal_footprint);
   autoware::vehicle_info_utils::VehicleInfo vehicle_info_;
 
 protected:
