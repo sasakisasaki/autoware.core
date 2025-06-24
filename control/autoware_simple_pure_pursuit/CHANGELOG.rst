@@ -5,8 +5,9 @@ Changelog for package autoware_simple_pure_pursuit
 1.1.0 (2025-05-01)
 ------------------
 
-1.2.0 (2025-06-09)
+1.3.0 (2025-06-23)
 ------------------
+* fix: to be consistent version in all package.xml(s)
 * docs(simple_pure_pursuit): add flowchart (`#481 <https://github.com/autowarefoundation/autoware_core/issues/481>`_)
   * add flowchart
   * add default value to parameter schema
@@ -31,7 +32,7 @@ Changelog for package autoware_simple_pure_pursuit
   * fix autoware_utils packages
   ---------
   Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
-* Contributors: Masaki Baba, Mitsuhiro Sakamoto, Tim Clephas, Yukinari Hisaki, Yutaka Kondo, 心刚
+* Contributors: Masaki Baba, Mitsuhiro Sakamoto, Tim Clephas, Yukinari Hisaki, Yutaka Kondo, github-actions, 心刚
 
 1.0.0 (2025-03-31)
 ------------------

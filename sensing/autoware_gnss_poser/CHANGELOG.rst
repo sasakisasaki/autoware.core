@@ -5,8 +5,10 @@ Changelog for package autoware_gnss_poser
 1.1.0 (2025-05-01)
 ------------------
 
-1.2.0 (2025-06-09)
+1.3.0 (2025-06-23)
 ------------------
+* fix: to be consistent version in all package.xml(s)
+* chore: no longer support ROS 2 Galactic (`#492 <https://github.com/autowarefoundation/autoware_core/issues/492>`_)
 * fix: tf2 uses hpp headers in rolling (and is backported) (`#483 <https://github.com/autowarefoundation/autoware_core/issues/483>`_)
   * tf2 uses hpp headers in rolling (and is backported)
   * fixup! tf2 uses hpp headers in rolling (and is backported)
@@ -17,7 +19,7 @@ Changelog for package autoware_gnss_poser
   * style(pre-commit): autofix
   ---------
   Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
-* Contributors: NorahXiong, Tim Clephas, Yutaka Kondo
+* Contributors: NorahXiong, Tim Clephas, Yutaka Kondo, github-actions
 
 1.0.0 (2025-03-31)
 ------------------

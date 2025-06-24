@@ -50,8 +50,68 @@ Changelog for package autoware_trajectory
 * chore: include iostream and link yaml-cpp for Jazzy (`#351 <https://github.com/autowarefoundation/autoware_core/issues/351>`_)
 * Contributors: Mamoru Sobue, Tim Clephas, Yukinari Hisaki
 
-1.2.0 (2025-06-09)
+1.3.0 (2025-06-23)
 ------------------
+* fix: to be consistent version in all package.xml(s)
+* feat(autoware_trajectory): add specialized LaneIdsInterpolator for lane ID handling (`#528 <https://github.com/autowarefoundation/autoware_core/issues/528>`_)
+  * feat(autoware_trajectory): add specialized LaneIdsInterpolator for lane ID handling
+  Replace generic Stairstep interpolator with domain-specific LaneIdsInterpolator
+  that implements lane ID interpolation logic with preference for single lane IDs.
+  - Add LaneIdsInterpolator implementation
+  - Update path_point_with_lane_id to use specialized interpolator
+  - Add comprehensive tests for lane ID interpolation behavior
+  - Includes domain knowledge for handling lane transitions
+  * Update common/autoware_trajectory/test/test_interpolator.cpp
+  * Update common/autoware_trajectory/test/test_interpolator.cpp
+  ---------
+  Co-authored-by: Mamoru Sobue <hilo.soblin@gmail.com>
+* feat(autoware_trajectory): implement a function to construct trajectory class for reference path (`#469 <https://github.com/autowarefoundation/autoware_core/issues/469>`_)
+  Co-authored-by: Junya Sasaki <j2sasaki1990@gmail.com>
+* feat: support ROS 2 Jazzy (`#487 <https://github.com/autowarefoundation/autoware_core/issues/487>`_)
+  * fix ekf_localizer
+  * fix lanelet2_map_loader_node
+  * MUST REVERT
+  * fix pybind
+  * fix depend
+  * add buildtool
+  * remove
+  * revert
+  * find_package
+  * wip
+  * remove embed
+  * find python_cmake_module
+  * public
+  * remove ament_cmake_python
+  * fix autoware_trajectory
+  * add .lcovrc
+  * fix egm
+  * use char*
+  * use global
+  * namespace
+  * string view
+  * clock
+  * version
+  * wait
+  * fix egm2008-1
+  * typo
+  * fixing
+  * fix egm2008-1
+  * MUST REVERT
+  * fix egm2008-1
+  * fix twist_with_covariance
+  * Revert "MUST REVERT"
+  This reverts commit 93b7a57f99dccf571a01120132348460dbfa336e.
+  * namespace
+  * fix qos
+  * revert some
+  * comment
+  * Revert "MUST REVERT"
+  This reverts commit 7a680a796a875ba1dabc7e714eaea663d1e5c676.
+  * fix dungling pointer
+  * fix memory alignment
+  * ignored
+  * spellcheck
+  ---------
 * fix: tf2 uses hpp headers in rolling (and is backported) (`#483 <https://github.com/autowarefoundation/autoware_core/issues/483>`_)
   * tf2 uses hpp headers in rolling (and is backported)
   * fixup! tf2 uses hpp headers in rolling (and is backported)
@@ -128,7 +188,7 @@ Changelog for package autoware_trajectory
   * resurrect get_internal_base
   ---------
 * chore: include iostream and link yaml-cpp for Jazzy (`#351 <https://github.com/autowarefoundation/autoware_core/issues/351>`_)
-* Contributors: Mamoru Sobue, Tim Clephas, Yukinari Hisaki, Yutaka Kondo
+* Contributors: Mamoru Sobue, Tim Clephas, Yukinari Hisaki, Yutaka Kondo, github-actions
 
 1.0.0 (2025-03-31)
 ------------------

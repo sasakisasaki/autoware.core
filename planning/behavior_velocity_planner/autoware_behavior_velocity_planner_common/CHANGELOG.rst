@@ -5,8 +5,30 @@ Changelog for package autoware_behavior_velocity_planner_common
 1.1.0 (2025-05-01)
 ------------------
 
-1.2.0 (2025-06-09)
+1.3.0 (2025-06-23)
 ------------------
+* fix: to be consistent version in all package.xml(s)
+* fix(behavior_velocity_planner): fix registered module ids log (`#535 <https://github.com/autowarefoundation/autoware_core/issues/535>`_)
+* fix(behavior_velocity_planner): validate extedned line (`#527 <https://github.com/autowarefoundation/autoware_core/issues/527>`_)
+  * fix(behavior_velocity_planner): validated extedned line
+  * Update planning/behavior_velocity_planner/autoware_behavior_velocity_planner_common/src/utilization/util.cpp
+  Co-authored-by: Mamoru Sobue <hilo.soblin@gmail.com>
+  * remove unnecessary angle validation
+  ---------
+  Co-authored-by: Mamoru Sobue <hilo.soblin@gmail.com>
+* feat(planning_factor): add console output option (`#513 <https://github.com/autowarefoundation/autoware_core/issues/513>`_)
+  fix param json
+  fix param json
+  snake_case
+  set default
+* feat(behavior_velocity_planner): improve module registraion/deletion log (`#503 <https://github.com/autowarefoundation/autoware_core/issues/503>`_)
+  feat(behavior_velocity_planner): imporve module registraion log
+  update
+  update
+  ho
+* feat(behavior_velocity_planner_common, stop_line_module): print module/regulatory_element/lane/line ID and improve stop line module log (`#504 <https://github.com/autowarefoundation/autoware_core/issues/504>`_)
+  feat(behavior_velocity_planner_common, stop_line_module): print module/regulatory_element/lane/line ID and improve stop_line_module log
+* chore: no longer support ROS 2 Galactic (`#492 <https://github.com/autowarefoundation/autoware_core/issues/492>`_)
 * fix(autoware_behavior_velocity_planner_common): fix deprecated autoware_utils header (`#441 <https://github.com/autowarefoundation/autoware_core/issues/441>`_)
   * fix autoware_utils header
   * style(pre-commit): autofix
@@ -54,7 +76,7 @@ Changelog for package autoware_behavior_velocity_planner_common
   ---------
   Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
   Co-authored-by: Yutaka Kondo <yutaka.kondo@youtalk.jp>
-* Contributors: Mamoru Sobue, Masaki Baba, Mitsuhiro Sakamoto, Takayuki Murooka, Tim Clephas, Yukinari Hisaki, Yutaka Kondo
+* Contributors: Kosuke Takeuchi, Mamoru Sobue, Masaki Baba, Mitsuhiro Sakamoto, Takayuki Murooka, Tim Clephas, Yukinari Hisaki, Yutaka Kondo, github-actions
 
 1.0.0 (2025-03-31)
 ------------------

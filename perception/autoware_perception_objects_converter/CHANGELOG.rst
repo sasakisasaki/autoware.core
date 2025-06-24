@@ -2,7 +2,7 @@
 Changelog for package autoware_perception_objects_converter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.2.0 (2025-06-09)
+1.3.0 (2025-06-23)
 ------------------
 * fix: to be consistent version in all package.xml(s)
 * feat: add autoware_perception_objects_converter (`#458 <https://github.com/autowarefoundation/autoware_core/issues/458>`_)

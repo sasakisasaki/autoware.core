@@ -5,13 +5,24 @@ Changelog for package autoware_planning_factor_interface
 1.1.0 (2025-05-01)
 ------------------
 
-1.2.0 (2025-06-09)
+1.3.0 (2025-06-23)
 ------------------
+* fix: to be consistent version in all package.xml(s)
+* feat(planning_factor): add console output option (`#513 <https://github.com/autowarefoundation/autoware_core/issues/513>`_)
+  fix param json
+  fix param json
+  snake_case
+  set default
+* feat!: remove obstacle_stop_planner and obstacle_cruise_planner (`#495 <https://github.com/autowarefoundation/autoware_core/issues/495>`_)
+  * feat: remove obstacle_stop_planner and obstacle_cruise_planner
+  * update
+  * fix
+  ---------
 * fix(autoware_planning_factor_interface): removed unused autoware_utils (`#440 <https://github.com/autowarefoundation/autoware_core/issues/440>`_)
   removed unused autoware_utils
   Co-authored-by: Yutaka Kondo <yutaka.kondo@youtalk.jp>
 * chore: bump up version to 1.1.0 (`#462 <https://github.com/autowarefoundation/autoware_core/issues/462>`_) (`#464 <https://github.com/autowarefoundation/autoware_core/issues/464>`_)
-* Contributors: Masaki Baba, Yutaka Kondo
+* Contributors: Kosuke Takeuchi, Masaki Baba, Takayuki Murooka, Yutaka Kondo, github-actions
 
 1.0.0 (2025-03-31)
 ------------------

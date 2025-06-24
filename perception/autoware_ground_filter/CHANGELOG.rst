@@ -11,8 +11,9 @@ Changelog for package autoware_ground_filter
   Co-authored-by: Yutaka Kondo <yutaka.kondo@youtalk.jp>
 * Contributors: Amadeusz Szymko
 
-1.2.0 (2025-06-09)
+1.3.0 (2025-06-23)
 ------------------
+* fix: to be consistent version in all package.xml(s)
 * fix: tf2 uses hpp headers in rolling (and is backported) (`#483 <https://github.com/autowarefoundation/autoware_core/issues/483>`_)
   * tf2 uses hpp headers in rolling (and is backported)
   * fixup! tf2 uses hpp headers in rolling (and is backported)
@@ -36,7 +37,7 @@ Changelog for package autoware_ground_filter
   * fix(autoware_ground_filter): redundant inclusion
   ---------
   Co-authored-by: Yutaka Kondo <yutaka.kondo@youtalk.jp>
-* Contributors: Amadeusz Szymko, Masaki Baba, Tim Clephas, Yutaka Kondo
+* Contributors: Amadeusz Szymko, Masaki Baba, Tim Clephas, Yutaka Kondo, github-actions
 
 1.0.0 (2025-03-31)
 ------------------

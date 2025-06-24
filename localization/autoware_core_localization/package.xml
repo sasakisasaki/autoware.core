@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>autoware_core_localization</name>
-  <version>1.2.0</version>
+  <version>1.3.0</version>
   <description>The autoware_core_localization package</description>
   <maintainer email="ryohsuke.mitsudome@tier4.jp">Ryohsuke Mitsudome</maintainer>
   <maintainer email="mfc@autoware.org">Mete Fatih Cırıt</maintainer>
@@ -14,7 +14,10 @@
   <buildtool_depend>ament_cmake_auto</buildtool_depend>
   <buildtool_depend>autoware_cmake</buildtool_depend>
 
+  <exec_depend>autoware_downsample_filters</exec_depend>
   <exec_depend>autoware_ekf_localizer</exec_depend>
+  <exec_depend>autoware_ndt_scan_matcher</exec_depend>
+  <exec_depend>autoware_pose_initializer</exec_depend>
   <exec_depend>autoware_stop_filter</exec_depend>
   <exec_depend>autoware_twist2accel</exec_depend>
 

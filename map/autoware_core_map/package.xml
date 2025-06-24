@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>autoware_core_map</name>
-  <version>1.2.0</version>
+  <version>1.3.0</version>
   <description>The autoware_core_map package</description>
   <maintainer email="ryohsuke.mitsudome@tier4.jp">Ryohsuke Mitsudome</maintainer>
   <maintainer email="mfc@autoware.org">Mete Fatih Cırıt</maintainer>
@@ -14,6 +14,7 @@
   <buildtool_depend>ament_cmake_auto</buildtool_depend>
   <buildtool_depend>autoware_cmake</buildtool_depend>
 
+  <exec_depend>autoware_lanelet2_map_visualizer</exec_depend>
   <exec_depend>autoware_map_loader</exec_depend>
   <exec_depend>autoware_map_projection_loader</exec_depend>
 

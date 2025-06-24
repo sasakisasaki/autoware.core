@@ -16,6 +16,7 @@
 #define OBSTACLE_STOP_MODULE_HPP_
 
 #include "parameters.hpp"
+#include "path_length_buffer.hpp"
 #include "stop_planning_debug_info.hpp"
 #include "type_alias.hpp"
 #include "types.hpp"
@@ -59,6 +60,14 @@ public:
     const std::vector<autoware_planning_msgs::msg::TrajectoryPoint> & smoothed_trajectory_points,
     const std::shared_ptr<const PlannerData> planner_data) override;
 
+  RequiredSubscriptionInfo getRequiredSubscriptions() const override
+  {
+    RequiredSubscriptionInfo required_subscription_info;
+    required_subscription_info.predicted_objects = true;
+    required_subscription_info.no_ground_pointcloud = true;
+    return required_subscription_info;
+  }
+
 private:
   std::string module_name_{};
   rclcpp::Clock::SharedPtr clock_{};
@@ -85,6 +94,8 @@ private:
   std::vector<StopObstacle> prev_closest_stop_obstacles_{};
   std::vector<StopObstacle> prev_stop_obstacles_{};
 
+  autoware::motion_velocity_planner::obstacle_stop::PathLengthBuffer path_length_buffer_;
+
   // PointCloud-based stop obstacle history
   std::vector<StopObstacle> stop_pointcloud_obstacle_history_;
 
@@ -102,7 +113,7 @@ private:
   std::vector<geometry_msgs::msg::Point> convert_point_cloud_to_stop_points(
     const PlannerData::Pointcloud & pointcloud, const std::vector<TrajectoryPoint> & traj_points,
     const std::vector<Polygon2d> & decimated_traj_polys, const VehicleInfo & vehicle_info,
-    size_t ego_idx);
+    const TrajectoryPolygonCollisionCheck & trajectory_polygon_collision_check, size_t ego_idx);
 
   std::vector<Polygon2d> get_trajectory_polygon_for_inside(
     const std::vector<TrajectoryPoint> & decimated_traj_points, const VehicleInfo & vehicle_info,

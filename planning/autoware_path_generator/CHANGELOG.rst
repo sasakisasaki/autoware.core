@@ -63,8 +63,38 @@ Changelog for package autoware_path_generator
 * feat(autoware_path_generator): use autoware_trajectory for cropping bounds (`#349 <https://github.com/autowarefoundation/autoware_core/issues/349>`_)
 * Contributors: Kazunori-Nakajima, Mamoru Sobue, Mitsuhiro Sakamoto, Yukinari Hisaki
 
-1.2.0 (2025-06-09)
+1.3.0 (2025-06-23)
 ------------------
+* fix: to be consistent version in all package.xml(s)
+* feat(path_generator): publish processing time (`#549 <https://github.com/autowarefoundation/autoware_core/issues/549>`_)
+* fix(path_generator): deal with short path (`#536 <https://github.com/autowarefoundation/autoware_core/issues/536>`_)
+  * use pretty_build to handle short path
+  * add error message
+  ---------
+* fix(path_generator): ensure refined path connects start and goal (`#511 <https://github.com/autowarefoundation/autoware_core/issues/511>`_)
+  * ensure refined path connects start and goal
+  * rename and add parameters for smooth goal connection
+  * parameterize pre-goal offset
+  * delegate validation to generate_parameter_library
+  ---------
+  Co-authored-by: Yutaka Kondo <yutaka.kondo@youtalk.jp>
+* refactor(path_generator): remove refine_goal (`#500 <https://github.com/autowarefoundation/autoware_core/issues/500>`_)
+* refactor(path_generator): remove unused functions (`#499 <https://github.com/autowarefoundation/autoware_core/issues/499>`_)
+  * remove unused functions
+  * fix function declaration to match implementation
+  * add declaration of is_trajectory_inside_lanelets
+  * fix declaration of refine_path_for_goal
+  ---------
+* fix(path_generator): fix crop range when waypoints exist (`#461 <https://github.com/autowarefoundation/autoware_core/issues/461>`_)
+  * fix crop range when waypoints exist
+  * add get_arc_length_on_path function
+  * fix handling of waypoints on overlapping lanes
+  * check for self-intersections of bounds of lanelets extended outside route
+  * fix cropping at goal
+  * fix cropping trajectory
+  * add comments about lanelet extension
+  * fix behavior in edge cases
+  ---------
 * docs(path_generator): replace flowchart with raw plantuml code (`#482 <https://github.com/autowarefoundation/autoware_core/issues/482>`_)
   * add flowchart
   * style(pre-commit): autofix
@@ -134,7 +164,7 @@ Changelog for package autoware_path_generator
   * add constraints for current lane search
   ---------
 * feat(autoware_path_generator): use autoware_trajectory for cropping bounds (`#349 <https://github.com/autowarefoundation/autoware_core/issues/349>`_)
-* Contributors: Kazunori-Nakajima, Mamoru Sobue, Mitsuhiro Sakamoto, Yukinari Hisaki, Yutaka Kondo, taikitanaka3
+* Contributors: Kazunori-Nakajima, Kosuke Takeuchi, Mamoru Sobue, Mitsuhiro Sakamoto, Yukinari Hisaki, Yutaka Kondo, github-actions, taikitanaka3
 
 1.0.0 (2025-03-31)
 ------------------

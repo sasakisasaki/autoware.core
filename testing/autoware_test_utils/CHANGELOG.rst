@@ -27,8 +27,13 @@ Changelog for package autoware_test_utils
 * chore: include iostream and link yaml-cpp for Jazzy (`#351 <https://github.com/autowarefoundation/autoware_core/issues/351>`_)
 * Contributors: Mitsuhiro Sakamoto, Tim Clephas
 
-1.2.0 (2025-06-09)
+1.3.0 (2025-06-23)
 ------------------
+* fix: to be consistent version in all package.xml(s)
+* feat(autoware_trajectory): implement a function to construct trajectory class for reference path (`#469 <https://github.com/autowarefoundation/autoware_core/issues/469>`_)
+  Co-authored-by: Junya Sasaki <j2sasaki1990@gmail.com>
+* chore(autoware_test_utils): delete `launch` directory to remove dependency on `autoware_launch` (`#498 <https://github.com/autowarefoundation/autoware_core/issues/498>`_)
+  remove launch
 * fix(autoware_test_utils): fix linking to yaml-cpp (`#315 <https://github.com/autowarefoundation/autoware_core/issues/315>`_)
   * Fix linking to yaml-cpp
   * Remove find_package(yaml_cpp_vendor...)
@@ -66,7 +71,7 @@ Changelog for package autoware_test_utils
   Co-authored-by: Kosuke Takeuchi <kosuke.tnp@gmail.com>
   Co-authored-by: Yutaka Kondo <yutaka.kondo@youtalk.jp>
 * chore: include iostream and link yaml-cpp for Jazzy (`#351 <https://github.com/autowarefoundation/autoware_core/issues/351>`_)
-* Contributors: Masaki Baba, Mitsuhiro Sakamoto, Shane Loretz, Tim Clephas, Yutaka Kondo
+* Contributors: Mamoru Sobue, Masaki Baba, Mitsuhiro Sakamoto, Shane Loretz, Tim Clephas, Yutaka Kondo, github-actions
 
 1.0.0 (2025-03-31)
 ------------------
