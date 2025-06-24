@@ -140,7 +140,6 @@ public:
     : pointcloud_obstacle_filtering_param_(pointcloud_obstacle_filtering_param),
       mask_lat_margin_(mask_lat_margin)
     {
-      pointcloud = arg_pointcloud;
     }
     void set_pointcloud(pcl::PointCloud<pcl::PointXYZ> && arg_pointcloud)
     {

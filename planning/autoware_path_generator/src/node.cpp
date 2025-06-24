@@ -456,8 +456,6 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
     trajectory->crop(0., s_path_end);
   }
 
-  finalized_path_with_lane_id.points = trajectory->restore();
-
   // Check if the goal point is in the search range
   // Note: We only see if the goal is approaching the tail of the path.
   const auto distance_to_goal = autoware_utils::calc_distance2d(
@@ -477,7 +475,6 @@ std::optional<PathWithLaneId> PathGenerator::generate_path(
   if (trajectory->length() - s_path_start > 0) {
     trajectory->crop(s_path_start, trajectory->length() - s_path_start);
   }
-  finalized_path_with_lane_id.points = trajectory->restore();
 
   // Compose the polished path
   PathWithLaneId finalized_path_with_lane_id{};
