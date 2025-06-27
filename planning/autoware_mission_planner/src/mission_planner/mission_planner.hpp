@@ -40,6 +40,7 @@
 #include <tf2_ros/transform_listener.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -62,6 +63,23 @@ using nav_msgs::msg::Odometry;
 using std_msgs::msg::Header;
 using unique_identifier_msgs::msg::UUID;
 using visualization_msgs::msg::MarkerArray;
+
+struct RouteValidationResult
+{
+  bool is_valid;
+  bool is_reroute;
+  bool is_autonomous_driving;
+  uint16_t error_code;
+  std::string error_message;
+};
+
+struct CommonSegments
+{
+  size_t start_idx_original;
+  size_t end_idx_original;
+  size_t start_idx_target;
+  size_t end_idx_target;
+};
 
 class MissionPlanner : public rclcpp::Node
 {
@@ -140,6 +158,42 @@ private:
   std::unique_ptr<autoware_utils_logging::LoggerLevelConfigure> logger_configure_;
   rclcpp::Publisher<autoware_internal_debug_msgs::msg::Float64Stamped>::SharedPtr
     pub_processing_time_;
+
+private:
+  // Initialization methods
+  void initialize_parameters();
+  void initialize_plugin();
+  void initialize_publishers_and_subscribers();
+  void initialize_services();
+  void initialize_timers();
+
+  // Validation methods
+  void validate_ready_state();
+  RouteValidationResult validate_route_request(bool is_reroute);
+  
+  // Route handling methods
+  void handle_route_planning(
+    const LaneletRoute & route, const RouteValidationResult & validation_result,
+    const Pose & initial_pose, const Pose & goal_pose);
+
+  // Reroute safety check helper methods
+  bool validate_reroute_inputs(
+    const LaneletRoute & original_route, const LaneletRoute & target_route) const;
+  std::optional<CommonSegments> find_common_segments(
+    const LaneletRoute & original_route, const LaneletRoute & target_route) const;
+  bool verify_ego_position_in_target_route(const LaneletRoute & target_route) const;
+  double calculate_reroute_length(
+    const LaneletRoute & original_route, const LaneletRoute & target_route,
+    const CommonSegments & common_segments) const;
+  double calculate_distance_to_common_segment(
+    const LaneletRoute & original_route, const LaneletRoute & target_route,
+    const CommonSegments & common_segments) const;
+  double calculate_remaining_distance_in_lanelet(
+    const Pose & current_pose, const std::vector<LaneletPrimitive> & primitives) const;
+  double calculate_common_segments_length(
+    const LaneletRoute & route, size_t start_idx, size_t end_idx) const;
+  double adjust_length_for_goal_position(
+    const LaneletRoute & target_route, size_t end_idx_target, double accumulated_length) const;
 };
 
 }  // namespace autoware::mission_planner
