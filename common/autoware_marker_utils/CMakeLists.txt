@@ -1,17 +1,11 @@
 cmake_minimum_required(VERSION 3.8)
-project(autoware_lanelet2_utils)
+project(autoware_marker_utils)
 
 find_package(autoware_cmake REQUIRED)
 autoware_package()
 
 ament_auto_add_library(${PROJECT_NAME} SHARED
-  src/kind.cpp
-  src/topology.cpp
-  src/stop_line.cpp
-  src/intersection.cpp
-  src/conversion.cpp
-  src/geometry.cpp
-  src/hatched_road_markings.cpp
+  src/marker_conversion.cpp
 )
 
 if(BUILD_TESTING)
@@ -19,12 +13,7 @@ if(BUILD_TESTING)
   ament_auto_find_test_dependencies()
 
   set(test_files
-    test/kind.cpp
-    test/topology.cpp
-    test/intersection.cpp
-    test/stop_line.cpp
-    test/geometry.cpp
-    test/hatched_road_marking.cpp
+    test/marker_conversion.cpp
   )
 
   foreach (test_file IN LISTS test_files)
@@ -36,12 +25,4 @@ if(BUILD_TESTING)
   endforeach()
 endif()
 
-ament_auto_package(INSTALL_TO_SHARE
-  sample_map
-)
-
-install(PROGRAMS
-  scripts/lanelet_anonymizer.py
-  scripts/lanelet_id_aligner.py
-  DESTINATION lib/${PROJECT_NAME}
-)
+ament_auto_package()
