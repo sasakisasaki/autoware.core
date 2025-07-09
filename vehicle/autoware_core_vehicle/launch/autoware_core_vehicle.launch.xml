@@ -2,6 +2,7 @@
 <launch>
   <arg name="vehicle_model" description="vehicle model name"/>
   <arg name="sensor_model" description="sensor model name"/>
+  <arg name="vehicle_id" description="vehicle id"/>
   <arg name="config_dir" default="$(find-pkg-share $(var sensor_model)_description)/config" description="path to dir where sensors_calibration.yaml, etc. are located"/>
 
   <!-- vehicle description -->
@@ -11,4 +12,9 @@
       <param name="robot_description" value="$(command 'xacro $(var model_file) vehicle_model:=$(var vehicle_model) sensor_model:=$(var sensor_model) config_dir:=$(var config_dir)' 'warn')"/>
     </node>
   </group>
+
+  <let name="vehicle_launch_pkg" value="$(find-pkg-share $(var vehicle_model)_launch)"/>
+  <include file="$(var vehicle_launch_pkg)/launch/vehicle_interface.launch.xml">
+    <arg name="vehicle_id" value="$(var vehicle_id)"/>
+  </include>
 </launch>
