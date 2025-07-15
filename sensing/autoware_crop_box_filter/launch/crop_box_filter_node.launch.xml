@@ -4,7 +4,8 @@
   <arg name="output_topic_name" default="/sensing/lidar/top/self_cropped/pointcloud_ex"/>
   <arg name="input_frame" default="base_link"/>
   <arg name="output_frame" default="base_link"/>
-  <arg name="input_pointcloud_frame" default="velodyne_top_base_link"/>
+  <!-- <arg name="input_pointcloud_frame" default="velodyne_top_base_link"/> -->
+  <arg name="input_pointcloud_frame" default="xt32_top_base_link"/>
   <arg name="crop_box_filter_param_file" default="$(find-pkg-share autoware_crop_box_filter)/config/crop_box_filter_node.param.yaml"/>
   <node pkg="autoware_crop_box_filter" exec="crop_box_filter" name="crop_box_filter">
     <param from="$(var crop_box_filter_param_file)"/>
