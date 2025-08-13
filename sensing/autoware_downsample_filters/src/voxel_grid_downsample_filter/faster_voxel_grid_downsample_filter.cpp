@@ -165,7 +165,7 @@ FasterVoxelGridDownsampleFilter::calc_centroids_each_voxel(
   for (size_t global_offset = 0; global_offset + input->point_step <= input->data.size();
        global_offset += input->point_step) {
     Eigen::Vector4f point = get_point_from_global_offset(input, global_offset);
-    if (std::isfinite(point[0]) && std::isfinite(point[1]), std::isfinite(point[2])) {
+    if (std::isfinite(point[0]) && std::isfinite(point[1]) && std::isfinite(point[2])) {
       // Calculate the voxel index to which the point belongs
       int ijk0 = static_cast<int>(std::floor(point[0] * inverse_voxel_size_[0]) - min_voxel[0]);
       int ijk1 = static_cast<int>(std::floor(point[1] * inverse_voxel_size_[1]) - min_voxel[1]);
