@@ -65,9 +65,9 @@ BehaviorVelocityPlannerNode::BehaviorVelocityPlannerNode(const rclcpp::NodeOptio
     this->create_subscription<autoware_internal_planning_msgs::msg::PathWithLaneId>(
       "~/input/path_with_lane_id", 1, std::bind(&BehaviorVelocityPlannerNode::onTrigger, this, _1));
 
-  srv_load_plugin_ = create_service<autoware_internal_debug_msgs::srv::String>(
+  srv_load_plugin_ = create_service<LoadPlugin>(
     "~/service/load_plugin", std::bind(&BehaviorVelocityPlannerNode::onLoadPlugin, this, _1, _2));
-  srv_unload_plugin_ = create_service<autoware_internal_debug_msgs::srv::String>(
+  srv_unload_plugin_ = create_service<UnloadPlugin>(
     "~/service/unload_plugin",
     std::bind(&BehaviorVelocityPlannerNode::onUnloadPlugin, this, _1, _2));
 
@@ -105,19 +105,19 @@ BehaviorVelocityPlannerNode::BehaviorVelocityPlannerNode(const rclcpp::NodeOptio
 }
 
 void BehaviorVelocityPlannerNode::onLoadPlugin(
-  const autoware_internal_debug_msgs::srv::String::Request::SharedPtr request,
-  [[maybe_unused]] const autoware_internal_debug_msgs::srv::String::Response::SharedPtr response)
+  const LoadPlugin::Request::SharedPtr request,
+  [[maybe_unused]] const LoadPlugin::Response::SharedPtr response)
 {
   std::unique_lock<std::mutex> lk(mutex_);
-  planner_manager_.launchScenePlugin(*this, request->data);
+  planner_manager_.launchScenePlugin(*this, request->plugin_name);
 }
 
 void BehaviorVelocityPlannerNode::onUnloadPlugin(
-  const autoware_internal_debug_msgs::srv::String::Request::SharedPtr request,
-  [[maybe_unused]] const autoware_internal_debug_msgs::srv::String::Response::SharedPtr response)
+  const UnloadPlugin::Request::SharedPtr request,
+  [[maybe_unused]] const UnloadPlugin::Response::SharedPtr response)
 {
   std::unique_lock<std::mutex> lk(mutex_);
-  planner_manager_.removeScenePlugin(*this, request->data);
+  planner_manager_.removeScenePlugin(*this, request->plugin_name);
 }
 
 void BehaviorVelocityPlannerNode::onParam()
@@ -130,7 +130,7 @@ void BehaviorVelocityPlannerNode::onParam()
   planner_data_.velocity_smoother_->setWheelBase(planner_data_.vehicle_info_.wheel_base_m);
 }
 
-void BehaviorVelocityPlannerNode::processNoGroundPointCloud(
+bool BehaviorVelocityPlannerNode::processNoGroundPointCloud(
   const sensor_msgs::msg::PointCloud2::ConstSharedPtr msg)
 {
   geometry_msgs::msg::TransformStamped transform;
@@ -139,7 +139,7 @@ void BehaviorVelocityPlannerNode::processNoGroundPointCloud(
       "map", msg->header.frame_id, msg->header.stamp, rclcpp::Duration::from_seconds(0.1));
   } catch (tf2::TransformException & e) {
     RCLCPP_WARN(get_logger(), "no transform found for no_ground_pointcloud: %s", e.what());
-    return;
+    return false;
   }
 
   pcl::PointCloud<pcl::PointXYZ> pc;
@@ -147,11 +147,13 @@ void BehaviorVelocityPlannerNode::processNoGroundPointCloud(
 
   Eigen::Affine3f affine = tf2::transformToEigen(transform.transform).cast<float>();
   pcl::PointCloud<pcl::PointXYZ>::Ptr pc_transformed(new pcl::PointCloud<pcl::PointXYZ>);
+
   if (!pc.empty()) {
     autoware_utils_pcl::transform_pointcloud(pc, *pc_transformed, affine);
   }
 
   planner_data_.no_ground_pointcloud = pc_transformed;
+  return true;
 }
 
 void BehaviorVelocityPlannerNode::processOdometry(const nav_msgs::msg::Odometry::ConstSharedPtr msg)
@@ -265,8 +267,9 @@ bool BehaviorVelocityPlannerNode::processData(rclcpp::Clock clock)
   is_ready &= getData(
     no_ground_pointcloud, sub_no_ground_pointcloud_, "pointcloud",
     required_subscriptions.no_ground_pointcloud);
-  if (no_ground_pointcloud) {
-    processNoGroundPointCloud(no_ground_pointcloud);
+
+  if (required_subscriptions.no_ground_pointcloud && no_ground_pointcloud) {
+    is_ready &= processNoGroundPointCloud(no_ground_pointcloud);
   }
 
   const auto map_data = sub_lanelet_map_.take_data();
