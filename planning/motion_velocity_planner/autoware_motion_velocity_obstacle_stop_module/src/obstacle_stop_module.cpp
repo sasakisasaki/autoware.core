@@ -132,14 +132,6 @@ double calc_x_offset_to_bumper(const bool is_driving_forward, const VehicleInfo 
   return vehicle_info.min_longitudinal_offset_m;
 }
 
-Float64Stamped create_float64_stamped(const rclcpp::Time & now, const float & data)
-{
-  Float64Stamped msg;
-  msg.stamp = now;
-  msg.data = data;
-  return msg;
-}
-
 double calc_time_to_reach_collision_point(
   const Odometry & odometry, const geometry_msgs::msg::Point & collision_point,
   const std::vector<TrajectoryPoint> & traj_points, const double x_offset_to_bumper,
@@ -233,8 +225,6 @@ void ObstacleStopModule::init(rclcpp::Node & node, const std::string & module_na
     update_distance_th, min_off_duration, min_on_duration);
 
   // common publisher
-  processing_time_publisher_ =
-    node.create_publisher<Float64Stamped>("~/debug/obstacle_stop/processing_time_ms", 1);
   virtual_wall_publisher_ =
     node.create_publisher<visualization_msgs::msg::MarkerArray>("~/obstacle_stop/virtual_walls", 1);
   debug_publisher_ =
@@ -275,7 +265,6 @@ VelocityPlanningResult ObstacleStopModule::plan(
   autoware_utils_debug::ScopedTimeTrack st(__func__, *time_keeper_);
 
   // 1. init variables
-  stop_watch_.tic();
   debug_data_ptr_ = std::make_shared<DebugData>();
   const double x_offset_to_bumper =
     calc_x_offset_to_bumper(planner_data->is_driving_forward, planner_data->vehicle_info_);
@@ -380,7 +369,7 @@ std::optional<CollisionPointWithDist> ObstacleStopModule::get_nearest_collision_
           continue;
         }
         const double dist_from_base_link =
-          autoware_utils::calc_distance2d(traj_points.at(traj_index).pose, obstacle_point);
+          autoware_utils_geometry::calc_distance2d(traj_points.at(traj_index).pose, obstacle_point);
         if (dist_from_base_link > rough_dist_th) {
           continue;
         }
@@ -394,13 +383,13 @@ std::optional<CollisionPointWithDist> ObstacleStopModule::get_nearest_collision_
       continue;
     }
 
-    const auto bumper_pose = autoware_utils::calc_offset_pose(
+    const auto bumper_pose = autoware_utils_geometry::calc_offset_pose(
       traj_points.at(traj_index).pose, x_offset_to_bumper, 0.0, 0.0);
     std::optional<double> max_collision_length = std::nullopt;
     std::optional<geometry_msgs::msg::Point> max_collision_point = std::nullopt;
     for (const auto & point : collision_geom_points) {
       const double dist_from_bumper =
-        std::abs(autoware_utils::inverse_transform_point(point, bumper_pose).x);
+        std::abs(autoware_utils_geometry::inverse_transform_point(point, bumper_pose).x);
 
       if (!max_collision_length.has_value() || dist_from_bumper > *max_collision_length) {
         max_collision_length = dist_from_bumper;
@@ -1058,14 +1047,24 @@ double ObstacleStopModule::calc_desired_stop_margin(
   //       margin we set closest_obstacle_stop_distance to closest_behavior_stop_distance
   const auto closest_behavior_stop_idx =
     autoware::motion_utils::searchZeroVelocityIndex(traj_points, ego_segment_idx + 1);
+  const auto current_time = clock_->now();
   if (closest_behavior_stop_idx) {
     const double closest_behavior_stop_dist_on_ref_traj =
       autoware::motion_utils::calcSignedArcLength(traj_points, 0, *closest_behavior_stop_idx);
     const double stop_dist_diff =
       closest_behavior_stop_dist_on_ref_traj - (dist_to_collide_on_ref_traj - stop_margin_on_curve);
     if (0.0 < stop_dist_diff && stop_dist_diff < stop_margin_on_curve) {
-      return stop_planning_param_.min_behavior_stop_margin;
+      last_observed_behavior_stop_time_and_margin_ = std::make_pair(
+        current_time, std::max(
+                        stop_planning_param_.min_behavior_stop_margin,
+                        dist_to_collide_on_ref_traj - closest_behavior_stop_dist_on_ref_traj));
     }
+  }
+  if (
+    last_observed_behavior_stop_time_and_margin_.has_value() &&
+    (current_time - last_observed_behavior_stop_time_and_margin_->first).seconds() <=
+      stop_planning_param_.behavior_stop_margin_hold_time) {
+    return last_observed_behavior_stop_time_and_margin_->second;
   }
   return stop_margin_on_curve;
 }
@@ -1273,9 +1272,6 @@ void ObstacleStopModule::publish_debug_info()
 
   // 4. objects of interest
   objects_of_interest_marker_interface_->publishMarkerArray();
-
-  // 5. processing time
-  processing_time_publisher_->publish(create_float64_stamped(clock_->now(), stop_watch_.toc()));
 }
 
 DetectionPolygon ObstacleStopModule::get_trajectory_polygon(

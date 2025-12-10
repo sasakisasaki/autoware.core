@@ -63,10 +63,19 @@ def draw_centerline_arrow(ax, centerline):
     )
 
 
+def load_properly_projected_map(map_path, projector):
+    dry_run_map = lanelet2.io.load(map_path, projector)
+    for point in dry_run_map.pointLayer:
+        projector.reverse(lanelet2.core.BasicPoint3d(point.x, point.y, point.z))
+        break
+    projector.setMGRSCode(projector.getProjectedMGRSGrid())
+    return lanelet2.io.load(map_path, projector)
+
+
 class LaneletVisualizationHandler:
     def __init__(self, fig, ax, map_path) -> None:
-        projector = MGRSProjector(lanelet2.io.Origin(0.0, 0.0))
-        lanelet_map = lanelet2.io.load(map_path, projector)
+        projector = MGRSProjector()
+        lanelet_map = load_properly_projected_map(map_path, projector)
 
         self.fig, self.ax = fig, ax
         self.ax.set_aspect("equal")
@@ -129,10 +138,14 @@ class LaneletVisualizationHandler:
         self.ax.add_patch(p)
         self.lanelet_polygon_patches.append((p, lanelet.id))
 
+        has_custom_centerline = lanelet.centerline.id != 0
         centerline = lanelet.centerline
         center_x = [pt.x for pt in centerline]
         center_y = [pt.y for pt in centerline]
-        self.ax.plot(center_x, center_y, "k--", linewidth=1, alpha=0.5)
+        if has_custom_centerline:
+            self.ax.plot(center_x, center_y, "k", linewidth=1.5, alpha=0.5)
+        else:
+            self.ax.plot(center_x, center_y, "k--", linewidth=1, alpha=0.5)
         draw_centerline_arrow(self.ax, centerline)
 
     def hover_on_lanelet(self, event):

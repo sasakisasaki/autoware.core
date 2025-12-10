@@ -26,58 +26,361 @@ This package aims to strictly define the meaning of several words to clarify the
 
 ## API description
 
+### `<autoware/lanelet2_utils/geometry.hpp>`
+
+| Function                         | Description                                                                                                                                                                                                                                                                                            | Average Computational Complexity | Illustration                                                                                                                                                                                                              |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `extrapolate_point`              | Linearly extrapolate a point (`ConstPoint3d`) beyond a segment defined by two points (`first` and `second`) with given distance.                                                                                                                                                                       |                                  | ![extrapolate_point](./media/api/geometry/extrapolate_point.drawio.svg)<br>[Open]({{ drawio("/common/autoware_lanelet2_utils/media/api/geometry/extrapolate_point.drawio.svg") }})                                        |
+| `interpolate_point`              | Linearly interpolates a point along a segment defined by two points.                                                                                                                                                                                                                                   |                                  | ![interpolate_point](./media/api/geometry/interpolate_point.drawio.svg)<br>[Open]({{ drawio("/common/autoware_lanelet2_utils/media/api/geometry/interpolate_point.drawio.svg") }})                                        |
+| `interpolate_lanelet`            | Find an interpolated point from a lanelet centerline at a given distance.                                                                                                                                                                                                                              |                                  | ![interpolate_lanelet](./media/api/geometry/interpolate_lanelet.drawio.svg)<br>[Open]({{ drawio("/common/autoware_lanelet2_utils/media/api/geometry/interpolate_lanelet.drawio.svg") }})                                  |
+| `interpolate_lanelet_sequence`   | Find the first interpolated point from a centerline of the lanelet sequence at a given distance.                                                                                                                                                                                                       |                                  | ![interpolate_lanelet_sequence](./media/api/geometry/interpolate_lanelet_sequence.drawio.svg)<br>[Open]({{ drawio("/common/autoware_lanelet2_utils/media/api/geometry/interpolate_lanelet_sequence.drawio.svg") }})       |
+| `concatenate_center_line`        | Concatenate all center line of input lanelet sequence (several `ConstLanelets`)                                                                                                                                                                                                                        |                                  | ![concatenate_center_line](./media/api/geometry/concatenate_center_line.drawio.svg)<br>[Open]({{ drawio("/common/autoware_lanelet2_utils/media/api/geometry/concatenate_center_line.drawio.svg") }})                      |
+| `get_linestring_from_arc_length` | Extract a sub-linestring between two arc-length positions along an input linestring.                                                                                                                                                                                                                   |                                  | ![get_linestring_from_arc_length](./media/api/geometry/get_linestring_from_arc_length.drawio.svg)<br>[Open]({{ drawio("/common/autoware_lanelet2_utils/media/api/geometry/get_linestring_from_arc_length.drawio.svg") }}) |
+| `get_pose_from_2d_arc_length`    | Compute the 2D pose (position and heading) at a given arc-length along a sequence of lanelets.                                                                                                                                                                                                         |                                  | ![get_pose_from_2d_arc_length](./media/api/geometry/get_pose_from_2d_arc_length.drawio.svg)<br>[Open]({{ drawio("/common/autoware_lanelet2_utils/media/api/geometry/get_pose_from_2d_arc_length.drawio.svg") }})          |
+| `get_closest_segment`            | Find the closest segment of the `ConstLineString3d` to the search point (`BasicPoint3d`).                                                                                                                                                                                                              |                                  | ![get_closest_segment](./media/api/geometry/get_closest_segment.drawio.svg)<br>[Open]({{ drawio("/common/autoware_lanelet2_utils/media/api/geometry/get_closest_segment.drawio.svg") }})                                  |
+| `get_lanelet_angle`              | Find the angle of center line segment of the lanelet that is closest to search point (`BasicPoint3d`). The angle is defined with the x-axis as the reference (0 radians). Positive angles are measured counterclockwise, while negative angles are measured clockwise within range of −π to π radians. |                                  | ![get_lanelet_angle](./media/api/geometry/get_lanelet_angle.drawio.svg)<br>[Open]({{ drawio("/common/autoware_lanelet2_utils/media/api/geometry/get_lanelet_angle.drawio.svg") }})                                        |
+
+#### Example Usage of `geometry`
+
+Extrapolate point for distance of 5.
+
+```cpp title="./examples/example_geometry.cpp:51:55"
+--8<--
+common/autoware_lanelet2_utils/examples/example_geometry.cpp:51:55
+--8<--
+```
+
+Interpolate point at half of the segment.
+
+```cpp title="./examples/example_geometry.cpp:69:74"
+--8<--
+common/autoware_lanelet2_utils/examples/example_geometry.cpp:69:74
+--8<--
+```
+
+Interpolate lanelet at distance of 3.
+
+```cpp title="./examples/example_geometry.cpp:82:84"
+--8<--
+common/autoware_lanelet2_utils/examples/example_geometry.cpp:82:84
+--8<--
+```
+
+Interpolate lanelet sequence at distance of 3.
+
+```cpp title="./examples/example_geometry.cpp:92:98"
+--8<--
+common/autoware_lanelet2_utils/examples/example_geometry.cpp:92:98
+--8<--
+```
+
+Concatenate several lanelet centerline.
+
+```cpp title="./examples/example_geometry.cpp:110:118"
+--8<--
+common/autoware_lanelet2_utils/examples/example_geometry.cpp:110:118
+--8<--
+```
+
+Get linestring from arc-length range (of 0.5 to 1.5).
+
+```cpp title="./examples/example_geometry.cpp:142:150"
+--8<--
+common/autoware_lanelet2_utils/examples/example_geometry.cpp:142:150
+--8<--
+```
+
+Get pose from arc-length (of 3.0).
+
+```cpp title="./examples/example_geometry.cpp:162:168"
+--8<--
+common/autoware_lanelet2_utils/examples/example_geometry.cpp:162:168
+--8<--
+```
+
+Get closest segment from the `ConstLineString3d`.
+
+```cpp title="./examples/example_geometry.cpp:179:186"
+--8<--
+common/autoware_lanelet2_utils/examples/example_geometry.cpp:179:186
+--8<--
+```
+
+Get lanelet angle from the lanelet centerline.
+
+```cpp title="./examples/example_geometry.cpp:202:204"
+--8<--
+common/autoware_lanelet2_utils/examples/example_geometry.cpp:202:204
+--8<--
+```
+
+Get closest center pose from `ConstLanelet`.
+
+```cpp title="./examples/example_geometry.cpp:211:221"
+--8<--
+common/autoware_lanelet2_utils/examples/example_geometry.cpp:211:221
+--8<--
+```
+
 ### `<autoware/lanelet2_utils/conversion.hpp>`
 
-| function                                                                            | description                                                                                                                                                                                                                           | average computational complexity | illustration |
+| Function                                                                            | Description                                                                                                                                                                                                                           | Average Computational Complexity | Illustration |
 | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | ------------ |
 | `load_mgrs_coordinate_map(path, centerline_resolution)`                             | Instantiate a LaneletMap object from given `path` to `.osm` file. Also it sets more dense centerline(at the interval of `centerline_resolution`) than default `Lanelet2` library, to help improve Planning accuracy.                  |                                  |              |
 | `instantiate_routing_graph_and_traffic_rules`                                       | This function creates a `RoutingGraph` and `TrafficRules` object only from "road" lanes for `Vehicle` participant, which means "road_shoulder","bicycle_lane", "crosswalk", etc. Lanelets are inaccessible from left/right adjacency. |                                  |              |
-| <ul><li>`from_autoware_map_msgs(...)`</li><li>`to_autoware_map_msgs(...`)</li></ul> | Convert LaneletMap object from/to `autoware_mapping_msgs::LaneletMapBin` message                                                                                                                                                      |                                  |              |
+| <ul><li>`from_autoware_map_msgs(...)`</li><li>`to_autoware_map_msgs(...)`</li></ul> | Convert LaneletMap object from/to `autoware_mapping_msgs::LaneletMapBin` message                                                                                                                                                      |                                  |              |
+| <ul><li>`from_ros(...)`</li><li>`to_ros(...)`</li></ul>                             | Convert lanelet point (`lanelet::BasicPoint3d` or `lanelet::ConstPoint3d`) from/to `geometry_msgs::msg::Point` or `geometry_msgs::msg::Pose`                                                                                          |                                  |              |
+| `create_safe_linestring`                                                            | Construct LineString from vector of lanelet points (`BasicLineString3d` - `BasicPoint3d` and `ConstLineString3d` - `ConstPoint3d`)                                                                                                    |                                  |              |
+| `create_safe_lanelet`                                                               | Construct `ConstLanelet` from two vectors of lanelet points (left and right) - `BasicPoint3d` or `ConstPoint3d`                                                                                                                       |                                  |              |
+
+#### Example Usage of `conversion`
+
+Load coordinate map.
+
+```cpp title="./examples/example_conversion.cpp:36:44"
+--8<--
+common/autoware_lanelet2_utils/examples/example_conversion.cpp:36:44
+--8<--
+```
+
+Load routing graph and traffic rules.
+
+```cpp title="./examples/example_conversion.cpp:48:59"
+--8<--
+common/autoware_lanelet2_utils/examples/example_conversion.cpp:48:59
+--8<--
+```
+
+Conversion between `LaneletMapBin` and `LaneletMapConstPtr`.
+
+```cpp title="./examples/example_conversion.cpp:63:71"
+--8<--
+common/autoware_lanelet2_utils/examples/example_conversion.cpp:63:71
+--8<--
+```
+
+Message conversion from `BasicPoint3d` to `Point`.
+
+```cpp title="./examples/example_conversion.cpp:78:80"
+--8<--
+common/autoware_lanelet2_utils/examples/example_conversion.cpp:78:80
+--8<--
+```
+
+Message conversion between `ConstPoint3d` and `Point`.
+
+```cpp title="./examples/example_conversion.cpp:87:93"
+--8<--
+common/autoware_lanelet2_utils/examples/example_conversion.cpp:87:93
+--8<--
+```
+
+Message conversion from `Pose` to `ConstPoint3d`.
+
+```cpp title="./examples/example_conversion.cpp:98:104"
+--8<--
+common/autoware_lanelet2_utils/examples/example_conversion.cpp:98:104
+--8<--
+```
+
+Message conversion from `BasicPoint2d` to `Point`.
+
+```cpp title="./examples/example_conversion.cpp:109:112"
+--8<--
+common/autoware_lanelet2_utils/examples/example_conversion.cpp:109:112
+--8<--
+```
+
+Message conversion from `ConstPoint2d` to `Point`.
+
+```cpp title="./examples/example_conversion.cpp:118:127"
+--8<--
+common/autoware_lanelet2_utils/examples/example_conversion.cpp:118:127
+--8<--
+```
 
 ### `<autoware/lanelet2_utils/kind.hpp>`
 
-| function           | description                                                                   | average computational complexity | illustration |
+| Function           | Description                                                                   | Average Computational Complexity | Illustration |
 | ------------------ | ----------------------------------------------------------------------------- | -------------------------------- | ------------ |
 | `is_road_lane`     | This function returns `true` if the input Lanelet is `road` subtype.          | $O(1)$                           |              |
 | `is_shoulder_lane` | This function returns `true` if the input Lanelet is `road_shoulder` subtype. | $O(1)$                           |              |
 | `is_bicycle_lane`  | This function returns `true` if the input Lanelet is `bicycle_lane` subtype.  | $O(1)$                           |              |
 
+#### Example Usage of `kind`
+
+Check type of lanelet.
+
+```cpp title="./examples/example_kind.cpp:44:66"
+--8<--
+common/autoware_lanelet2_utils/examples/example_kind.cpp:44:66
+--8<--
+```
+
 ### `<autoware/lanelet2_utils/hatched_road_markings.hpp>`
 
-| function                             | description                                                                                                                                                             | average computational complexity                              | illustration |
+| Function                             | Description                                                                                                                                                             | Average Computational Complexity                              | Illustration |
 | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | ------------ |
 | `get_adjacent_hatched_road_markings` | Returns polygons with type `hatched_road_markings` that touch the left/right bounds of the given lanelet sequence. Polygons are grouped by side and duplicates removed. | $O(V)$ where $V$ is the number of boundary vertices inspected |              |
 
+#### Example Usage of `hatched_road_markings`
+
+```cpp title="./examples/example_hatched_road_markings.cpp:51:75"
+--8<--
+common/autoware_lanelet2_utils/examples/example_hatched_road_markings.cpp:51:75
+--8<--
+```
+
 ### `<autoware/lanelet2_utils/topology.hpp>`
 
-| function                 | description                                                                                                    | average computational complexity                                                   | illustration                                                                                                                                                                                                                                                                                                                                                                |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `left_opposite_lanelet`  | same as below `right_opposite_lanelet`                                                                         | $O(1)$<br>see [`findUsage`](#complexity-of-findusage) for detail                   |                                                                                                                                                                                                                                                                                                                                                                             |
-| `right_opposite_lanelet` | This functions returns the right `opposite` Lanelet of the input Lanelet if available, otherwise returns null. | $O(1)$<br>see [`findUsage`](#complexity-of-findusage) for detail                   | In the first and second map, the green Lanelet is the `right_opposite_lanelet` of the orange Lanelet.<br>In the third map, the `right_opposite_lanelet` of the orange Lanelet is `null`.<br>![right_opposite_lanelet](./media/api/right_opposite_lanelet.drawio.svg)<br>[Open]({{ drawio("/common/autoware_lanelet2_utils/media/api/right_opposite_lanelet.drawio.svg") }}) |
-| `following_lanelets`     | This function returns the `following` Lanelets of the input Lanelet. The order is not defined.                 | $O(E)$ where $E$ is the number of Lanelets to which the input is connected to.     |                                                                                                                                                                                                                                                                                                                                                                             |
-| `previous_lanelets`      | This function returns the `previous` Lanelets of the input Lanelet. The order is not defined.                  | $O(E)$ where $E$ is the number of Lanelets from which the input is connected from. |                                                                                                                                                                                                                                                                                                                                                                             |
-| `sibling_lanelets`       | This function returns the `sibling` Lanelets of the input Lanelet excluding itself. The order is not defined.  | $O(E)$ where $E$ is the number of sibling Lanelets                                 |                                                                                                                                                                                                                                                                                                                                                                             |
-| `from_ids`               | This function returns Lanelet objects in the same order as the input IDs.                                      | $O(n)$                                                                             |                                                                                                                                                                                                                                                                                                                                                                             |
+| Function                   | Description                                                                                                    | Average Computational Complexity                                                   | Illustration                                                                                                                                                                                                                                                                                                                                                                |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `left_opposite_lanelet`    | same as below `right_opposite_lanelet`                                                                         | $O(1)$<br>see [`findUsage`](#complexity-of-findusage) for detail                   |                                                                                                                                                                                                                                                                                                                                                                             |
+| `right_opposite_lanelet`   | This functions returns the right `opposite` Lanelet of the input Lanelet if available, otherwise returns null. | $O(1)$<br>see [`findUsage`](#complexity-of-findusage) for detail                   | In the first and second map, the green Lanelet is the `right_opposite_lanelet` of the orange Lanelet.<br>In the third map, the `right_opposite_lanelet` of the orange Lanelet is `null`.<br>![right_opposite_lanelet](./media/api/right_opposite_lanelet.drawio.svg)<br>[Open]({{ drawio("/common/autoware_lanelet2_utils/media/api/right_opposite_lanelet.drawio.svg") }}) |
+| `following_lanelets`       | This function returns the `following` Lanelets of the input Lanelet. The order is not defined.                 | $O(E)$ where $E$ is the number of Lanelets to which the input is connected to.     |                                                                                                                                                                                                                                                                                                                                                                             |
+| `previous_lanelets`        | This function returns the `previous` Lanelets of the input Lanelet. The order is not defined.                  | $O(E)$ where $E$ is the number of Lanelets from which the input is connected from. |                                                                                                                                                                                                                                                                                                                                                                             |
+| `sibling_lanelets`         | This function returns the `sibling` Lanelets of the input Lanelet excluding itself. The order is not defined.  | $O(E)$ where $E$ is the number of sibling Lanelets                                 |                                                                                                                                                                                                                                                                                                                                                                             |
+| `from_ids`                 | This function returns Lanelet objects in the same order as the input IDs.                                      | $O(n)$                                                                             |                                                                                                                                                                                                                                                                                                                                                                             |
+| `get_conflicting_lanelets` | This function returns the `conflicting` Lanelets of the input Lanelet. The order is not defined.               | $O(E)$ where $E$ is the number of conflicting Lanelets                             |                                                                                                                                                                                                                                                                                                                                                                             |
+
+#### Example Usage of `topology`
+
+Get left opposite lanelet.
+
+```cpp title="./examples/example_topology.cpp:60:63"
+--8<--
+common/autoware_lanelet2_utils/examples/example_topology.cpp:60:63
+--8<--
+```
+
+Get right opposite lanelet.
+
+```cpp title="./examples/example_topology.cpp:71:74"
+--8<--
+common/autoware_lanelet2_utils/examples/example_topology.cpp:71:74
+--8<--
+```
+
+Get following lanelets.
+
+```cpp title="./examples/example_topology.cpp:84:89"
+--8<--
+common/autoware_lanelet2_utils/examples/example_topology.cpp:84:89
+--8<--
+```
+
+Get previous lanelets.
+
+```cpp title="./examples/example_topology.cpp:93:98"
+--8<--
+common/autoware_lanelet2_utils/examples/example_topology.cpp:93:98
+--8<--
+```
+
+Get sibling lanelets.
+
+```cpp title="./examples/example_topology.cpp:102:107"
+--8<--
+common/autoware_lanelet2_utils/examples/example_topology.cpp:102:107
+--8<--
+```
+
+Get conflicting lanelets.
+
+```cpp title="./examples/example_topology.cpp:111:116"
+--8<--
+common/autoware_lanelet2_utils/examples/example_topology.cpp:111:116
+--8<--
+```
+
+Get `ConstLanelets` from ids.
+
+```cpp title="./examples/example_topology.cpp:120:122"
+--8<--
+common/autoware_lanelet2_utils/examples/example_topology.cpp:120:122
+--8<--
+```
 
 ### `<autoware/lanelet2_utils/intersection.hpp>`
 
-| function                                                                                     | description                                                                                                                              | average computational complexity | illustration |
-| -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | ------------ |
-| `is_intersection_lanelet`                                                                    | This function returns `true` if and only if the input Lanelet has `turn_direction` attribute.                                            | $O(1)$                           |              |
-| <ul><li>`is_straight_lanelet`</li><li>`is_left_lanelet`</li><li>`is_right_lanelet`</li></ul> | This function returns `true` if and only if the input Lanelet has `turn_direction` attribute and its value is `straight`/`left`/`right`. | $O(1)$                           |              |
+| Function                                                                                     | Description                                                                                                                                               | Average Computational Complexity | Illustration |
+| -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | ------------ |
+| `is_intersection_lanelet`                                                                    | This function returns `true` if and only if the input Lanelet has `turn_direction` attribute.                                                             | $O(1)$                           |              |
+| <ul><li>`is_straight_lanelet`</li><li>`is_left_lanelet`</li><li>`is_right_lanelet`</li></ul> | This function returns `true` if and only if the input Lanelet has `turn_direction` attribute and its value is `straight`/`left`/`right`.                  | $O(1)$                           |              |
+| `get_turn_direction`                                                                         | This function returns the turn direction (`straight`/`left`/`right`) at the intersection if and only if the input Lanelet has `turn_direction` attribute. | $O(1)$                           |              |
+
+#### Example Usage of `intersection`
+
+Check if the lanelet is intersection.
+
+```cpp title="./examples/example_intersection.cpp:47:49"
+--8<--
+common/autoware_lanelet2_utils/examples/example_intersection.cpp:47:49
+--8<--
+```
+
+Check if the lanelet is straight direction.
+
+```cpp title="./examples/example_intersection.cpp:52:54"
+--8<--
+common/autoware_lanelet2_utils/examples/example_intersection.cpp:52:54
+--8<--
+```
+
+Check if the lanelet is left direction.
+
+```cpp title="./examples/example_intersection.cpp:57:59"
+--8<--
+common/autoware_lanelet2_utils/examples/example_intersection.cpp:57:59
+--8<--
+```
+
+Check if the lanelet is right direction.
+
+```cpp title="./examples/example_intersection.cpp:62:65"
+--8<--
+common/autoware_lanelet2_utils/examples/example_intersection.cpp:62:65
+--8<--
+```
+
+Get Turn direction at the intersection.
+
+```cpp title="./examples/example_intersection.cpp:71:104"
+--8<--
+common/autoware_lanelet2_utils/examples/example_intersection.cpp:71:104
+--8<--
+```
 
 ### `<autoware/lanelet2_utils/lane_sequence.hpp`
 
-| function                          | description                                                                                               | average computational complexity | illustration |
+| Function                          | Description                                                                                               | Average Computational Complexity | Illustration |
 | --------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------- | ------------ |
 | `class LaneSequence`              | This class internally holds `lanelet::ConstLanelets` such that they are consecutive on the routing graph. |                                  |              |
 | **class invariance**              | `.as_lanelets()` return Lanelets that are consecutive on the routing graph                                |                                  |              |
 | `create(lanelets, routing_graph)` | Return an optional of `LaneSequence` class that satisfies the invariance                                  |                                  |              |
 | `.as_lanelets()`                  | Return the underlying `lanelet::ConstLanelets`                                                            |                                  |              |
 
+#### Example Usage of `lane_sequence`
+
+Create LaneSequence using constructor.
+
+```cpp title="./examples/example_lane_sequence.cpp:61:67"
+--8<--
+common/autoware_lanelet2_utils/examples/example_lane_sequence.cpp:61:67
+--8<--
+```
+
+Create LaneSequence using `create`.
+
+```cpp title="./examples/example_lane_sequence.cpp:68:80"
+--8<--
+common/autoware_lanelet2_utils/examples/example_lane_sequence.cpp:68:80
+--8<--
+```
+
 ### `<autoware/lanelet2_utils/nn_search.hpp>`
 
-| function                                                                         | description                                                                                                                                                                                                  | average computational complexity                                                                                                | illustration |
+| Function                                                                         | Description                                                                                                                                                                                                  | Average Computational Complexity                                                                                                | Illustration |
 | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ------------ |
 | `get_closest_lanelet(lanelets, pose)`                                            | This function retrieves the lanelet which gives the smallest distance to given `pose`(if it is within a lanelet, it gives zero distance) and whose centerline is closest to the given orientation among them | $O(N)$ where $N$ is the number of input lanelets<br><br>:warning: "Native R-tree API" and `LaneletRTree` is much more efficient |              |
 | `get_closest_lanelet_within_constraint(lanelets, pose, dist_thresh, yaw_thresh)` | In addition to `get_closest_lanelet`, it filters `lanelets` whose distance to `pose` is $\leq$ `dist_thresh` and yaw angle difference is $\leq$ `yaw_thresh`                                                 | $O(N)$ where $N$ is the number of input lanelets<br><br>:warning: "Native R-tree API" and `LaneletRTree` is much more efficient |              |
@@ -87,9 +390,51 @@ This package aims to strictly define the meaning of several words to clarify the
 | `.get_closest_lanelet(pose)`                                                     | Efficient version of `get_closest_lanelet`                                                                                                                                                                   | _R-tree_                                                                                                                        |              |
 | `.get_closest_lanelet_within_constraint(pose, dist_thresh, yaw_thresh)`          | Efficient version of `get_closest_lanelet_within_constraint`                                                                                                                                                 | _R-tree_                                                                                                                        |              |
 
+#### Example Usage of `nn_search`
+
+Create `R-tree`
+
+```cpp title="./examples/example_nn_search.cpp:47:48"
+--8<--
+common/autoware_lanelet2_utils/examples/example_nn_search.cpp:47:48
+--8<--
+```
+
+Get the closest lanelet **without** constraint (in both use and not use `R-tree`)
+
+```cpp title="./examples/example_nn_search.cpp:72:83"
+--8<--
+common/autoware_lanelet2_utils/examples/example_nn_search.cpp:72:83
+--8<--
+```
+
+Get the closest lanelet **without** constraint (in both use and not use `R-tree`)
+
+```cpp title="./examples/example_nn_search.cpp:85:101"
+--8<--
+common/autoware_lanelet2_utils/examples/example_nn_search.cpp:85:101
+--8<--
+```
+
+Get road lanelet from the `LaneletMap`
+
+```cpp title="./examples/example_nn_search.cpp:104:111"
+--8<--
+common/autoware_lanelet2_utils/examples/example_nn_search.cpp:104:111
+--8<--
+```
+
+Get shoulder lanelet from the `LaneletMap`
+
+```cpp title="./examples/example_nn_search.cpp:115:121"
+--8<--
+common/autoware_lanelet2_utils/examples/example_nn_search.cpp:115:121
+--8<--
+```
+
 ### `<autoware/lanelet2_utils/map_handler.hpp>`
 
-| function                                                                                                                                                                          | description                                                                                                                                                                                                                                                                                                                                                                                 | average computational complexity              | illustration                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Function                                                                                                                                                                          | Description                                                                                                                                                                                                                                                                                                                                                                                 | Average Computational Complexity              | Illustration                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `class MapHandler`                                                                                                                                                                | `class MapHandler` provides convenient functions related to adjacency, VRU lanes, etc. for Planning.                                                                                                                                                                                                                                                                                        |                                               |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | **class invariance**                                                                                                                                                              | <ul><li>`lanelet_map_ptr` is not `nullptr`</li><li>`routing_graph_ptr` is not `nullptr`</li><li>`traffic_rules_ptr` is not `nullptr`</li></ul>                                                                                                                                                                                                                                              |                                               |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -104,9 +449,75 @@ This package aims to strictly define the meaning of several words to clarify the
 | `.get_shoulder_lanelet_sequence(lanelet, forward, backward)`                                                                                                                      | This function computes (1) "road_shoulder" Lanelets behind of `lanelet` by up to `backward` and (2) "road_shoulder" Lanelets after `lanelet` by up to `forward` as a list                                                                                                                                                                                                                   | $O(\textrm{total length})$                    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | <ul><li>`.left_shoulder_lanelet(lanelet)`</li><li>`.right_shoulder_lanelet(lanelet)`</li><li>`.left_bicycle_lanelet(lanelet)`</li><li>`.right_bicycle_lanelet(lanelet)`</li></ul> | Retrieve each VRU Lanelet of `lanelet` if it exists                                                                                                                                                                                                                                                                                                                                         |                                               |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
+#### Example Usage of `map_handler`
+
+Create `map_handler`.
+
+```cpp title="./examples/example_map_handler.cpp:41:49"
+--8<--
+common/autoware_lanelet2_utils/examples/example_map_handler.cpp:41:49
+--8<--
+```
+
+Try using `left_lanelet` with different `extra_vru`.
+
+```cpp title="./examples/example_map_handler.cpp:59:90"
+--8<--
+common/autoware_lanelet2_utils/examples/example_map_handler.cpp:59:90
+--8<--
+```
+
+Call `right_lanelet`.
+
+```cpp title="./examples/example_map_handler.cpp:94:97"
+--8<--
+common/autoware_lanelet2_utils/examples/example_map_handler.cpp:94:97
+--8<--
+```
+
+Call `leftmost_lanelet`.
+
+```cpp title="./examples/example_map_handler.cpp:102:105"
+--8<--
+common/autoware_lanelet2_utils/examples/example_map_handler.cpp:102:105
+--8<--
+```
+
+Call `rightmost_lanelet`.
+
+```cpp title="./examples/example_map_handler.cpp:110:113"
+--8<--
+common/autoware_lanelet2_utils/examples/example_map_handler.cpp:110:113
+--8<--
+```
+
+Call `left_lanelets`.
+
+```cpp title="./examples/example_map_handler.cpp:118:123"
+--8<--
+common/autoware_lanelet2_utils/examples/example_map_handler.cpp:118:123
+--8<--
+```
+
+Call `right_lanelets` including opposite lanelets.
+
+```cpp title="./examples/example_map_handler.cpp:128:133"
+--8<--
+common/autoware_lanelet2_utils/examples/example_map_handler.cpp:128:133
+--8<--
+```
+
+Call `get_shoulder_lanelet_sequence`.
+
+```cpp title="./examples/example_map_handler.cpp:140:146"
+--8<--
+common/autoware_lanelet2_utils/examples/example_map_handler.cpp:140:146
+--8<--
+```
+
 ### `<autoware/lanelet2_utils/route_manager.hpp>`
 
-| function                                                    | description                                                                                                                                                                                                                                                                                                                           | average computational complexity | illustration                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Function                                                    | Description                                                                                                                                                                                                                                                                                                                           | Average Computational Complexity | Illustration                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `class RouteManager EXTENDS MapHandler`                     | `class RouteManager` is responsible for properly tracking `current_route_lanelet` along the given route information, considering swerving maneuver and lane change. Also it provides several functions related to `current_route_lanelet`                                                                                             |                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | **class invariance**                                        | <ul><li>`current_pose` may not be inside of any `route_lanelets` nor `preferred_route_lanelets`, because swerving and abrupt localization jump cannot be distinguished. For the same reason `current_pose` may not be inside of `current_route_lanelet`</li><li>`current_route_lanelet` matches one of the `route_lanelets`</li></ul> |                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                              |
@@ -120,9 +531,71 @@ This package aims to strictly define the meaning of several words to clarify the
 | `.get_closest_preferred_route_lanelet(...)`                 | preferred route lanelet limited version of `get_closest_lanelet_within_constraint`                                                                                                                                                                                                                                                    | _R-tree_                         |                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | `.get_closest_route_lanelet_within_constraints(...)`        | route lanelet limited version of `get_closest_lanelet_within_constraint`                                                                                                                                                                                                                                                              | _R-tree_                         |                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 
+#### Example Usage of `route_manager`
+
+Create `route_manager`.
+
+```cpp title="./examples/example_route_manager.cpp:33:50"
+--8<--
+common/autoware_lanelet2_utils/examples/example_route_manager.cpp:33:50
+--8<--
+```
+
+```cpp title="./examples/example_route_manager.cpp:72:79"
+--8<--
+common/autoware_lanelet2_utils/examples/example_route_manager.cpp:72:79
+--8<--
+```
+
+```cpp title="./examples/example_route_manager.cpp:91:95"
+--8<--
+common/autoware_lanelet2_utils/examples/example_route_manager.cpp:91:95
+--8<--
+```
+
+Update current pose.
+
+```cpp title="./examples/example_route_manager.cpp:124:130"
+--8<--
+common/autoware_lanelet2_utils/examples/example_route_manager.cpp:124:130
+--8<--
+```
+
+Commit success lane change.
+
+```cpp title="./examples/example_route_manager.cpp:144:148"
+--8<--
+common/autoware_lanelet2_utils/examples/example_route_manager.cpp:144:148
+--8<--
+```
+
+Get `current_lanelet` from `route_manager`.
+
+```cpp title="./examples/example_route_manager.cpp:98:104"
+--8<--
+common/autoware_lanelet2_utils/examples/example_route_manager.cpp:98:104
+--8<--
+```
+
+Get lanelet sequence (on route and outward route)
+
+```cpp title="./examples/example_route_manager.cpp:159:175"
+--8<--
+common/autoware_lanelet2_utils/examples/example_route_manager.cpp:159:175
+--8<--
+```
+
+Get closest preferred route lanelet (with and without constraints)
+
+```cpp title="./examples/example_route_manager.cpp:178:191"
+--8<--
+common/autoware_lanelet2_utils/examples/example_route_manager.cpp:178:191
+--8<--
+```
+
 ### Native R-tree API
 
-| function                                                                                                                                                                      | description                                                                                                                                                                                                                                                                                                                                               | average computational complexity | illustration |
+| Function                                                                                                                                                                      | Description                                                                                                                                                                                                                                                                                                                                               | Average Computational Complexity | Illustration |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | ------------ |
 | `.laneletLayer`, `.pointLayer`, etc. have following member functions<ul><li>`PrimitiveLayer::nearest(point, n)`</li><li>`PrimitiveLayer::nearestUntil(point, cond)`</li></ul> | Against the input `point`, this function **approximately** returns elements of given `layer` in the ascending order of distance by specified number `n`([reference](https://docs.ros.org/en/noetic/api/lanelet2_core/html/doxygen/classlanelet_1_1PrimitiveLayer.html#ad95e9e5a636de3fdeed1b269589600fb)). Note that they can return inaccurate distance. | _R-tree_                         |              |
 | <ul><li>`PrimitiveLayer::search(area)`</li><li>`PrimitiveLayer::searchUntil(area, cond)`</li></ul>                                                                            | This function **approximately** searches for the object within the specified `area`([reference](https://docs.ros.org/en/noetic/api/lanelet2_core/html/doxygen/classlanelet_1_1PrimitiveLayer.html#a15bd6c74dcf274be3626a33ad67c0f2c))                                                                                                                     | _R-tree_                         |              |
@@ -264,15 +737,32 @@ std::vector<T> forEachMatchInMultiMap(const MapT& map, const KeyT& key, Func&& f
 
 ## Test maps
 
-All of the maps are in `MGRS` coordinate. In each map, an anchor point is set to an origin point $(100.0, 100.0)$ for simplicity.
+Test maps are structured based on the [Autoware Vector map specifications](https://autowarefoundation.github.io/autoware-documentation/main/design/autoware-architecture-v1/components/map/map-requirements/vector-map-requirements-overview/).
 
-| Map name                                | Origin point id | Image                                                               |
-| --------------------------------------- | --------------- | ------------------------------------------------------------------- |
-| `road_shoulder/highway.osm`             | `1`             | ![highway](./media/maps/road_shoulder/highway.png)                  |
-| `road_shoulder/pudo.osm`                | `140`           | ![pudo](./media/maps/road_shoulder/pudo.png)                        |
-| `intersection/crossing.osm`             | `1791`          | ![crossing](./media/maps/intersection/crossing.png)                 |
-| `dense_centerline/lanelet2_map.osm`     | `16`            | ![lanelet2_map](./media/maps/dense_centerline/lanelet2_map.png)     |
-| `hatched_road_marking/lanelet2_map.osm` | `15`            | ![lanelet2_map](./media/maps/hatched_road_marking/lanelet2_map.png) |
+All of the maps are in `MGRS` coordinate **without map_projector_info.yaml**. In each map, an anchor point is set to an origin point $(100.0, 100.0)$ for simplicity.
+
+| Map name                                         | Origin point id | Image/Description                                                                                                                                                                                          |
+| ------------------------------------------------ | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `vm_01_10-12/dense_centerline/lanelet2_map.osm`  | `16`            | ![dense_centerline](./media/maps/vm_01_10-12/dense_centerline.png)                                                                                                                                         |
+| `vm_01_10-12/straight_waypoint/lanelet2_map.osm` | `1`             | TODO                                                                                                                                                                                                       |
+| `vm_01_10-12/valid_01/lanelet2_map.osm`          | `16`            | ![valid_01](./media/maps/vm_01_10-12/valid_01.png)<br>The start/end of centerline is exactly on the edge of Lanelet border, and consecutive center lines are connected. Speed limits are set as annotated. |
+| `vm_01_10-12/valid_02/lanelet2_map.osm`          | `16`            | ![valid_02](./media/maps/vm_01_10-12/valid_02.png)<br>Consecutive center lines are not connected.                                                                                                          |
+| `vm_01_10-12/valid_03/lanelet2_map.osm`          | `16`            | ![valid_03](./media/maps/vm_01_10-12/valid_03.png)<br>The start of the center lines are off the border.                                                                                                    |
+| `vm_01_10-12/valid_04/lanelet2_map.osm`          | `16`            | ![valid_04](./media/maps/vm_01_10-12/valid_04.png)<br>The end of the center lines are off the border.                                                                                                      |
+| `vm_01_10-12/valid_05/lanelet2_map.osm`          | `16`            | ![valid_05](./media/maps/vm_01_10-12/valid_05.png)<br>The start/end of the center lines are off the border(Consecutive center lines are connected).                                                        |
+| `vm_01_10-12/valid_06/lanelet2_map.osm`          | `16`            | ![valid_06](./media/maps/vm_01_10-12/valid_06.png)<br>The start/end of the center lines are off the border(Consecutive center lines are connected).                                                        |
+| `vm_01_10-12/invalid_01/lanelet2_map.osm`        | `16`            | Any of centerline points except for start/end are outside of the associated Lanelet.                                                                                                                       |
+|                                                  |                 |                                                                                                                                                                                                            |
+| `vm_01_15-16/highway/lanelet2_map.osm`           | `1`             | ![highway](./media/maps/vm_01_15-16/highway.png)                                                                                                                                                           |
+| `vm_01_15-16/pudo/lanelet2_map.osm`              | `140`           | ![pudo](./media/maps/vm_01_15-16/pudo.png)                                                                                                                                                                 |
+| `vm_01_15-16/loop/lanelet2_map.osm`              | `23`            | ![loop](./media/maps/vm_01_15-16/loop.png)                                                                                                                                                                 |
+|                                                  |                 |                                                                                                                                                                                                            |
+| `vm_02/lanelet2_map.osm`                         | TODO            |                                                                                                                                                                                                            |
+|                                                  |                 |                                                                                                                                                                                                            |
+| `vm_03/left_hand/lanelet2_map.osm`               | `1791`          | ![left_hand](./media/maps/vm_03/crossing.png)                                                                                                                                                              |
+| `vm_03/right_hand/lanelet2_map.osm`              | TODO            | TODO                                                                                                                                                                                                       |
+|                                                  |                 |                                                                                                                                                                                                            |
+| `vm_06_01/lanelet2_map.osm`                      | `15`            | ![hatched_road_marking](./media/maps/vm_06_01/hatched_road_marking.png)                                                                                                                                    |
 
 ### How to craft test map
 
@@ -289,6 +779,8 @@ By applying `lanelet_id_aligner.py`, the primitive ids are aligned to start from
 ```bash
 ros2 run autoware_lanelet2_utils lanelet_id_aligner.py <input_map.osm>
 ```
+
+Finally, to fix lat/lon value of the map, upload the map on VMB, then export it again.
 
 ## Tested case
 
