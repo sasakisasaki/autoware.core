@@ -17,10 +17,12 @@ We can run [the planning simulation](https://autowarefoundation.github.io/autowa
 # If you have not cloned `autoware_core` yet
 $ git clone https://github.com/autowarefoundation/autoware_core.git
 
-$ cd autoware_core
-$ mkdir src && vcs import src < autoware_core.repos    # TO BE UPDATED
+$ mkdir -p <your workspace>
+$ cd <your workspace>/autoware_core
+$ mkdir src && vcs import src < autoware_core.repos && vcs import src < tools.repos
 $ rosdep install -y --from-paths ./src --ignore-src --rosdistro $ROS_DISTRO
 $ colcon build --base-paths ./src --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+$ cd ../
 $ git clone https://github.com/autowarefoundation/autoware_universe.git
 $ colcon build --base-paths ./ --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-up-to autoware_simple_planning_simulator autoware_raw_vehicle_cmd_converter autoware_dummy_perception_publisher
 ```
@@ -36,4 +38,19 @@ $ ros2 launch autoware_core autoware_core.launch.xml \
     launch_sensing_driver:=false \
     launch_perception:=false \
     is_planning_simulation:=true
+```
+
+## Scenario Tests
+
+### Build for Planning Simulation
+
+Finish the procedure in "Planning Simulation"
+
+### Build Dependencies
+
+```
+$ cd <your workspace>/autoware_core
+$ vcs import src < simulator.repos
+$ cd ../
+$ colcon build --base-paths ./autoware.core --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 ```
