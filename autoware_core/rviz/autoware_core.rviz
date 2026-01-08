@@ -59,13 +59,27 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
+        base_link:
+          Value: true
+        ego:
+          Value: true
+        entities:
+          Value: true
+        map:
+          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: true
       Tree:
-        {}
+        map:
+          base_link:
+            {}
+          ego:
+            {}
+          entities:
+            {}
       Update Interval: 0
       Value: true
     - Class: rviz_common/Group
@@ -78,28 +92,19 @@ Visualization Manager:
             center_line_arrows: false
             crosswalk_lanelet_id: true
             crosswalk_lanelets: true
-            detection_area: true
-            detection_area_stopline: true
             lane_start_bound: true
             lanelet direction: false
             lanelet_id: true
             left_lane_bound: true
-            pedestrian_polygon_marking: true
+            parking_lots: true
+            parking_space: true
             right_lane_bound: true
-            road_borders: true
             road_lanelets: false
-            shoulder_center_lane_line: true
-            shoulder_center_line_arrows: false
-            shoulder_lane_start_bound: true
-            shoulder_left_lane_bound: true
-            shoulder_right_lane_bound: true
-            shoulder_road_lanelets: true
             stop_lines: true
             traffic_light: true
             traffic_light_id: false
             traffic_light_reg_elem_id: false
             traffic_light_triangle: true
-            walkway_lanelets: true
           Topic:
             Depth: 5
             Durability Policy: Transient Local
@@ -531,7 +536,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: 0.47499993443489075
+      Angle: 0
       Class: rviz_default_plugins/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
@@ -541,11 +546,11 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 2.091386079788208
-      Target Frame: <Fixed Frame>
+      Scale: 10
+      Target Frame: ego
       Value: TopDownOrtho (rviz_default_plugins)
-      X: 81390.3359375
-      Y: 49835.6171875
+      X: 0
+      Y: 0
     Saved:
       - Angle: 0.47499993443489075
         Class: rviz_default_plugins/TopDownOrtho
