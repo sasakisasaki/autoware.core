@@ -57,6 +57,12 @@ $ cd ../
 $ colcon build --base-paths ./autoware.core --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 ```
 
+And for using old ADAPIs
+
+```
+$ colcon build --base-paths ./autoware.core --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-up-to autoware_default_adapi_universe
+```
+
 ### Apply Patches
 
 - Open [autoware_core_api.launch.xml](./api/autoware_core_api/launch/autoware_core_api.launch.xml) and uncomment the following line.
@@ -64,15 +70,27 @@ $ colcon build --base-paths ./autoware.core --symlink-install --cmake-args -DCMA
     <!-- <include file="$(find-pkg-share tier4_autoware_api_launch)/launch/deprecated_api.launch.xml"/> -->
 ```
 
-- Open `<your workspace>/autoware.core/src/simulator/scenario_simulator/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py`
+- Open `<your workspace>/autoware.core/src/simulator/scenario_simulator/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py` and modify as follows.
+```
+diff --git a/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py b/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py
+index 2b5f645eb..a7581957b 100755
+--- a/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py
++++ b/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py
+@@ -49,7 +49,7 @@ def default_autoware_launch_package_of(architecture_type):
+     return {
+         "awf/universe/20230906": "autoware_launch",
+         "awf/universe/20240605": "autoware_launch",
+-        "awf/universe/20250130": "autoware_launch",
++        "awf/universe/20250130": "autoware_core",
+     }[architecture_type]
+```
 
 ### Launch Scenario Simulatotion
 
 TO BE UPDATED
 
 ```
-#!/bin/bash
-
+$ source install/setup.bash
 $ ros2 launch scenario_test_runner scenario_test_runner.launch.py \
     architecture_type:=awf/universe/20250130 \
     record:=false \
