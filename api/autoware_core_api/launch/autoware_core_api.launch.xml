@@ -11,6 +11,9 @@
     <!-- Default AD API -->
     <include file="$(find-pkg-share autoware_default_adapi)/launch/default_adapi.launch.py" if="$(var launch_default_adapi)"/>
 
+    <!-- Deprecated API -->
+    <!-- <include file="$(find-pkg-share tier4_autoware_api_launch)/launch/deprecated_api.launch.xml"/> -->
+
     <!-- RViz Adaptors -->
     <group if="$(var launch_rviz_adaptors)">
       <let name="rviz_initial_pose_auto_fix_target" value="vector_map" if="$(var is_planning_simulation)"/>

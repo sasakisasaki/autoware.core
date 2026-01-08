@@ -25,6 +25,8 @@ $ colcon build --base-paths ./src --symlink-install --cmake-args -DCMAKE_BUILD_T
 $ cd ../
 $ git clone https://github.com/autowarefoundation/autoware_universe.git
 $ colcon build --base-paths ./ --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-up-to autoware_simple_planning_simulator autoware_raw_vehicle_cmd_converter autoware_dummy_perception_publisher
+$ git clone https://github.com/autowarefoundation/autoware_launch.git
+$ colcon build --base-paths ./ --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-up-to sample_vehicle_description sample_sensor_kit_description
 ```
 
 ### Launch Planning Simulation
@@ -53,4 +55,28 @@ $ cd <your workspace>/autoware_core
 $ vcs import src < simulator.repos
 $ cd ../
 $ colcon build --base-paths ./autoware.core --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+```
+
+### Apply Patches
+
+- Open [autoware_core_api.launch.xml](./api/autoware_core_api/launch/autoware_core_api.launch.xml) and uncomment the following line.
+```
+    <!-- <include file="$(find-pkg-share tier4_autoware_api_launch)/launch/deprecated_api.launch.xml"/> -->
+```
+
+- Open `<your workspace>/autoware.core/src/simulator/scenario_simulator/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py`
+
+### Launch Scenario Simulatotion
+
+TO BE UPDATED
+
+```
+#!/bin/bash
+
+$ ros2 launch scenario_test_runner scenario_test_runner.launch.py \
+    architecture_type:=awf/universe/20250130 \
+    record:=false \
+    scenario:='$(find-pkg-share scenario_test_runner)/scenario/sample.yaml' \
+    sensor_model:=sample_sensor_kit \
+    vehicle_model:=sample_vehicle
 ```
