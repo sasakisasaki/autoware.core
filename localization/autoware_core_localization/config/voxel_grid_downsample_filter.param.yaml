@@ -3,6 +3,6 @@
     voxel_size_x: 0.6
     voxel_size_y: 0.6
     voxel_size_z: 0.6
-    input_frame: "xt32_top"
-    output_frame: "xt32_top"
+    input_frame: "xt32_top_base_link"
+    output_frame: "xt32_top_base_link"
     max_queue_size: 5
