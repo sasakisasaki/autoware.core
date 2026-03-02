@@ -48,9 +48,6 @@ struct OperationModeState
   using Message = autoware_adapi_v1_msgs::msg::OperationModeState;
   static constexpr char name[] = "/api/operation_mode/state";
   static constexpr size_t depth = 1;
-  static constexpr rmw_qos_reliability_policy_t reliability = RMW_QOS_POLICY_RELIABILITY_RELIABLE;
-  static constexpr rmw_qos_durability_policy_t durability =
-    RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
 };
 
 struct GearCommand
