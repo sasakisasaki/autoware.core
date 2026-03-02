@@ -12,15 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <autoware_adapi_v1_msgs/msg/operation_mode_state.hpp>
-#include <autoware_adapi_v1_msgs/srv/change_operation_mode.hpp>
-#include <autoware_vehicle_msgs/msg/gear_command.hpp>
-#include <gtest/gtest.h>
 #include <rclcpp/executors/single_threaded_executor.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp_components/component_manager.hpp>
 #include <rclcpp_components/node_factory.hpp>
 #include <rclcpp_components/node_instance_wrapper.hpp>
+
+#include <autoware_adapi_v1_msgs/msg/operation_mode_state.hpp>
+#include <autoware_adapi_v1_msgs/srv/change_operation_mode.hpp>
+#include <autoware_vehicle_msgs/msg/gear_command.hpp>
+
+#include <gtest/gtest.h>
 
 #include <algorithm>
 #include <chrono>
@@ -62,13 +64,10 @@ protected:
   {
     test_node_ = std::make_shared<rclcpp::Node>("command_gate_test_node");
     component_manager_ = std::make_shared<rclcpp_components::ComponentManager>();
-    const auto resources =
-      component_manager_->get_component_resources("autoware_command_gate");
-    auto resource_it = std::find_if(
-      resources.begin(), resources.end(), [](const auto & resource) {
-        return resource.first ==
-               "autoware::control::command_gate::AutowareCommandGateNode";
-      });
+    const auto resources = component_manager_->get_component_resources("autoware_command_gate");
+    auto resource_it = std::find_if(resources.begin(), resources.end(), [](const auto & resource) {
+      return resource.first == "autoware::control::command_gate::AutowareCommandGateNode";
+    });
     ASSERT_TRUE(resource_it != resources.end());
     factory_ = component_manager_->create_component_factory(*resource_it);
     wrapper_ = std::make_unique<rclcpp_components::NodeInstanceWrapper>(
@@ -118,7 +117,8 @@ TEST_F(CommandGateRosIntegrationTest, ChangeToStopPublishesStateAndGear)
     "/control/command/gear_cmd", rclcpp::QoS{1},
     [&gear_msg](const GearCommand::SharedPtr msg) { gear_msg = *msg; });
 
-  auto client = test_node_->create_client<ChangeOperationMode>("/api/operation_mode/change_to_stop");
+  auto client =
+    test_node_->create_client<ChangeOperationMode>("/api/operation_mode/change_to_stop");
   ASSERT_TRUE(spin_until(executor_, [&client]() { return client->wait_for_service(0s); }, 2s));
 
   auto request = std::make_shared<ChangeOperationMode::Request>();
