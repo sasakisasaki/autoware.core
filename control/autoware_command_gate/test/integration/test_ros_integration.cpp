@@ -28,6 +28,7 @@
 #include <chrono>
 #include <functional>
 #include <future>
+#include <memory>
 #include <optional>
 #include <string>
 #include <thread>
@@ -37,7 +38,6 @@ namespace
 using autoware_adapi_v1_msgs::msg::OperationModeState;
 using autoware_adapi_v1_msgs::srv::ChangeOperationMode;
 using autoware_vehicle_msgs::msg::GearCommand;
-using namespace std::chrono_literals;
 
 bool spin_until(
   rclcpp::executors::SingleThreadedExecutor & executor, const std::function<bool()> & predicate,
@@ -49,7 +49,7 @@ bool spin_until(
     if (predicate()) {
       return true;
     }
-    std::this_thread::sleep_for(5ms);
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
   }
   executor.spin_some();
   return predicate();
@@ -119,12 +119,16 @@ TEST_F(CommandGateRosIntegrationTest, ChangeToStopPublishesStateAndGear)
 
   auto client =
     test_node_->create_client<ChangeOperationMode>("/api/operation_mode/change_to_stop");
-  ASSERT_TRUE(spin_until(executor_, [&client]() { return client->wait_for_service(0s); }, 2s));
+  ASSERT_TRUE(spin_until(
+    executor_, [&client]() { return client->wait_for_service(std::chrono::seconds(0)); },
+    std::chrono::seconds(2)));
 
   auto request = std::make_shared<ChangeOperationMode::Request>();
   auto future = client->async_send_request(request);
   ASSERT_TRUE(spin_until(
-    executor_, [&future]() { return future.wait_for(0s) == std::future_status::ready; }, 2s));
+    executor_,
+    [&future]() { return future.wait_for(std::chrono::seconds(0)) == std::future_status::ready; },
+    std::chrono::seconds(2)));
 
   const auto response = future.get();
   EXPECT_TRUE(response->status.success);
@@ -133,7 +137,7 @@ TEST_F(CommandGateRosIntegrationTest, ChangeToStopPublishesStateAndGear)
 
   ASSERT_TRUE(spin_until(
     executor_, [&state_msg, &gear_msg]() { return state_msg.has_value() && gear_msg.has_value(); },
-    2s));
+    std::chrono::seconds(2)));
 
   EXPECT_EQ(state_msg->mode, OperationModeState::STOP);
   EXPECT_FALSE(state_msg->is_autoware_control_enabled);
@@ -164,12 +168,16 @@ TEST_F(CommandGateRosIntegrationTest, ChangeToAutonomousPublishesStateAndGear)
 
   auto client =
     test_node_->create_client<ChangeOperationMode>("/api/operation_mode/change_to_autonomous");
-  ASSERT_TRUE(spin_until(executor_, [&client]() { return client->wait_for_service(0s); }, 2s));
+  ASSERT_TRUE(spin_until(
+    executor_, [&client]() { return client->wait_for_service(std::chrono::seconds(0)); },
+    std::chrono::seconds(2)));
 
   auto request = std::make_shared<ChangeOperationMode::Request>();
   auto future = client->async_send_request(request);
   ASSERT_TRUE(spin_until(
-    executor_, [&future]() { return future.wait_for(0s) == std::future_status::ready; }, 2s));
+    executor_,
+    [&future]() { return future.wait_for(std::chrono::seconds(0)) == std::future_status::ready; },
+    std::chrono::seconds(2)));
 
   const auto response = future.get();
   EXPECT_TRUE(response->status.success);
@@ -178,7 +186,7 @@ TEST_F(CommandGateRosIntegrationTest, ChangeToAutonomousPublishesStateAndGear)
 
   ASSERT_TRUE(spin_until(
     executor_, [&state_msg, &gear_msg]() { return state_msg.has_value() && gear_msg.has_value(); },
-    2s));
+    std::chrono::seconds(2)));
 
   EXPECT_EQ(state_msg->mode, OperationModeState::AUTONOMOUS);
   EXPECT_TRUE(state_msg->is_autoware_control_enabled);
