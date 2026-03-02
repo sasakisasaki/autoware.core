@@ -43,3 +43,45 @@ Echo topics:
 ros2 topic echo /api/operation_mode/state
 ros2 topic echo /control/command/gear_cmd
 ```
+
+## Tests
+
+Tests are grouped under the following directories:
+
+- Unit tests: test/unit
+- Integration tests: test/integration
+
+Run all tests:
+
+```bash
+colcon test --packages-select autoware_command_gate --event-handlers console_direct+
+```
+
+## Coverage
+
+Coverage targets are available when configuring with `-DENABLE_COVERAGE=ON` and require `lcov`.
+Reports are filtered to this package's sources under `src/` and `include/`.
+
+Generate unit test coverage:
+
+```bash
+colcon build --packages-select autoware_command_gate --cmake-args -DENABLE_COVERAGE=ON
+cmake --build build/autoware_command_gate --target coverage_unit
+```
+
+Generate integration test coverage:
+
+```bash
+colcon build --packages-select autoware_command_gate --cmake-args -DENABLE_COVERAGE=ON
+cmake --build build/autoware_command_gate --target coverage_integration
+```
+
+Coverage reports are generated under:
+
+- build/autoware_command_gate/coverage/unit
+- build/autoware_command_gate/coverage/integration
+
+### Codecov
+
+This repository already provides Codecov configuration at the workspace root. In CI, upload the
+generated `coverage_*.info` to Codecov to compare unit vs integration coverage for this package.
