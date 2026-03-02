@@ -52,6 +52,13 @@ struct OperationModeState
   static constexpr rmw_qos_durability_policy_t durability =
     RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
 };
+
+struct GearCommand
+{
+  using Message = autoware_vehicle_msgs::msg::GearCommand;
+  static constexpr char name[] = "/control/command/gear_cmd";
+  static constexpr size_t depth = 1;
+};
 }  // namespace spec
 
 class AutowareCommandGateNode : public rclcpp::Node
@@ -66,8 +73,8 @@ public:
 
     state_pub_ = create_publisher<spec::OperationModeState::Message>(
       spec::OperationModeState::name, state_qos);
-    gear_pub_ = create_publisher<autoware_vehicle_msgs::msg::GearCommand>(
-      "/control/command/gear_cmd", rclcpp::QoS{1});
+    gear_pub_ = create_publisher<spec::GearCommand::Message>(
+      spec::GearCommand::name, rclcpp::QoS{spec::GearCommand::depth});
 
     srv_stop_ = create_service<spec::ChangeToStop::Service>(
       spec::ChangeToStop::name, [this](
