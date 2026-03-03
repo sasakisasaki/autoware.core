@@ -1,14 +1,15 @@
 <launch>
   <arg name="gnss_input_topic" default="/sensing/gnss/pose_with_covariance"/>
-  <arg name="lidar_input_topic" default="/sensing/lidar/top/pointcloud_raw_ex"/>
+  <!-- <arg name="lidar_input_topic" default="/sensing/lidar/top/pointcloud_raw_ex"/> -->
+  <arg name="lidar_input_topic" default="/sensing/lidar/top/concatenated/pointcloud"/>
   <arg name="vehicle_twist_input_topic" default="/sensing/vehicle_velocity_converter/twist_with_covariance"/>
 
-  <arg name="ekf_localizer_param_path" default="$(find-pkg-share autoware_core_localization)/config/ekf_localizer.param.yaml"/>
-  <arg name="stop_filter_param_path" default="$(find-pkg-share autoware_core_localization)/config/stop_filter.param.yaml"/>
-  <arg name="twist2accel_param_path" default="$(find-pkg-share autoware_core_localization)/config/twist2accel.param.yaml"/>
+  <arg name="ekf_localizer_param_path" default="$(find-pkg-share autoware_ekf_localizer)/config/ekf_localizer.param.yaml"/>
+  <arg name="stop_filter_param_path" default="$(find-pkg-share autoware_stop_filter)/config/stop_filter.param.yaml"/>
+  <arg name="twist2accel_param_path" default="$(find-pkg-share autoware_twist2accel)/config/twist2accel.param.yaml"/>
   <arg name="pose_initializer_param_path" default="$(find-pkg-share autoware_core_localization)/config/pose_initializer.param.yaml"/>
-  <arg name="voxel_grid_downsample_filter_param_file" default="$(find-pkg-share autoware_core_localization)/config/voxel_grid_downsample_filter.param.yaml"/>
-  <arg name="ndt_scan_matcher_param_path" default="$(find-pkg-share autoware_core_localization)/config/ndt_scan_matcher.param.yaml"/>
+  <arg name="voxel_grid_downsample_filter_param_file" default="$(find-pkg-share autoware_downsample_filters)/config/voxel_grid_downsample_filter_node.param.yaml"/>
+  <arg name="ndt_scan_matcher_param_path" default="$(find-pkg-share autoware_ndt_scan_matcher)/config/ndt_scan_matcher.param.yaml"/>
 
   <group>
     <push-ros-namespace namespace="localization"/>

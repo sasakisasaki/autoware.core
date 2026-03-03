@@ -2,6 +2,7 @@
 <launch>
   <arg name="vehicle_model" description="vehicle model name"/>
   <arg name="sensor_model" description="sensor model name"/>
+  <arg name="vehicle_id" description="vehicle id"/>
   <arg name="config_dir" default="$(find-pkg-share $(var sensor_model)_description)/config" description="path to dir where sensors_calibration.yaml, etc. are located"/>
 
   <!-- vehicle description -->

@@ -2,7 +2,8 @@
   ros__parameters:
     frame:
       # Vehicle reference frame
-      base_frame: "base_link"
+      #base_frame: "base_link"
+      base_frame: "xt32_top_base_link"
 
       # NDT reference frame
       ndt_base_frame: "ndt_base_link"

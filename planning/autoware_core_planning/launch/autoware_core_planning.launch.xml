@@ -18,9 +18,10 @@
 
   <!-- motion velocity planner module config path -->
   <arg name="motion_velocity_planner_launch_modules" default="[autoware::motion_velocity_planner::ObstacleStopModule]"/>
-  <arg name="motion_velocity_planner_param_path" default="$(find-pkg-share autoware_core_planning)/config/motion_velocity_planner/motion_velocity_planner.param.yaml"/>
+  <arg name="motion_velocity_planner_param_path" default="$(find-pkg-share autoware_motion_velocity_planner)/config/motion_velocity_planner.param.yaml"/>
+  <!-- Use existing analytical smoother params (package autoware_core_planning) -->
   <arg name="motion_velocity_planner_velocity_smoother_type_param_path" default="$(find-pkg-share autoware_core_planning)/config/autoware_velocity_smoother/Analytical.param.yaml"/>
-  <arg name="motion_velocity_planner_obstacle_stop_module_param_path" default="$(find-pkg-share autoware_core_planning)/config/motion_velocity_planner/obstacle_stop.param.yaml"/>
+  <arg name="motion_velocity_planner_obstacle_stop_module_param_path" default="$(find-pkg-share autoware_motion_velocity_obstacle_stop_module)/config/obstacle_stop.param.yaml"/>
 
   <!-- velocity smoother -->
   <arg name="velocity_smoother_type" default="JerkFiltered"/>
