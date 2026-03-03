@@ -69,8 +69,10 @@
     <include file="$(find-pkg-share autoware_core_control)/launch/autoware_core_control.launch.xml"/>
   </group>
 
+  <arg name="vehicle_id" default="$(env VEHICLE_ID default)" description="vehicle specific ID"/>
   <group if="$(var launch_vehicle)">
     <include file="$(find-pkg-share autoware_core_vehicle)/launch/autoware_core_vehicle.launch.xml">
+      <arg name="vehicle_id" value="$(var vehicle_id)"/>
       <arg name="vehicle_model" value="$(var vehicle_model)"/>
       <arg name="sensor_model" value="$(var sensor_model)"/>
     </include>
