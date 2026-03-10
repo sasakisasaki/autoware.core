@@ -6,3 +6,95 @@
 - A more detailed explanation about Autoware Core can be found on the [Autoware concepts documentation page](https://autowarefoundation.github.io/autoware-documentation/main/design/autoware-concepts/#the-core-module).
 
 - For researchers and developers who want to extend the functionality of Autoware Core with experimental, cutting-edge ROS packages, see [Autoware Universe](https://github.com/autowarefoundation/autoware_universe).
+
+## Planning Simulation
+
+We can run [the planning simulation](https://autowarefoundation.github.io/autoware-documentation/main/demos/planning-sim/) based on the `autoware_core`.
+
+### Build Dependencies
+
+```
+# If you have not cloned `autoware_core` yet
+$ git clone https://github.com/autowarefoundation/autoware_core.git
+
+$ mkdir -p <your workspace>
+$ cd <your workspace>/autoware_core
+$ mkdir src && vcs import src < autoware_core.repos && vcs import src < tools.repos
+$ rosdep install -y --from-paths ./src --ignore-src --rosdistro $ROS_DISTRO
+$ colcon build --base-paths ./src --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+$ cd ../
+$ git clone https://github.com/autowarefoundation/autoware_universe.git
+$ colcon build --base-paths ./ --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-up-to autoware_simple_planning_simulator autoware_raw_vehicle_cmd_converter autoware_dummy_perception_publisher
+$ git clone https://github.com/autowarefoundation/autoware_launch.git
+$ colcon build --base-paths ./ --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-up-to sample_vehicle_description sample_sensor_kit_description
+```
+
+### Launch Planning Simulation
+```
+$ source install/setup.bash
+$ ros2 launch autoware_core autoware_core.launch.xml \
+    vehicle_model:=sample_vehicle \
+    sensor_model:=sample_sensor_kit \
+    map_path:=PATH_TO_YOUR_MAP \
+    launch_sensing:=false \
+    launch_sensing_driver:=false \
+    launch_perception:=false \
+    is_planning_simulation:=true
+```
+
+## Scenario Tests
+
+### Build for Planning Simulation
+
+Finish the procedure in "Planning Simulation"
+
+### Build Dependencies
+
+```
+$ cd <your workspace>/autoware_core
+$ vcs import src < simulator.repos
+$ cd ../
+$ colcon build --base-paths ./autoware.core --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+```
+
+And for using old ADAPIs
+
+```
+$ colcon build --base-paths ./autoware.core --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-up-to autoware_default_adapi_universe
+```
+
+### Apply Patches
+
+- Open [autoware_core_api.launch.xml](./api/autoware_core_api/launch/autoware_core_api.launch.xml) and uncomment the following line.
+```
+    <!-- <include file="$(find-pkg-share tier4_autoware_api_launch)/launch/deprecated_api.launch.xml"/> -->
+```
+
+- Open `<your workspace>/autoware.core/src/simulator/scenario_simulator/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py` and modify as follows.
+```
+diff --git a/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py b/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py
+index 2b5f645eb..a7581957b 100755
+--- a/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py
++++ b/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py
+@@ -49,7 +49,7 @@ def default_autoware_launch_package_of(architecture_type):
+     return {
+         "awf/universe/20230906": "autoware_launch",
+         "awf/universe/20240605": "autoware_launch",
+-        "awf/universe/20250130": "autoware_launch",
++        "awf/universe/20250130": "autoware_core",
+     }[architecture_type]
+```
+
+### Launch Scenario Simulatotion
+
+TO BE UPDATED
+
+```
+$ source install/setup.bash
+$ ros2 launch scenario_test_runner scenario_test_runner.launch.py \
+    architecture_type:=awf/universe/20250130 \
+    record:=false \
+    scenario:='$(find-pkg-share scenario_test_runner)/scenario/sample.yaml' \
+    sensor_model:=sample_sensor_kit \
+    vehicle_model:=sample_vehicle
+```
