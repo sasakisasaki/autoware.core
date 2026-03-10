@@ -7,7 +7,7 @@
 
 - For researchers and developers who want to extend the functionality of Autoware Core with experimental, cutting-edge ROS packages, see [Autoware Universe](https://github.com/autowarefoundation/autoware_universe).
 
-## Planning Simulation
+## Simulation
 
 We can run [the planning simulation](https://autowarefoundation.github.io/autoware-documentation/main/demos/planning-sim/) based on the `autoware_core`.
 
@@ -19,14 +19,39 @@ $ git clone https://github.com/autowarefoundation/autoware_core.git
 
 $ mkdir -p <your workspace>
 $ cd <your workspace>/autoware_core
-$ mkdir src && vcs import src < autoware_core.repos && vcs import src < tools.repos
-$ rosdep install -y --from-paths ./src --ignore-src --rosdistro $ROS_DISTRO
-$ colcon build --base-paths ./src --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
-$ cd ../
-$ git clone https://github.com/autowarefoundation/autoware_universe.git
-$ colcon build --base-paths ./ --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-up-to autoware_simple_planning_simulator autoware_raw_vehicle_cmd_converter autoware_dummy_perception_publisher
-$ git clone https://github.com/autowarefoundation/autoware_launch.git
-$ colcon build --base-paths ./ --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-up-to sample_vehicle_description sample_sensor_kit_description
+$ mkdir -p src \
+    && vcs import src < autoware_core.repos \
+    && vcs import src < simulator.repos \
+    && vcs import src < tools.repos
+
+# Currently, this command does not work
+# $ rosdep install -y \
+#     --from-paths \
+#         ./autoware_core \
+#         ./src/universe/autoware_universe/simulator/autoware_simple_planning_simulator \
+#         ./src/universe/autoware_universe/simulator/autoware_dummy_perception_publisher \
+#         ./src/universe/autoware_universe/vehicle/autoware_raw_vehicle_cmd_converter \
+#         ./src/launcher/autoware_launch/sensor_kit/sample_sensor_kit_launch \
+#     --ignore-src \
+#     --rosdistro $ROS_DISTRO
+
+# Build except scenario_simulator
+$ colcon build --base-paths ./ \
+    --symlink-install \
+    --cmake-args -DCMAKE_BUILD_TYPE=Release \
+    --packages-up-to \
+        autoware_core \
+        autoware_simple_planning_simulator \
+        autoware_dummy_perception_publisher \
+        autoware_raw_vehicle_cmd_converter \
+        sample_vehicle_description \
+        sample_sensor_kit_description
+
+# Build scenario_simulator
+$ colcon build --base-paths ./ \
+    --symlink-install \
+    --cmake-args -DCMAKE_BUILD_TYPE=Release \
+    --packages-up-to scenario_simulator_v2
 ```
 
 ### Launch Planning Simulation
@@ -35,11 +60,11 @@ $ source install/setup.bash
 $ ros2 launch autoware_core autoware_core.launch.xml \
     vehicle_model:=sample_vehicle \
     sensor_model:=sample_sensor_kit \
-    map_path:=PATH_TO_YOUR_MAP \
     launch_sensing:=false \
     launch_sensing_driver:=false \
     launch_perception:=false \
-    is_planning_simulation:=true
+    is_planning_simulation:=true \
+    map_path:=PATH_TO_YOUR_MAP
 ```
 
 ## Scenario Tests
@@ -48,21 +73,6 @@ $ ros2 launch autoware_core autoware_core.launch.xml \
 
 Finish the procedure in "Planning Simulation"
 
-### Build Dependencies
-
-```
-$ cd <your workspace>/autoware_core
-$ vcs import src < simulator.repos
-$ cd ../
-$ colcon build --base-paths ./autoware.core --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
-```
-
-And for using old ADAPIs
-
-```
-$ colcon build --base-paths ./autoware.core --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-up-to autoware_default_adapi_universe
-```
-
 ### Apply Patches
 
 - Open [autoware_core_api.launch.xml](./api/autoware_core_api/launch/autoware_core_api.launch.xml) and uncomment the following line.
@@ -70,7 +80,7 @@ $ colcon build --base-paths ./autoware.core --symlink-install --cmake-args -DCMA
     <!-- <include file="$(find-pkg-share tier4_autoware_api_launch)/launch/deprecated_api.launch.xml"/> -->
 ```
 
-- Open `<your workspace>/autoware.core/src/simulator/scenario_simulator/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py` and modify as follows.
+- Open `<your workspace>/autoware_core/src/simulator/scenario_simulator/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py` and modify as follows.
 ```
 diff --git a/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py b/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py
 index 2b5f645eb..a7581957b 100755
