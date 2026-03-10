@@ -12,17 +12,17 @@
   <!-- Optional parameters -->
   <!-- Modules to be launched -->
   <arg name="launch_map" default="true" description="launch map"/>
-  <arg name="launch_sensing" default="true" description="launch sensing"/>
-  <arg name="launch_sensing_driver" default="true" description="do launch sensing driver"/>
+  <arg name="launch_sensing" default="false" description="launch sensing"/>
+  <arg name="launch_sensing_driver" default="false" description="do launch sensing driver"/>
   <arg name="launch_localization" default="true" description="launch localization"/>
-  <arg name="launch_perception" default="true" description="launch perception"/>
+  <arg name="launch_perception" default="false" description="launch perception"/>
   <arg name="launch_planning" default="true" description="launch planning"/>
   <arg name="launch_control" default="true" description="launch control"/>
   <arg name="launch_vehicle" default="true" description="launch vehicle"/>
   <arg name="launch_api" default="true" description="launch api"/>
 
   <!-- Configure if this is planning simulator -->
-  <arg name="is_planning_simulation" default="false" description="enable planning simulation if true (default is false)"/>
+  <arg name="is_planning_simulation" default="true" description="enable planning simulation if true (default is false)"/>
 
   <!-- Global parameters -->
   <group scoped="false">
