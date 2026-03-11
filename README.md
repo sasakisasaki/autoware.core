@@ -44,6 +44,7 @@ $ colcon build --base-paths ./ \
         autoware_simple_planning_simulator \
         autoware_dummy_perception_publisher \
         autoware_raw_vehicle_cmd_converter \
+        autoware_evaluation_adapter \
         sample_vehicle_description \
         sample_sensor_kit_description
 
