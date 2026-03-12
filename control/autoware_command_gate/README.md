@@ -5,8 +5,9 @@ A minimal gateway that exposes operation-mode change services and publishes matc
 ## Features
 
 - Services `/api/operation_mode/change_to_stop` and `/api/operation_mode/change_to_autonomous` (`autoware_adapi_v1_msgs/srv/ChangeOperationMode`).
-- Publishes `/api/operation_mode/state` (reliable, transient local QoS) and `/control/command/gear_cmd` on each service call.
-- STOP -> gear `PARK`; AUTONOMOUS -> gear `DRIVE`.
+- Service `/system/operation_mode/change_operation_mode` (`autoware_system_msgs/srv/ChangeOperationMode`).
+- Publishes `/api/operation_mode/state` and `/system/operation_mode/state` (reliable, transient local QoS) and `/control/command/gear_cmd` on each service call.
+- STOP -> gear `PARK`; AUTONOMOUS -> gear `DRIVE`; LOCAL/REMOTE -> gear `NONE`.
 
 ## Build
 
@@ -35,12 +36,18 @@ Call services (example from a sourced workspace):
 ```bash
 ros2 service call /api/operation_mode/change_to_stop autoware_adapi_v1_msgs/srv/ChangeOperationMode "{}"
 ros2 service call /api/operation_mode/change_to_autonomous autoware_adapi_v1_msgs/srv/ChangeOperationMode "{}"
+# System service values: STOP=1, AUTONOMOUS=2, LOCAL=3, REMOTE=4
+ros2 service call /system/operation_mode/change_operation_mode autoware_system_msgs/srv/ChangeOperationMode "{mode: 1}"
+ros2 service call /system/operation_mode/change_operation_mode autoware_system_msgs/srv/ChangeOperationMode "{mode: 2}"
+ros2 service call /system/operation_mode/change_operation_mode autoware_system_msgs/srv/ChangeOperationMode "{mode: 3}"
+ros2 service call /system/operation_mode/change_operation_mode autoware_system_msgs/srv/ChangeOperationMode "{mode: 4}"
 ```
 
 Echo topics:
 
 ```bash
 ros2 topic echo /api/operation_mode/state
+ros2 topic echo /system/operation_mode/state
 ros2 topic echo /control/command/gear_cmd
 ```
 
