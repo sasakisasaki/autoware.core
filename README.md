@@ -102,8 +102,6 @@ index 2b5f645eb..20cc70aa1 100755
 
 ### Launch Scenario Simulation
 
-TO BE UPDATED
-
 ```
 $ source install/setup.bash
 $ ros2 launch scenario_test_runner scenario_test_runner.launch.py \
