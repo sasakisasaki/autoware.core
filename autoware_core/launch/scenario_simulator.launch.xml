@@ -25,7 +25,7 @@
   <arg name="is_planning_simulation" default="true" description="enable planning simulation if true (default is false)"/>
 
   <!-- Configure if this is scenario simulation -->
-  <arg name="is_scenario_simulation" default="false" description="enable scenario simulation if true (default is false)"/>
+  <arg name="is_scenario_simulation" default="true" description="enable scenario simulation if true (default is false)"/>
 
   <!-- Global parameters -->
   <group scoped="false">

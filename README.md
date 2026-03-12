@@ -76,15 +76,10 @@ Finish the procedure in "Planning Simulation"
 
 ### Apply Patches
 
-- Open [autoware_core_api.launch.xml](./api/autoware_core_api/launch/autoware_core_api.launch.xml) and uncomment the following line.
-```
-    <!-- <include file="$(find-pkg-share tier4_autoware_api_launch)/launch/deprecated_api.launch.xml"/> -->
-```
-
 - Open `<your workspace>/autoware_core/src/simulator/scenario_simulator/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py` and modify as follows.
 ```
 diff --git a/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py b/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py
-index 2b5f645eb..a7581957b 100755
+index 2b5f645eb..20cc70aa1 100755
 --- a/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py
 +++ b/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py
 @@ -49,7 +49,7 @@ def default_autoware_launch_package_of(architecture_type):
@@ -94,24 +89,15 @@ index 2b5f645eb..a7581957b 100755
 -        "awf/universe/20250130": "autoware_launch",
 +        "awf/universe/20250130": "autoware_core",
      }[architecture_type]
-```
 
-- Also, open `<your workspace>/autoware_core/src/simulator/scenario_simulator/simulation/traffic_simulator/src/entity/ego_entity.cpp` and modify as follows to disable deprecated ADAPI.
-```
-diff --git a/simulation/traffic_simulator/src/entity/ego_entity.cpp b/simulation/traffic_simulator/src/entity/ego_entity.cpp
-index 99e571130..1f9ab13d6 100644
---- a/simulation/traffic_simulator/src/entity/ego_entity.cpp
-+++ b/simulation/traffic_simulator/src/entity/ego_entity.cpp
-@@ -62,7 +62,8 @@ EgoEntity::EgoEntity(
-       parameters.push_back("sensor_model:=" + common::getParameter<std::string>(node_parameters, "sensor_model"));
-       parameters.push_back("vehicle_model:=" + common::getParameter<std::string>(node_parameters, "vehicle_model"));
-       parameters.push_back("rviz_config:=" + common::getParameter<std::string>(node_parameters, "rviz_config"));
--      parameters.push_back("scenario_simulation:=true");
-+      //parameters.push_back("scenario_simulation:=true");
-+      parameters.push_back("scenario_simulation:=false");
-       parameters.push_back("use_foa:=false");
-       parameters.push_back("perception/enable_traffic_light:=" + std::string(architecture_type >= "awf/universe/20230906" ? "true" : "false"));
-       parameters.push_back("use_sim_time:=" + std::string(common::getParameter<bool>(node_parameters, "use_sim_time", false) ? "true" : "false"));
+
+@@ -61,7 +61,7 @@ def default_autoware_launch_file_of(architecture_type):
+     return {
+         "awf/universe/20230906": "planning_simulator.launch.xml",
+         "awf/universe/20240605": "planning_simulator.launch.xml",
+-        "awf/universe/20250130": "planning_simulator.launch.xml",
++        "awf/universe/20250130": "scenario_simulator.launch.xml",
+     }[architecture_type]
 ```
 
 ### Launch Scenario Simulatotion
