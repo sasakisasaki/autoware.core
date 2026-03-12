@@ -96,7 +96,7 @@
   </group>
 
   <!-- Simulator: either planning simulation or scenario simulation -->
-  <group if="$(or var is_planning_simulation var is_scenario_simulation)">
+  <group if="$(var is_scenario_simulation)">
     <arg
       name="localization_sim_mode"
       default="api"
