@@ -20,6 +20,7 @@
 
 #include <autoware_adapi_v1_msgs/msg/operation_mode_state.hpp>
 #include <autoware_adapi_v1_msgs/srv/change_operation_mode.hpp>
+#include <autoware_system_msgs/srv/change_operation_mode.hpp>
 #include <autoware_vehicle_msgs/msg/gear_command.hpp>
 
 #include <gtest/gtest.h>
@@ -37,6 +38,7 @@ namespace
 {
 using autoware_adapi_v1_msgs::msg::OperationModeState;
 using autoware_adapi_v1_msgs::srv::ChangeOperationMode;
+using SystemChangeOperationMode = autoware_system_msgs::srv::ChangeOperationMode;
 using autoware_vehicle_msgs::msg::GearCommand;
 
 bool spin_until(
@@ -197,6 +199,108 @@ TEST_F(CommandGateRosIntegrationTest, ChangeToAutonomousPublishesStateAndGear)
   EXPECT_TRUE(state_msg->is_remote_mode_available);
 
   EXPECT_EQ(gear_msg->command, GearCommand::DRIVE);
+}
+
+TEST_F(CommandGateRosIntegrationTest, SystemChangeToLocalPublishesStateAndGear)
+{
+  std::optional<OperationModeState> state_msg;
+  std::optional<GearCommand> gear_msg;
+
+  rclcpp::QoS state_qos(1);
+  state_qos.reliable();
+  state_qos.transient_local();
+
+  auto state_sub = test_node_->create_subscription<OperationModeState>(
+    "/system/operation_mode/state", state_qos,
+    [&state_msg](const OperationModeState::SharedPtr msg) { state_msg = *msg; });
+  auto gear_sub = test_node_->create_subscription<GearCommand>(
+    "/control/command/gear_cmd", rclcpp::QoS{1},
+    [&gear_msg](const GearCommand::SharedPtr msg) { gear_msg = *msg; });
+
+  auto client =
+    test_node_->create_client<SystemChangeOperationMode>(
+      "/system/operation_mode/change_operation_mode");
+  ASSERT_TRUE(spin_until(
+    executor_, [&client]() { return client->wait_for_service(std::chrono::seconds(0)); },
+    std::chrono::seconds(2)));
+
+  auto request = std::make_shared<SystemChangeOperationMode::Request>();
+  request->mode = SystemChangeOperationMode::Request::LOCAL;
+  auto future = client->async_send_request(request);
+  ASSERT_TRUE(spin_until(
+    executor_,
+    [&future]() { return future.wait_for(std::chrono::seconds(0)) == std::future_status::ready; },
+    std::chrono::seconds(2)));
+
+  const auto response = future.get();
+  EXPECT_TRUE(response->status.success);
+  EXPECT_EQ(response->status.code, 0);
+  EXPECT_EQ(response->status.message, "Switched to LOCAL");
+
+  ASSERT_TRUE(spin_until(
+    executor_, [&state_msg, &gear_msg]() { return state_msg.has_value() && gear_msg.has_value(); },
+    std::chrono::seconds(2)));
+
+  EXPECT_EQ(state_msg->mode, OperationModeState::LOCAL);
+  EXPECT_FALSE(state_msg->is_autoware_control_enabled);
+  EXPECT_FALSE(state_msg->is_in_transition);
+  EXPECT_TRUE(state_msg->is_stop_mode_available);
+  EXPECT_TRUE(state_msg->is_autonomous_mode_available);
+  EXPECT_TRUE(state_msg->is_local_mode_available);
+  EXPECT_TRUE(state_msg->is_remote_mode_available);
+
+  EXPECT_EQ(gear_msg->command, GearCommand::NONE);
+}
+
+TEST_F(CommandGateRosIntegrationTest, SystemChangeToRemotePublishesStateAndGear)
+{
+  std::optional<OperationModeState> state_msg;
+  std::optional<GearCommand> gear_msg;
+
+  rclcpp::QoS state_qos(1);
+  state_qos.reliable();
+  state_qos.transient_local();
+
+  auto state_sub = test_node_->create_subscription<OperationModeState>(
+    "/system/operation_mode/state", state_qos,
+    [&state_msg](const OperationModeState::SharedPtr msg) { state_msg = *msg; });
+  auto gear_sub = test_node_->create_subscription<GearCommand>(
+    "/control/command/gear_cmd", rclcpp::QoS{1},
+    [&gear_msg](const GearCommand::SharedPtr msg) { gear_msg = *msg; });
+
+  auto client =
+    test_node_->create_client<SystemChangeOperationMode>(
+      "/system/operation_mode/change_operation_mode");
+  ASSERT_TRUE(spin_until(
+    executor_, [&client]() { return client->wait_for_service(std::chrono::seconds(0)); },
+    std::chrono::seconds(2)));
+
+  auto request = std::make_shared<SystemChangeOperationMode::Request>();
+  request->mode = SystemChangeOperationMode::Request::REMOTE;
+  auto future = client->async_send_request(request);
+  ASSERT_TRUE(spin_until(
+    executor_,
+    [&future]() { return future.wait_for(std::chrono::seconds(0)) == std::future_status::ready; },
+    std::chrono::seconds(2)));
+
+  const auto response = future.get();
+  EXPECT_TRUE(response->status.success);
+  EXPECT_EQ(response->status.code, 0);
+  EXPECT_EQ(response->status.message, "Switched to REMOTE");
+
+  ASSERT_TRUE(spin_until(
+    executor_, [&state_msg, &gear_msg]() { return state_msg.has_value() && gear_msg.has_value(); },
+    std::chrono::seconds(2)));
+
+  EXPECT_EQ(state_msg->mode, OperationModeState::REMOTE);
+  EXPECT_FALSE(state_msg->is_autoware_control_enabled);
+  EXPECT_FALSE(state_msg->is_in_transition);
+  EXPECT_TRUE(state_msg->is_stop_mode_available);
+  EXPECT_TRUE(state_msg->is_autonomous_mode_available);
+  EXPECT_TRUE(state_msg->is_local_mode_available);
+  EXPECT_TRUE(state_msg->is_remote_mode_available);
+
+  EXPECT_EQ(gear_msg->command, GearCommand::NONE);
 }
 
 int main(int argc, char ** argv)
