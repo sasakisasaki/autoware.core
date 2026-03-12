@@ -56,6 +56,7 @@ $ colcon build --base-paths ./ \
 ```
 
 ### Launch Planning Simulation
+
 ```
 $ source install/setup.bash
 $ ros2 launch autoware_core autoware_core.launch.xml \
@@ -77,6 +78,7 @@ Finish the procedure in "Planning Simulation"
 ### Apply Patches
 
 - Open `<your workspace>/autoware_core/src/simulator/scenario_simulator/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py` and modify as follows.
+
 ```
 diff --git a/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py b/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py
 index 2b5f645eb..20cc70aa1 100755
