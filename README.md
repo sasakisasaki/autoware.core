@@ -100,7 +100,7 @@ index 2b5f645eb..20cc70aa1 100755
      }[architecture_type]
 ```
 
-### Launch Scenario Simulatotion
+### Launch Scenario Simulation
 
 TO BE UPDATED
 
