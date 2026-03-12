@@ -80,4 +80,60 @@ TEST(CommandGateModeBuilder, MakeAutonomous)
   EXPECT_EQ(outputs.status.message, "Switched to AUTONOMOUS");
 }
 
+TEST(CommandGateModeBuilder, MakeLocal)
+{
+  CommandGateModeBuilder builder;
+  builtin_interfaces::msg::Time stamp;
+  stamp.sec = 7;
+  stamp.nanosec = 77;
+
+  const auto outputs = builder.make_local(stamp);
+
+  EXPECT_EQ(outputs.state.stamp.sec, stamp.sec);
+  EXPECT_EQ(outputs.state.stamp.nanosec, stamp.nanosec);
+  EXPECT_EQ(outputs.state.mode, autoware_adapi_v1_msgs::msg::OperationModeState::LOCAL);
+  EXPECT_FALSE(outputs.state.is_autoware_control_enabled);
+  EXPECT_FALSE(outputs.state.is_in_transition);
+  EXPECT_TRUE(outputs.state.is_stop_mode_available);
+  EXPECT_TRUE(outputs.state.is_autonomous_mode_available);
+  EXPECT_TRUE(outputs.state.is_local_mode_available);
+  EXPECT_TRUE(outputs.state.is_remote_mode_available);
+
+  EXPECT_EQ(outputs.gear.stamp.sec, stamp.sec);
+  EXPECT_EQ(outputs.gear.stamp.nanosec, stamp.nanosec);
+  EXPECT_EQ(outputs.gear.command, autoware_vehicle_msgs::msg::GearCommand::NONE);
+
+  EXPECT_TRUE(outputs.status.success);
+  EXPECT_EQ(outputs.status.code, 0);
+  EXPECT_EQ(outputs.status.message, "Switched to LOCAL");
+}
+
+TEST(CommandGateModeBuilder, MakeRemote)
+{
+  CommandGateModeBuilder builder;
+  builtin_interfaces::msg::Time stamp;
+  stamp.sec = 13;
+  stamp.nanosec = 130;
+
+  const auto outputs = builder.make_remote(stamp);
+
+  EXPECT_EQ(outputs.state.stamp.sec, stamp.sec);
+  EXPECT_EQ(outputs.state.stamp.nanosec, stamp.nanosec);
+  EXPECT_EQ(outputs.state.mode, autoware_adapi_v1_msgs::msg::OperationModeState::REMOTE);
+  EXPECT_FALSE(outputs.state.is_autoware_control_enabled);
+  EXPECT_FALSE(outputs.state.is_in_transition);
+  EXPECT_TRUE(outputs.state.is_stop_mode_available);
+  EXPECT_TRUE(outputs.state.is_autonomous_mode_available);
+  EXPECT_TRUE(outputs.state.is_local_mode_available);
+  EXPECT_TRUE(outputs.state.is_remote_mode_available);
+
+  EXPECT_EQ(outputs.gear.stamp.sec, stamp.sec);
+  EXPECT_EQ(outputs.gear.stamp.nanosec, stamp.nanosec);
+  EXPECT_EQ(outputs.gear.command, autoware_vehicle_msgs::msg::GearCommand::NONE);
+
+  EXPECT_TRUE(outputs.status.success);
+  EXPECT_EQ(outputs.status.code, 0);
+  EXPECT_EQ(outputs.status.message, "Switched to REMOTE");
+}
+
 }  // namespace autoware::control::command_gate

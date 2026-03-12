@@ -38,6 +38,8 @@ class CommandGateModeBuilder
 public:
   static ModeOutputs make_stop(const builtin_interfaces::msg::Time & stamp);
   static ModeOutputs make_autonomous(const builtin_interfaces::msg::Time & stamp);
+  static ModeOutputs make_local(const builtin_interfaces::msg::Time & stamp);
+  static ModeOutputs make_remote(const builtin_interfaces::msg::Time & stamp);
 
 private:
   static void fill_state(

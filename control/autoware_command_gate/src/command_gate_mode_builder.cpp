@@ -37,6 +37,24 @@ ModeOutputs CommandGateModeBuilder::make_autonomous(const builtin_interfaces::ms
   return outputs;
 }
 
+ModeOutputs CommandGateModeBuilder::make_local(const builtin_interfaces::msg::Time & stamp)
+{
+  ModeOutputs outputs;
+  fill_state(outputs.state, autoware_adapi_v1_msgs::msg::OperationModeState::LOCAL, stamp);
+  fill_gear(outputs.gear, autoware_vehicle_msgs::msg::GearCommand::NONE, stamp);
+  outputs.status = make_status("Switched to LOCAL");
+  return outputs;
+}
+
+ModeOutputs CommandGateModeBuilder::make_remote(const builtin_interfaces::msg::Time & stamp)
+{
+  ModeOutputs outputs;
+  fill_state(outputs.state, autoware_adapi_v1_msgs::msg::OperationModeState::REMOTE, stamp);
+  fill_gear(outputs.gear, autoware_vehicle_msgs::msg::GearCommand::NONE, stamp);
+  outputs.status = make_status("Switched to REMOTE");
+  return outputs;
+}
+
 void CommandGateModeBuilder::fill_state(
   autoware_adapi_v1_msgs::msg::OperationModeState & msg, uint8_t mode,
   const builtin_interfaces::msg::Time & stamp)
