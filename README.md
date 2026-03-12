@@ -13,7 +13,7 @@ We can run [the planning simulation](https://autowarefoundation.github.io/autowa
 
 ### Build Dependencies
 
-```
+```bash
 # If you have not cloned `autoware_core` yet
 $ git clone https://github.com/autowarefoundation/autoware_core.git
 
@@ -57,7 +57,7 @@ $ colcon build --base-paths ./ \
 
 ### Launch Planning Simulation
 
-```
+```bash
 $ source install/setup.bash
 $ ros2 launch autoware_core autoware_core.launch.xml \
     vehicle_model:=sample_vehicle \
@@ -79,7 +79,7 @@ Finish the procedure in "Planning Simulation"
 
 - Open `<your workspace>/autoware_core/src/simulator/scenario_simulator/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py` and modify as follows.
 
-```
+```diff
 diff --git a/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py b/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py
 index 2b5f645eb..20cc70aa1 100755
 --- a/test_runner/scenario_test_runner/launch/scenario_test_runner.launch.py
@@ -104,7 +104,7 @@ index 2b5f645eb..20cc70aa1 100755
 
 ### Launch Scenario Simulation
 
-```
+```bash
 $ source install/setup.bash
 $ ros2 launch scenario_test_runner scenario_test_runner.launch.py \
     architecture_type:=awf/universe/20250130 \
