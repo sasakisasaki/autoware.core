@@ -120,6 +120,12 @@ MultiGridNormalDistributionsTransform<PointSource, PointTarget> &
 MultiGridNormalDistributionsTransform<PointSource, PointTarget>::operator=(
   const MultiGridNormalDistributionsTransform & other)
 {
+  // Guard self-assignment to avoid unnecessary locking and copying.
+  if (this == &other) {
+    return *this;
+  }
+
+  std::scoped_lock<std::mutex, std::mutex> lock(input_source_mutex_, other.input_source_mutex_);
   target_cells_ = other.target_cells_;
   params_ = other.params_;
 
@@ -149,6 +155,12 @@ MultiGridNormalDistributionsTransform<PointSource, PointTarget> &
 MultiGridNormalDistributionsTransform<PointSource, PointTarget>::operator=(
   MultiGridNormalDistributionsTransform && other) noexcept
 {
+  // Guard self-assignment to avoid unnecessary locking and copying.
+  if (this == &other) {
+    return *this;
+  }
+
+  std::scoped_lock<std::mutex, std::mutex> lock(input_source_mutex_, other.input_source_mutex_);
   target_cells_ = std::move(other.target_cells_);
   params_ = std::move(other.params_);
 
