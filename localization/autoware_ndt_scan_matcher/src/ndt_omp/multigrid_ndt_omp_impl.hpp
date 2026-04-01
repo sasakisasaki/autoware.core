@@ -125,7 +125,6 @@ MultiGridNormalDistributionsTransform<PointSource, PointTarget>::operator=(
     return *this;
   }
 
-  std::scoped_lock<std::mutex, std::mutex> lock(input_source_mutex_, other.input_source_mutex_);
   target_cells_ = other.target_cells_;
   params_ = other.params_;
 
@@ -145,6 +144,7 @@ MultiGridNormalDistributionsTransform<PointSource, PointTarget>::operator=(
   regularization_pose_ = other.regularization_pose_;
   regularization_pose_translation_ = other.regularization_pose_translation_;
 
+  std::scoped_lock<std::mutex, std::mutex> lock(input_source_mutex_, other.input_source_mutex_);
   BaseRegType::operator=(other);
 
   return *this;
@@ -160,7 +160,6 @@ MultiGridNormalDistributionsTransform<PointSource, PointTarget>::operator=(
     return *this;
   }
 
-  std::scoped_lock<std::mutex, std::mutex> lock(input_source_mutex_, other.input_source_mutex_);
   target_cells_ = std::move(other.target_cells_);
   params_ = std::move(other.params_);
 
@@ -180,6 +179,7 @@ MultiGridNormalDistributionsTransform<PointSource, PointTarget>::operator=(
   regularization_pose_ = other.regularization_pose_;
   regularization_pose_translation_ = other.regularization_pose_translation_;
 
+  std::scoped_lock<std::mutex, std::mutex> lock(input_source_mutex_, other.input_source_mutex_);
   BaseRegType::operator=(std::move(other));
 
   return *this;
