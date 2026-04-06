@@ -1,6 +1,7 @@
 <launch>
   <arg name="gnss_input_topic" default="/sensing/gnss/pose_with_covariance"/>
-  <arg name="lidar_input_topic" default="/sensing/lidar/top/pointcloud_raw_ex"/>
+  <!-- <arg name="lidar_input_topic" default="/sensing/lidar/top/pointcloud_raw_ex"/> -->
+  <arg name="lidar_input_topic" default="/sensing/lidar/top/concatenated/pointcloud"/>
   <arg name="vehicle_twist_input_topic" default="/sensing/vehicle_velocity_converter/twist_with_covariance"/>
 
   <arg name="ekf_localizer_param_path" default="$(find-pkg-share autoware_core_localization)/config/ekf_localizer.param.yaml"/>
