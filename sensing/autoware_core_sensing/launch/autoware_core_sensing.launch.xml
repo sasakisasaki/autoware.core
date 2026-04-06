@@ -15,12 +15,10 @@
     </include>
 
     <!-- Driver -->
-    <group unless="$(var is_planning_simulation)">
-      <include file="$(var sensor_launch_pkg)/launch/sensing.launch.xml">
-        <arg name="launch_driver" value="$(var launch_driver)"/>
-        <arg name="vehicle_mirror_param_file" value="$(var vehicle_mirror_param_file)"/>
-        <arg name="pointcloud_container_name" value="$(var pointcloud_container_name)"/>
-      </include>
-    </group>
+    <include file="$(var sensor_launch_pkg)/launch/sensing.launch.xml">
+      <arg name="launch_driver" value="$(var launch_driver)"/>
+      <arg name="vehicle_mirror_param_file" value="$(var vehicle_mirror_param_file)"/>
+      <arg name="pointcloud_container_name" value="$(var pointcloud_container_name)"/>
+    </include>
   </group>
 </launch>
