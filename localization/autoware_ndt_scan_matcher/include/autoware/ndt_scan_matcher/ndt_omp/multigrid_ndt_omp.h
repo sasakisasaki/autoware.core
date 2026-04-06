@@ -68,6 +68,8 @@
 #include <pcl/point_cloud.h>
 
 #include <iostream>
+#include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -130,7 +132,30 @@ public:
     MultiGridNormalDistributionsTransform && other) noexcept;
 
   /** \brief Empty destructor */
-  ~MultiGridNormalDistributionsTransform() = default;
+  virtual ~MultiGridNormalDistributionsTransform() {}
+
+  inline void setInputSource(const PointCloudSourceConstPtr & input)
+  {
+    // This is to avoid segmentation fault when setting null input
+    // No idea why PCL does not check the nullity of input
+    if (input) {
+      // Deep-copy to avoid data races when the producer mutates the cloud after passing it in.
+      auto copied = std::make_shared<PointCloudSource>(*input);
+      {
+        std::lock_guard<std::mutex> lock(input_source_mutex_);
+        BaseRegType::setInputSource(copied);
+      }
+    } else {
+      std::cerr << "Error: Null input source cloud is not allowed" << std::endl;
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  inline PointCloudSourceConstPtr getInputSource()
+  {
+    std::lock_guard<std::mutex> lock(input_source_mutex_);
+    return BaseRegType::getInputSource();
+  }
 
   inline void setInputTarget(const PointCloudTargetConstPtr & cloud)
   {
@@ -471,13 +496,7 @@ protected:
 
   NdtParams params_;
 
-  // Members previously inherited from pcl::Registration
-  Eigen::Matrix4f final_transformation_ = Eigen::Matrix4f::Identity();
-  Eigen::Matrix4f transformation_ = Eigen::Matrix4f::Identity();
-  Eigen::Matrix4f previous_transformation_ = Eigen::Matrix4f::Identity();
-  int nr_iterations_ = 0;
-  int max_iterations_ = 35;
-  bool converged_ = false;
+  mutable std::mutex input_source_mutex_;
 
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW

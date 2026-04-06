@@ -130,6 +130,11 @@ MultiGridNormalDistributionsTransform<PointSource, PointTarget> &
 MultiGridNormalDistributionsTransform<PointSource, PointTarget>::operator=(
   const MultiGridNormalDistributionsTransform & other)
 {
+  // Guard self-assignment to avoid unnecessary locking and copying.
+  if (this == &other) {
+    return *this;
+  }
+
   target_cells_ = other.target_cells_;
   params_ = other.params_;
 
@@ -149,12 +154,8 @@ MultiGridNormalDistributionsTransform<PointSource, PointTarget>::operator=(
   regularization_pose_ = other.regularization_pose_;
   regularization_pose_translation_ = other.regularization_pose_translation_;
 
-  final_transformation_ = other.final_transformation_;
-  transformation_ = other.transformation_;
-  previous_transformation_ = other.previous_transformation_;
-  nr_iterations_ = other.nr_iterations_;
-  max_iterations_ = other.max_iterations_;
-  converged_ = other.converged_;
+  std::scoped_lock<std::mutex, std::mutex> lock(input_source_mutex_, other.input_source_mutex_);
+  BaseRegType::operator=(other);
 
   return *this;
 }
@@ -164,6 +165,11 @@ MultiGridNormalDistributionsTransform<PointSource, PointTarget> &
 MultiGridNormalDistributionsTransform<PointSource, PointTarget>::operator=(
   MultiGridNormalDistributionsTransform && other) noexcept
 {
+  // Guard self-assignment to avoid unnecessary locking and copying.
+  if (this == &other) {
+    return *this;
+  }
+
   target_cells_ = std::move(other.target_cells_);
   params_ = std::move(other.params_);
 
@@ -183,12 +189,8 @@ MultiGridNormalDistributionsTransform<PointSource, PointTarget>::operator=(
   regularization_pose_ = other.regularization_pose_;
   regularization_pose_translation_ = other.regularization_pose_translation_;
 
-  final_transformation_ = other.final_transformation_;
-  transformation_ = other.transformation_;
-  previous_transformation_ = other.previous_transformation_;
-  nr_iterations_ = other.nr_iterations_;
-  max_iterations_ = other.max_iterations_;
-  converged_ = other.converged_;
+  std::scoped_lock<std::mutex, std::mutex> lock(input_source_mutex_, other.input_source_mutex_);
+  BaseRegType::operator=(std::move(other));
 
   return *this;
 }
