@@ -64,14 +64,6 @@ jobs:
         id: get-modified-packages
         uses: autowarefoundation/autoware-github-actions/get-modified-packages@v1
 
-      - name: Use ros2-testing packages
-        run: |
-          if [ "${{ inputs.rosdistro }}" = "jazzy" ]; then
-            sed -i 's|http://packages.ros.org/ros2/ubuntu|http://packages.ros.org/ros2-testing/ubuntu|g' /etc/apt/sources.list.d/ros2.sources
-            apt-get update
-          fi
-        shell: bash
-
       - name: Create ccache directory
         run: |
           mkdir -p ${CCACHE_DIR}
@@ -166,7 +158,7 @@ jobs:
       - name: Get changed files (existing files only, excluding header-only packages)
         id: get-changed-files
         run: |
-          changed_files=$(git diff --diff-filter=d --name-only "origin/${{ github.base_ref }}"...HEAD | { grep -E '\.(cpp|hpp)$' || true; } | while read -r file; do [ -e "$file" ] && echo -n "$file "; done)
+          changed_files=$(git diff --diff-filter=d --name-only "origin/${{ github.base_ref }}"...HEAD | { grep -E '\.(cpp|hpp)$' || true; } | { grep -Ev '(^|/)test/' || true; } | while read -r file; do [ -e "$file" ] && echo -n "$file "; done)
 
           # Exclude files belonging to header-only packages (no .cpp in src/).
           # These packages don't generate compile_commands.json, which causes clang-tidy to fail.
