@@ -12,7 +12,6 @@
   <arg name="gnss_initial_pose_auto_fix_target" default="pointcloud_map"/>
   <arg name="stop_check_twist_topic" default="/sensing/vehicle_velocity_converter/twist_with_covariance"/>
 
-
   <node pkg="autoware_pose_initializer" exec="autoware_pose_initializer_node" output="both">
     <param from="$(var config_file)" allow_substs="true"/>
     <param name="user_defined_initial_pose/enable" value="$(var user_defined_initial_pose/enable)"/>
