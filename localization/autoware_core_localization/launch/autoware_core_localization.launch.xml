@@ -7,6 +7,7 @@
   <arg name="stop_filter_param_path" default="$(find-pkg-share autoware_stop_filter)/config/stop_filter.param.yaml"/>
   <arg name="twist2accel_param_path" default="$(find-pkg-share autoware_twist2accel)/config/twist2accel.param.yaml"/>
   <arg name="pose_initializer_param_path" default="$(find-pkg-share autoware_pose_initializer)/config/pose_initializer.param.yaml"/>
+  <arg name="initial_pose" default="[]" description="initial pose (x, y, z, quat_x, quat_y, quat_z, quat_w)"/>
   <arg name="voxel_grid_downsample_filter_param_file" default="$(find-pkg-share autoware_downsample_filters)/config/voxel_grid_downsample_filter_node.param.yaml"/>
   <arg name="ndt_scan_matcher_param_path" default="$(find-pkg-share autoware_ndt_scan_matcher)/config/ndt_scan_matcher.param.yaml"/>
 
@@ -78,8 +79,19 @@
 
     <group>
       <push-ros-namespace namespace="util"/>
+
+      <!--
+        Set initial pose.
+        Ref. https://github.com/autowarefoundation/autoware_launch/blob/6b71b90f3a1fd07c08defe974c7caff917759108/tier4_universe_launch/tier4_localization_launch/launch/pose_twist_estimator/pose_twist_estimator.launch.xml#L26-L29
+      -->
+      <let name="user_defined_initial_pose/enable" value="$(eval &quot;len($(var initial_pose)) == 7&quot;)"/>
+      <let name="user_defined_initial_pose/pose" value="$(var initial_pose)" if="$(var user_defined_initial_pose/enable)"/>
+      <let name="user_defined_initial_pose/pose" value="[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]" unless="$(var user_defined_initial_pose/enable)"/>
+
       <include file="$(find-pkg-share autoware_pose_initializer)/launch/pose_initializer.launch.xml">
         <arg name="config_file" value="$(var pose_initializer_param_path)"/>
+        <arg name="user_defined_initial_pose/enable" value="$(var user_defined_initial_pose/enable)"/>
+        <arg name="user_defined_initial_pose/pose" value="$(var user_defined_initial_pose/pose)"/>
         <arg name="ekf_enabled" value="true"/>
         <arg name="gnss_enabled" value="true"/>
         <arg name="yabloc_enabled" value="false"/>
