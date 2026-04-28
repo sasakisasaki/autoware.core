@@ -1,5 +1,7 @@
 <launch>
   <arg name="config_file" default="$(find-pkg-share autoware_pose_initializer)/config/pose_initializer.param.yaml"/>
+  <arg name="user_defined_initial_pose/enable" default="false"/>
+  <arg name="user_defined_initial_pose/pose" default="[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]"/>
   <arg name="ndt_enabled" default="true"/>
   <arg name="gnss_enabled" default="true"/>
   <arg name="ekf_enabled" default="true"/>
@@ -10,8 +12,11 @@
   <arg name="gnss_initial_pose_auto_fix_target" default="pointcloud_map"/>
   <arg name="stop_check_twist_topic" default="/sensing/vehicle_velocity_converter/twist_with_covariance"/>
 
+
   <node pkg="autoware_pose_initializer" exec="autoware_pose_initializer_node" output="both">
     <param from="$(var config_file)" allow_substs="true"/>
+    <param name="user_defined_initial_pose/enable" value="$(var user_defined_initial_pose/enable)"/>
+    <param name="user_defined_initial_pose/pose" value="$(var user_defined_initial_pose/pose)"/>
     <param name="ekf_enabled" value="$(var ekf_enabled)"/>
     <param name="gnss_enabled" value="$(var gnss_enabled)"/>
     <param name="yabloc_enabled" value="$(var yabloc_enabled)"/>
