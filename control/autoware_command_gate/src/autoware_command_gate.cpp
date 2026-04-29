@@ -67,6 +67,24 @@ public:
         autoware::component_interface_specs::get_qos<system::OperationModeState>())),
     gear_pub_(create_publisher<spec::GearCommand::Message>(spec::GearCommand::name, rclcpp::QoS{1}))
   {
+<<<<<<< HEAD
+=======
+    // The depth of the state topic is set to 1 to ensure that the latest state is always delivered
+    // to subscribers.
+    static constexpr size_t depth = 1;
+
+    // Publishers
+    const auto spec_state_qos =
+      autoware::component_interface_specs::get_qos<spec::OperationModeState>();
+    const auto system_state_qos =
+      autoware::component_interface_specs::get_qos<system::OperationModeState>();
+
+    state_pub_ = create_publisher<spec::OperationModeState::Message>(
+      spec::OperationModeState::name, spec_state_qos);
+    gear_pub_ =
+      create_publisher<spec::GearCommand::Message>(spec::GearCommand::name, rclcpp::QoS{depth});
+
+>>>>>>> 0ffcf04544625d467eec5514733e1c10321fd4b4
     srv_stop_ = create_service<spec::ChangeToStop::Service>(
       spec::ChangeToStop::name, [this](
                                   const spec::ChangeToStop::Service::Request::SharedPtr,
