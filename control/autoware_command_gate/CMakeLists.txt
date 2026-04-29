@@ -21,6 +21,7 @@ rclcpp_components_register_node(${PROJECT_NAME}_node
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
+  find_package(ament_cmake_ros REQUIRED)
   find_package(class_loader REQUIRED)
   find_package(rclcpp REQUIRED)
   find_package(rclcpp_components REQUIRED)
@@ -38,7 +39,7 @@ if(BUILD_TESTING)
   )
   set_tests_properties(test_command_gate_mode_builder PROPERTIES LABELS "unit")
 
-  ament_add_gtest(test_ros_integration
+  ament_add_ros_isolated_gtest(test_ros_integration
     test/integration/test_ros_integration.cpp
   )
   target_link_libraries(test_ros_integration
