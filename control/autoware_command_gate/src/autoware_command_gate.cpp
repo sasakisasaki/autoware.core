@@ -57,21 +57,15 @@ class AutowareCommandGateNode : public rclcpp::Node
 public:
   explicit AutowareCommandGateNode(const rclcpp::NodeOptions & options)
   : rclcpp::Node("autoware_command_gate", options)
+  , state_pub_(create_publisher<spec::OperationModeState::Message>(
+      spec::OperationModeState::name,
+      autoware::component_interface_specs::get_qos<spec::OperationModeState>()))
+  , system_state_pub_(create_publisher<system::OperationModeState::Message>(
+      system::OperationModeState::name,
+      autoware::component_interface_specs::get_qos<system::OperationModeState>()))
+  , gear_pub_(
+      create_publisher<spec::GearCommand::Message>(spec::GearCommand::name, rclcpp::QoS{1}))
   {
-    // The depth of the state topic is set to 1 to ensure that the latest state is always delivered
-    // to subscribers.
-    static constexpr size_t depth = 1;
-
-    // Publishers
-    const auto spec_state_qos = autoware::component_interface_specs::get_qos<spec::OperationModeState>();
-    const auto system_state_qos =
-      autoware::component_interface_specs::get_qos<system::OperationModeState>();
-
-    state_pub_ = create_publisher<spec::OperationModeState::Message>(
-      spec::OperationModeState::name, spec_state_qos);
-    gear_pub_ =
-      create_publisher<spec::GearCommand::Message>(spec::GearCommand::name, rclcpp::QoS{depth});
-
     srv_stop_ = create_service<spec::ChangeToStop::Service>(
       spec::ChangeToStop::name, [this](
                                   const spec::ChangeToStop::Service::Request::SharedPtr,
@@ -97,8 +91,6 @@ public:
       System layer where the final decision to trigger the mode change is made.
       The state is published to the same topic for simplicity, but it can be separated if needed.
     */
-    system_state_pub_ = create_publisher<system::OperationModeState::Message>(
-      system::OperationModeState::name, system_state_qos);
     srv_system_mode_ = create_service<SystemChangeOperationMode::Service>(
       SystemChangeOperationMode::name,
       [this](
