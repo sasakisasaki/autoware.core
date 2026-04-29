@@ -56,15 +56,16 @@ class AutowareCommandGateNode : public rclcpp::Node
 
 public:
   explicit AutowareCommandGateNode(const rclcpp::NodeOptions & options)
-  : rclcpp::Node("autoware_command_gate", options)
-  , state_pub_(create_publisher<spec::OperationModeState::Message>(
-      spec::OperationModeState::name,
-      autoware::component_interface_specs::get_qos<spec::OperationModeState>()))
-  , system_state_pub_(create_publisher<system::OperationModeState::Message>(
-      system::OperationModeState::name,
-      autoware::component_interface_specs::get_qos<system::OperationModeState>()))
-  , gear_pub_(
-      create_publisher<spec::GearCommand::Message>(spec::GearCommand::name, rclcpp::QoS{1}))
+  : rclcpp::Node("autoware_command_gate", options),
+    state_pub_(
+      create_publisher<spec::OperationModeState::Message>(
+        spec::OperationModeState::name,
+        autoware::component_interface_specs::get_qos<spec::OperationModeState>())),
+    system_state_pub_(
+      create_publisher<system::OperationModeState::Message>(
+        system::OperationModeState::name,
+        autoware::component_interface_specs::get_qos<system::OperationModeState>())),
+    gear_pub_(create_publisher<spec::GearCommand::Message>(spec::GearCommand::name, rclcpp::QoS{1}))
   {
     srv_stop_ = create_service<spec::ChangeToStop::Service>(
       spec::ChangeToStop::name, [this](
