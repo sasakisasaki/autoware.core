@@ -16,6 +16,7 @@
 
 #include <autoware/adapi_specs/operation_mode.hpp>
 #include <autoware/component_interface_specs/system.hpp>
+#include <autoware/component_interface_specs/utils.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp_components/register_node_macro.hpp>
 
@@ -62,12 +63,12 @@ public:
     static constexpr size_t depth = 1;
 
     // Publishers
-    rclcpp::QoS state_qos(depth);
-    state_qos.reliable();
-    state_qos.transient_local();
+    const auto spec_state_qos = autoware::component_interface_specs::get_qos<spec::OperationModeState>();
+    const auto system_state_qos =
+      autoware::component_interface_specs::get_qos<system::OperationModeState>();
 
     state_pub_ = create_publisher<spec::OperationModeState::Message>(
-      spec::OperationModeState::name, state_qos);
+      spec::OperationModeState::name, spec_state_qos);
     gear_pub_ =
       create_publisher<spec::GearCommand::Message>(spec::GearCommand::name, rclcpp::QoS{depth});
 
@@ -97,7 +98,7 @@ public:
       The state is published to the same topic for simplicity, but it can be separated if needed.
     */
     system_state_pub_ = create_publisher<system::OperationModeState::Message>(
-      system::OperationModeState::name, state_qos);
+      system::OperationModeState::name, system_state_qos);
     srv_system_mode_ = create_service<SystemChangeOperationMode::Service>(
       SystemChangeOperationMode::name,
       [this](
