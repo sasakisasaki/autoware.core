@@ -14,13 +14,12 @@
 
 #include "command_gate_mode_builder.hpp"
 
+#include <autoware/adapi_specs/operation_mode.hpp>
 #include <autoware/component_interface_specs/system.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp_components/register_node_macro.hpp>
 
-#include <autoware_adapi_v1_msgs/msg/operation_mode_state.hpp>
 #include <autoware_adapi_v1_msgs/msg/response_status.hpp>
-#include <autoware_adapi_v1_msgs/srv/change_operation_mode.hpp>
 #include <autoware_common_msgs/msg/response_status.hpp>
 #include <autoware_vehicle_msgs/msg/gear_command.hpp>
 
@@ -33,23 +32,9 @@ namespace autoware::control::command_gate
 
 namespace spec
 {
-struct ChangeToStop
-{
-  using Service = autoware_adapi_v1_msgs::srv::ChangeOperationMode;
-  static constexpr char name[] = "/api/operation_mode/change_to_stop";
-};
-
-struct ChangeToAutonomous
-{
-  using Service = autoware_adapi_v1_msgs::srv::ChangeOperationMode;
-  static constexpr char name[] = "/api/operation_mode/change_to_autonomous";
-};
-
-struct OperationModeState
-{
-  using Message = autoware_adapi_v1_msgs::msg::OperationModeState;
-  static constexpr char name[] = "/api/operation_mode/state";
-};
+using ChangeToStop = autoware::adapi_specs::operation_mode::ChangeToStop;
+using ChangeToAutonomous = autoware::adapi_specs::operation_mode::ChangeToAutonomous;
+using OperationModeState = autoware::adapi_specs::operation_mode::OperationModeState;
 
 struct GearCommand
 {
@@ -60,11 +45,7 @@ struct GearCommand
 
 namespace system
 {
-struct OperationModeState
-{
-  using Message = autoware_adapi_v1_msgs::msg::OperationModeState;
-  static constexpr char name[] = "/system/operation_mode/state";
-};
+using OperationModeState = autoware::component_interface_specs::system::OperationModeState;
 }  // namespace system
 
 class AutowareCommandGateNode : public rclcpp::Node
