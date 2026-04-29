@@ -63,7 +63,8 @@ public:
     static constexpr size_t depth = 1;
 
     // Publishers
-    const auto spec_state_qos = autoware::component_interface_specs::get_qos<spec::OperationModeState>();
+    const auto spec_state_qos =
+      autoware::component_interface_specs::get_qos<spec::OperationModeState>();
     const auto system_state_qos =
       autoware::component_interface_specs::get_qos<system::OperationModeState>();
 
