@@ -14,13 +14,13 @@
 
 #include "command_gate_mode_builder.hpp"
 
+#include <autoware/adapi_specs/operation_mode.hpp>
+#include <autoware/component_interface_specs/system.hpp>
+#include <autoware/component_interface_specs/utils.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp_components/register_node_macro.hpp>
 
-#include <autoware/component_interface_specs/system.hpp>
-#include <autoware_adapi_v1_msgs/msg/operation_mode_state.hpp>
 #include <autoware_adapi_v1_msgs/msg/response_status.hpp>
-#include <autoware_adapi_v1_msgs/srv/change_operation_mode.hpp>
 #include <autoware_common_msgs/msg/response_status.hpp>
 #include <autoware_vehicle_msgs/msg/gear_command.hpp>
 
@@ -33,23 +33,9 @@ namespace autoware::control::command_gate
 
 namespace spec
 {
-struct ChangeToStop
-{
-  using Service = autoware_adapi_v1_msgs::srv::ChangeOperationMode;
-  static constexpr char name[] = "/api/operation_mode/change_to_stop";
-};
-
-struct ChangeToAutonomous
-{
-  using Service = autoware_adapi_v1_msgs::srv::ChangeOperationMode;
-  static constexpr char name[] = "/api/operation_mode/change_to_autonomous";
-};
-
-struct OperationModeState
-{
-  using Message = autoware_adapi_v1_msgs::msg::OperationModeState;
-  static constexpr char name[] = "/api/operation_mode/state";
-};
+using ChangeToStop = autoware::adapi_specs::operation_mode::ChangeToStop;
+using ChangeToAutonomous = autoware::adapi_specs::operation_mode::ChangeToAutonomous;
+using OperationModeState = autoware::adapi_specs::operation_mode::OperationModeState;
 
 struct GearCommand
 {
@@ -60,34 +46,27 @@ struct GearCommand
 
 namespace system
 {
-struct OperationModeState
-{
-  using Message = autoware_adapi_v1_msgs::msg::OperationModeState;
-  static constexpr char name[] = "/system/operation_mode/state";
-};
+using OperationModeState = autoware::component_interface_specs::system::OperationModeState;
 }  // namespace system
 
 class AutowareCommandGateNode : public rclcpp::Node
 {
-  using SystemChangeOperationMode = autoware::component_interface_specs::system::ChangeOperationMode;
+  using SystemChangeOperationMode =
+    autoware::component_interface_specs::system::ChangeOperationMode;
 
 public:
   explicit AutowareCommandGateNode(const rclcpp::NodeOptions & options)
-  : rclcpp::Node("autoware_command_gate", options)
+  : rclcpp::Node("autoware_command_gate", options),
+    state_pub_(
+      create_publisher<spec::OperationModeState::Message>(
+        spec::OperationModeState::name,
+        autoware::component_interface_specs::get_qos<spec::OperationModeState>())),
+    system_state_pub_(
+      create_publisher<system::OperationModeState::Message>(
+        system::OperationModeState::name,
+        autoware::component_interface_specs::get_qos<system::OperationModeState>())),
+    gear_pub_(create_publisher<spec::GearCommand::Message>(spec::GearCommand::name, rclcpp::QoS{1}))
   {
-    // The depth of the state topic is set to 1 to ensure that the latest state is always delivered to subscribers.
-    static constexpr size_t depth = 1;
-
-    // Publishers
-    rclcpp::QoS state_qos(depth);
-    state_qos.reliable();
-    state_qos.transient_local();
-
-    state_pub_ = create_publisher<spec::OperationModeState::Message>(
-      spec::OperationModeState::name, state_qos);
-    gear_pub_ = create_publisher<spec::GearCommand::Message>(
-      spec::GearCommand::name, rclcpp::QoS{depth});
-
     srv_stop_ = create_service<spec::ChangeToStop::Service>(
       spec::ChangeToStop::name, [this](
                                   const spec::ChangeToStop::Service::Request::SharedPtr,
@@ -113,8 +92,6 @@ public:
       System layer where the final decision to trigger the mode change is made.
       The state is published to the same topic for simplicity, but it can be separated if needed.
     */
-    system_state_pub_ = create_publisher<system::OperationModeState::Message>(
-      system::OperationModeState::name, state_qos);
     srv_system_mode_ = create_service<SystemChangeOperationMode::Service>(
       SystemChangeOperationMode::name,
       [this](

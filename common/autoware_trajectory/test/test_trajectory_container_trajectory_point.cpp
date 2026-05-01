@@ -16,11 +16,13 @@
 #include "autoware/trajectory/utils/closest.hpp"
 #include "autoware/trajectory/utils/crossed.hpp"
 #include "autoware/trajectory/utils/curvature_utils.hpp"
+#include "autoware/trajectory/utils/max.hpp"
 #include "autoware_utils_geometry/geometry.hpp"
 #include "lanelet2_core/primitives/LineString.h"
 
 #include <gtest/gtest.h>
 
+#include <cmath>
 #include <vector>
 
 using Trajectory =
@@ -34,6 +36,14 @@ autoware_planning_msgs::msg::TrajectoryPoint trajectory_point(double x, double y
   return point;
 }
 
+autoware_planning_msgs::msg::TrajectoryPoint trajectory_point(
+  double x, double y, float longitudinal_velocity)
+{
+  auto point = trajectory_point(x, y);
+  point.longitudinal_velocity_mps = longitudinal_velocity;
+  return point;
+}
+
 void expect_strictly_increasing(const std::vector<double> & bases)
 {
   ASSERT_FALSE(bases.empty());
@@ -42,14 +52,14 @@ void expect_strictly_increasing(const std::vector<double> & bases)
   }
 }
 
-TEST(TrajectoryCreatorTestForTrajectoryPoint, create_from_single_point)
+TEST(TrajectoryCreatorTestForTrajectoryPoint, CreateFromSinglePoint)
 {
   std::vector<autoware_planning_msgs::msg::TrajectoryPoint> points{trajectory_point(0.00, 0.00)};
   auto trajectory = Trajectory::Builder{}.build(points);
   ASSERT_TRUE(trajectory);
 }
 
-TEST(TrajectoryCreatorTestForTrajectoryPoint, restore_single_point_trajectory)
+TEST(TrajectoryCreatorTestForTrajectoryPoint, RestoreSinglePointTrajectory)
 {
   const std::vector<autoware_planning_msgs::msg::TrajectoryPoint> points{
     trajectory_point(0.0, 0.0)};
@@ -64,7 +74,7 @@ TEST(TrajectoryCreatorTestForTrajectoryPoint, restore_single_point_trajectory)
 
 TEST(
   TrajectoryCreatorTestForTrajectoryPoint,
-  restore_complete_duplicate_points_trajectory_preserves_duplicates)
+  RestoreCompleteDuplicatePointsTrajectoryPreservesDuplicates)
 {
   const std::vector<autoware_planning_msgs::msg::TrajectoryPoint> points{
     trajectory_point(1.0, 2.0), trajectory_point(1.0, 2.0), trajectory_point(1.0, 2.0)};
@@ -79,9 +89,7 @@ TEST(
   }
 }
 
-TEST(
-  TrajectoryCreatorTestForTrajectoryPoint,
-  restore_crop_to_zero_length_trajectory_preserves_boundaries)
+TEST(TrajectoryCreatorTestForTrajectoryPoint, RestoreCropToZeroLengthTrajectoryPreservesBoundaries)
 {
   const std::vector<autoware_planning_msgs::msg::TrajectoryPoint> points{
     trajectory_point(0.0, 0.0), trajectory_point(1.0, 1.0), trajectory_point(2.0, 2.0),
@@ -100,7 +108,7 @@ TEST(
   }
 }
 
-TEST(TrajectoryCreatorTestForTrajectoryPoint, restore_tiny_cropped_trajectory_preserves_boundaries)
+TEST(TrajectoryCreatorTestForTrajectoryPoint, RestoreTinyCroppedTrajectoryPreservesBoundaries)
 {
   const std::vector<autoware_planning_msgs::msg::TrajectoryPoint> points{
     trajectory_point(0.0, 0.0), trajectory_point(1.0, 1.0), trajectory_point(2.0, 2.0),
@@ -108,8 +116,7 @@ TEST(TrajectoryCreatorTestForTrajectoryPoint, restore_tiny_cropped_trajectory_pr
   auto trajectory = Trajectory::Builder{}.build(points);
   ASSERT_TRUE(trajectory);
 
-  constexpr double tiny_length =
-    autoware::experimental::trajectory::k_points_minimum_dist_threshold / 10.0;
+  constexpr double tiny_length = autoware::experimental::trajectory::k_epsilon_distance / 10.0;
   const double crop_start = trajectory->length() / 2.0;
   const auto cropped_start_point = trajectory->compute(crop_start);
   const auto cropped_end_point = trajectory->compute(crop_start + tiny_length);
@@ -125,10 +132,10 @@ TEST(TrajectoryCreatorTestForTrajectoryPoint, restore_tiny_cropped_trajectory_pr
     std::hypot(
       restored.back().pose.position.x - restored.front().pose.position.x,
       restored.back().pose.position.y - restored.front().pose.position.y),
-    autoware::experimental::trajectory::k_points_minimum_dist_threshold);
+    autoware::experimental::trajectory::k_epsilon_distance);
 }
 
-TEST(TrajectoryCreatorTestForTrajectoryPoint, create_from_multiple_points)
+TEST(TrajectoryCreatorTestForTrajectoryPoint, CreateFromMultiplePoints)
 {
   std::vector<autoware_planning_msgs::msg::TrajectoryPoint> points{
     trajectory_point(0.00, 0.00), trajectory_point(0.81, 1.68), trajectory_point(1.65, 2.98),
@@ -137,9 +144,7 @@ TEST(TrajectoryCreatorTestForTrajectoryPoint, create_from_multiple_points)
   ASSERT_TRUE(trajectory);
 }
 
-TEST(
-  TrajectoryCreatorTestForTrajectoryPoint,
-  create_from_complete_duplicate_points_with_increasing_bases)
+TEST(TrajectoryCreatorTestForTrajectoryPoint, CreateFromCompleteDuplicatePointsWithIncreasingBases)
 {
   std::vector<autoware_planning_msgs::msg::TrajectoryPoint> points{
     trajectory_point(1.0, 2.0), trajectory_point(1.0, 2.0), trajectory_point(1.0, 2.0)};
@@ -152,9 +157,7 @@ TEST(
   expect_strictly_increasing(bases);
 }
 
-TEST(
-  TrajectoryCreatorTestForTrajectoryPoint,
-  create_from_partially_duplicate_points_with_increasing_bases)
+TEST(TrajectoryCreatorTestForTrajectoryPoint, CreateFromPartiallyDuplicatePointsWithIncreasingBases)
 {
   std::vector<autoware_planning_msgs::msg::TrajectoryPoint> points{
     trajectory_point(0.0, 0.0), trajectory_point(1.0, 1.0), trajectory_point(1.0, 1.0),
@@ -187,8 +190,9 @@ public:
   }
 };
 
-TEST_F(TrajectoryTestForTrajectoryPoint, compute)
+TEST_F(TrajectoryTestForTrajectoryPoint, Compute)
 {
+  ASSERT_TRUE(trajectory);
   double length = trajectory->length();
 
   trajectory->longitudinal_velocity_mps()
@@ -203,8 +207,9 @@ TEST_F(TrajectoryTestForTrajectoryPoint, compute)
   EXPECT_LT(point.pose.position.y, 10);
 }
 
-TEST_F(TrajectoryTestForTrajectoryPoint, manipulate_velocity)
+TEST_F(TrajectoryTestForTrajectoryPoint, ManipulateVelocity)
 {
+  ASSERT_TRUE(trajectory);
   trajectory->longitudinal_velocity_mps() = 10.0;
   trajectory->longitudinal_velocity_mps()
     .range(trajectory->length() / 3, 2.0 * trajectory->length() / 3)
@@ -218,30 +223,42 @@ TEST_F(TrajectoryTestForTrajectoryPoint, manipulate_velocity)
   EXPECT_EQ(10.0, point3.longitudinal_velocity_mps);
 }
 
-TEST_F(TrajectoryTestForTrajectoryPoint, direction)
+TEST_F(TrajectoryTestForTrajectoryPoint, Direction)
 {
+  ASSERT_TRUE(trajectory);
   double dir = trajectory->azimuth(0.0);
   EXPECT_LT(0, dir);
   EXPECT_LT(dir, M_PI / 2);
 }
 
-TEST_F(TrajectoryTestForTrajectoryPoint, curvature)
+TEST_F(TrajectoryTestForTrajectoryPoint, Curvature)
 {
+  ASSERT_TRUE(trajectory);
   double curvature_val = trajectory->curvature(0.0);
   EXPECT_LT(-1.0, curvature_val);
   EXPECT_LT(curvature_val, 1.0);
 }
 
-TEST_F(TrajectoryTestForTrajectoryPoint, restore)
+TEST_F(TrajectoryTestForTrajectoryPoint, Restore)
 {
+  ASSERT_TRUE(trajectory);
   using autoware::experimental::trajectory::Trajectory;
   trajectory->longitudinal_velocity_mps().range(4.0, trajectory->length()).set(5.0);
   auto points = trajectory->restore();
   EXPECT_EQ(11, points.size());
 }
 
-TEST_F(TrajectoryTestForTrajectoryPoint, crossed)
+TEST_F(TrajectoryTestForTrajectoryPoint, SetVelocityAtSinglePoint)
 {
+  const auto target_s = trajectory->length() * 0.5;
+  trajectory->longitudinal_velocity_mps().at(target_s).set(7.0);
+
+  EXPECT_DOUBLE_EQ(7.0, trajectory->longitudinal_velocity_mps().compute(target_s));
+}
+
+TEST_F(TrajectoryTestForTrajectoryPoint, Crossed)
+{
+  ASSERT_TRUE(trajectory);
   lanelet::LineString2d line_string;
   line_string.push_back(lanelet::Point3d(lanelet::InvalId, 0.0, 10.0, 0.0));
   line_string.push_back(lanelet::Point3d(lanelet::InvalId, 10.0, 0.0, 0.0));
@@ -253,8 +270,9 @@ TEST_F(TrajectoryTestForTrajectoryPoint, crossed)
   EXPECT_LT(crossed_point.at(0), trajectory->length());
 }
 
-TEST_F(TrajectoryTestForTrajectoryPoint, closest)
+TEST_F(TrajectoryTestForTrajectoryPoint, Closest)
 {
+  ASSERT_TRUE(trajectory);
   geometry_msgs::msg::Pose pose;
   pose.position.x = 5.0;
   pose.position.y = 5.0;
@@ -268,8 +286,55 @@ TEST_F(TrajectoryTestForTrajectoryPoint, closest)
   EXPECT_LT(distance, 3.0);
 }
 
-TEST_F(TrajectoryTestForTrajectoryPoint, crop)
+TEST(TrajectoryUtilsMax, ReturnsMaxValueAndArcLength)
 {
+  const std::vector<autoware_planning_msgs::msg::TrajectoryPoint> points{
+    trajectory_point(0.0, 0.0, 1.0F), trajectory_point(1.0, 0.0, 3.0F),
+    trajectory_point(2.0, 0.0, 2.0F)};
+  const auto trajectory = Trajectory::Builder{}.build(points);
+  ASSERT_TRUE(trajectory.has_value());
+
+  const auto result = autoware::experimental::trajectory::max(
+    trajectory.value(), [](autoware_planning_msgs::msg::TrajectoryPoint point) {
+      return point.longitudinal_velocity_mps;
+    });
+
+  EXPECT_NEAR(result.point, 1.0, 1e-6);
+  EXPECT_FLOAT_EQ(result.value, 3.0F);
+}
+
+TEST(TrajectoryUtilsMax, AcceptsArcLengthEvaluator)
+{
+  const std::vector<autoware_planning_msgs::msg::TrajectoryPoint> points{
+    trajectory_point(0.0, 0.0), trajectory_point(1.0, 0.0), trajectory_point(2.0, 0.0)};
+  const auto trajectory = Trajectory::Builder{}.build(points);
+  ASSERT_TRUE(trajectory.has_value());
+
+  const auto result =
+    autoware::experimental::trajectory::max(trajectory.value(), [](const double s) { return s; });
+
+  EXPECT_NEAR(result.point, 2.0, 1e-6);
+  EXPECT_NEAR(result.value, 2.0, 1e-6);
+}
+
+TEST(TrajectoryUtilsMax, SupportsFixedIntervalSearch)
+{
+  const std::vector<autoware_planning_msgs::msg::TrajectoryPoint> points{
+    trajectory_point(0.0, 0.0), trajectory_point(2.0, 0.0)};
+  const auto trajectory = Trajectory::Builder{}.build(points);
+  ASSERT_TRUE(trajectory.has_value());
+
+  const auto result = autoware::experimental::trajectory::max<
+    autoware::experimental::trajectory::MaxSearchMethod::FixedInterval>(
+    trajectory.value(), [](const double s) { return -std::abs(s - 0.5); }, 0.1);
+
+  EXPECT_NEAR(result.point, 0.5, 1e-6);
+  EXPECT_NEAR(result.value, 0.0, 1e-6);
+}
+
+TEST_F(TrajectoryTestForTrajectoryPoint, Crop)
+{
+  ASSERT_TRUE(trajectory);
   double length = trajectory->length();
 
   auto start_point_expect = trajectory->compute(length / 3.0);
@@ -289,14 +354,16 @@ TEST_F(TrajectoryTestForTrajectoryPoint, crop)
   EXPECT_EQ(end_point_expect.pose.position.y, end_point_actual.pose.position.y);
 }
 
-TEST_F(TrajectoryTestForTrajectoryPoint, max_curvature)
+TEST_F(TrajectoryTestForTrajectoryPoint, MaxCurvature)
 {
+  ASSERT_TRUE(trajectory);
   double max_curvature = autoware::experimental::trajectory::max_curvature(*trajectory);
   EXPECT_LT(0, max_curvature);
 }
 
-TEST_F(TrajectoryTestForTrajectoryPoint, build_from_two_points)
+TEST_F(TrajectoryTestForTrajectoryPoint, BuildFromTwoPoints)
 {
+  ASSERT_TRUE(trajectory);
   using autoware_utils_geometry::get_rpy;
 
   std::vector<autoware_planning_msgs::msg::TrajectoryPoint> points{

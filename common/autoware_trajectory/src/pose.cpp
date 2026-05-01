@@ -18,6 +18,7 @@
 #include "autoware/trajectory/forward.hpp"
 #include "autoware/trajectory/interpolator/nearest_neighbor.hpp"
 #include "autoware/trajectory/interpolator/spherical_linear.hpp"
+#include "autoware/trajectory/threshold.hpp"
 
 #include <tf2/LinearMath/Quaternion.hpp>
 #include <tf2/LinearMath/Vector3.hpp>
@@ -25,6 +26,7 @@
 
 #include <tf2_geometry_msgs/tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
+#include <cassert>
 #include <cmath>
 #include <memory>
 #include <utility>
@@ -59,11 +61,7 @@ Trajectory<PointType>::Trajectory(const Trajectory<geometry_msgs::msg::Point> & 
     orientations.at(i).w = 1.0;
   }
   auto success = orientation_interpolator_->build(bases_, orientations);
-
-  if (!success) {
-    throw std::runtime_error(
-      "Failed to build orientation interpolator.");  // This Exception should not be thrown.
-  }
+  assert(success && "Trajectory<Pose>: failed to build orientation interpolator");
 
   // align orientation with trajectory direction
   align_orientation_with_trajectory_direction();
@@ -197,10 +195,10 @@ void Trajectory<PointType>::align_orientation_with_trajectory_direction()
     aligned_orientations.emplace_back(aligned_orientation);
   }
   const auto success = orientation_interpolator_->build(bases_, std::move(aligned_orientations));
-  if (!success) {
-    throw std::runtime_error(
-      "Failed to build orientation interpolator.");  // This exception should not be thrown.
-  }
+  assert(
+    success &&
+    "Trajectory<Pose>::align_orientation_with_trajectory_direction: failed to build "
+    "orientation interpolator");
 }
 
 std::vector<PointType> Trajectory<PointType>::restore() const
@@ -222,7 +220,8 @@ Trajectory<PointType>::Builder::Builder() : trajectory_(std::make_unique<Traject
 void Trajectory<PointType>::Builder::defaults(Trajectory<PointType> * trajectory)
 {
   BaseClass::Builder::defaults(trajectory);
-  trajectory->orientation_interpolator_ = std::make_shared<interpolator::SphericalLinear>();
+  trajectory->orientation_interpolator_ =
+    std::make_shared<interpolator::SphericalLinear>(k_epsilon_distance);
 }
 
 tl::expected<Trajectory<PointType>, interpolator::InterpolationFailure>
