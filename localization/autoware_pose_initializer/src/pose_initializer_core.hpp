@@ -24,6 +24,7 @@
 #include <autoware_internal_localization_msgs/srv/initialize_localization.hpp>
 #include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -35,11 +36,13 @@ class LocalizationModule;
 class GnssModule;
 class EkfLocalizationTriggerModule;
 class NdtLocalizationTriggerModule;
+class PoseInitializerCore;
 
 class PoseInitializer : public rclcpp::Node
 {
 public:
   explicit PoseInitializer(const rclcpp::NodeOptions & options);
+  ~PoseInitializer() override;
 
 private:
   using Initialize = autoware::component_interface_specs::localization::Initialize;
@@ -62,6 +65,7 @@ private:
   std::unique_ptr<NdtLocalizationTriggerModule> ndt_localization_trigger_;
   std::unique_ptr<autoware_utils_logging::LoggerLevelConfigure> logger_configure_;
   std::unique_ptr<autoware_utils_diagnostics::DiagnosticsInterface> diagnostics_pose_reliable_;
+  std::unique_ptr<PoseInitializerCore> core_;
   double stop_check_duration_;
 
   void change_node_trigger(bool flag, bool need_spin = false);
@@ -71,7 +75,6 @@ private:
   void on_initialize(
     const Initialize::Service::Request::SharedPtr req,
     const Initialize::Service::Response::SharedPtr res);
-  PoseWithCovarianceStamped get_gnss_pose();
 };
 }  // namespace autoware::pose_initializer
 

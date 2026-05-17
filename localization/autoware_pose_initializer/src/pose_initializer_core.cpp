@@ -16,10 +16,9 @@
 
 #include "copy_vector_to_array.hpp"
 #include "ekf_localization_trigger_module.hpp"
-#include "gnss_module.hpp"
-#include "localization_module.hpp"
 #include "ndt_localization_trigger_module.hpp"
 #include "pose_error_check_module.hpp"
+#include "pose_initializer_core_logic.hpp"
 #include "stop_check_module.hpp"
 
 #include <autoware/qos_utils/qos_compatibility.hpp>
@@ -28,8 +27,6 @@
 
 #include <memory>
 #include <sstream>
-#include <vector>
-
 namespace autoware::pose_initializer
 {
 PoseInitializer::PoseInitializer(const rclcpp::NodeOptions & options)
@@ -73,6 +70,8 @@ PoseInitializer::PoseInitializer(const rclcpp::NodeOptions & options)
   if (declare_parameter<bool>("pose_error_check_enabled")) {
     pose_error_check_ = std::make_unique<PoseErrorCheckModule>(this);
   }
+  core_ = std::make_unique<PoseInitializerCore>(
+    gnss_.get(), ndt_.get(), yabloc_.get(), pose_error_check_.get());
   logger_configure_ = std::make_unique<autoware_utils_logging::LoggerLevelConfigure>(this);
 
   change_state(State::Message::UNINITIALIZED);
@@ -103,6 +102,8 @@ PoseInitializer::PoseInitializer(const rclcpp::NodeOptions & options)
     set_user_defined_initial_pose(initial_pose, true);
   }
 }
+
+PoseInitializer::~PoseInitializer() = default;
 
 void PoseInitializer::change_state(State::Message::_state_type state)
 {
@@ -171,31 +172,17 @@ void PoseInitializer::on_initialize(
       change_state(State::Message::INITIALIZING);
       change_node_trigger(false, false);
 
-      auto pose =
-        req->pose_with_covariance.empty() ? get_gnss_pose() : req->pose_with_covariance.front();
-      bool reliable = true;
-      if (ndt_) {
-        std::tie(pose, reliable) = ndt_->align_pose(pose);
-      } else if (yabloc_) {
-        // If both the NDT and YabLoc initializer are enabled, prioritize NDT as it offers more
-        // accuracy pose.
-        std::tie(pose, reliable) = yabloc_->align_pose(pose);
-      }
+      const auto outcome = core_->compute_auto_initial_pose(
+        req->pose_with_covariance, output_pose_covariance_, gnss_particle_covariance_);
 
       diagnostics_pose_reliable_->clear();
 
       // check pose error between gnss pose and initial pose result
-      if (pose_error_check_ && gnss_) {
-        const auto latest_gnss_pose = get_gnss_pose();
-
-        double gnss_error_2d;
-        const bool is_gnss_pose_error_small = pose_error_check_->check_pose_error(
-          latest_gnss_pose.pose.pose, pose.pose.pose, gnss_error_2d);
-
-        diagnostics_pose_reliable_->add_key_value("gnss_pose_error_2d", gnss_error_2d);
+      if (outcome.has_gnss_pose_error) {
+        diagnostics_pose_reliable_->add_key_value("gnss_pose_error_2d", outcome.gnss_error_2d);
         diagnostics_pose_reliable_->add_key_value(
-          "is_gnss_pose_error_small", is_gnss_pose_error_small);
-        if (!is_gnss_pose_error_small) {
+          "is_gnss_pose_error_small", outcome.is_gnss_pose_error_small);
+        if (!outcome.is_gnss_pose_error_small) {
           std::stringstream message;
           message << " Large error between Initial Pose and GNSS Pose.";
           diagnostics_pose_reliable_->update_level_and_message(
@@ -203,8 +190,8 @@ void PoseInitializer::on_initialize(
         }
       }
       // check initial pose result and publish diagnostics
-      diagnostics_pose_reliable_->add_key_value("is_initial_pose_reliable", reliable);
-      if (!reliable) {
+      diagnostics_pose_reliable_->add_key_value("is_initial_pose_reliable", outcome.reliable);
+      if (!outcome.reliable) {
         std::stringstream message;
         message << "Initial Pose Estimation is Unstable.";
         diagnostics_pose_reliable_->update_level_and_message(
@@ -212,8 +199,7 @@ void PoseInitializer::on_initialize(
       }
       diagnostics_pose_reliable_->publish(this->now());
 
-      pose.pose.covariance = output_pose_covariance_;
-      pub_reset_->publish(pose);
+      pub_reset_->publish(outcome.pose);
 
       change_node_trigger(true, false);
       res->status.success = true;
@@ -251,20 +237,6 @@ void PoseInitializer::on_initialize(
     res->status.message = error.message;
     change_state(State::Message::UNINITIALIZED);
   }
-}
-
-geometry_msgs::msg::PoseWithCovarianceStamped PoseInitializer::get_gnss_pose()
-{
-  if (gnss_) {
-    PoseWithCovarianceStamped pose = gnss_->get_pose();
-    pose.pose.covariance = gnss_particle_covariance_;
-    return pose;
-  }
-  autoware_adapi_v1_msgs::msg::ResponseStatus respose_status;
-  respose_status.success = false;
-  respose_status.code = Initialize::Service::Response::ERROR_GNSS_SUPPORT;
-  respose_status.message = "GNSS is not supported.";
-  throw respose_status;
 }
 }  // namespace autoware::pose_initializer
 
