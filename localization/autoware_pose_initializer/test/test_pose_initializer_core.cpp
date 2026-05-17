@@ -14,8 +14,9 @@
 
 #include "../src/pose_initializer_core_logic.hpp"
 
-#include <gmock/gmock.h>
 #include <rclcpp/rclcpp.hpp>
+
+#include <gmock/gmock.h>
 
 #include <array>
 #include <chrono>
@@ -29,15 +30,9 @@ namespace
 class RclcppFixture : public ::testing::Test
 {
 public:
-  static void SetUpTestSuite()
-  {
-    rclcpp::init(0, nullptr);
-  }
+  static void SetUpTestSuite() { rclcpp::init(0, nullptr); }
 
-  static void TearDownTestSuite()
-  {
-    rclcpp::shutdown();
-  }
+  static void TearDownTestSuite() { rclcpp::shutdown(); }
 };
 
 geometry_msgs::msg::PoseWithCovarianceStamped make_pose(double x, double y)
@@ -82,8 +77,7 @@ TEST(PoseInitializerCore, UsesInputPoseAndSetsOutputCovariance)
   const auto output_covariance = make_covariance(0.5);
   const std::array<double, 36> gnss_covariance{};
 
-  const auto outcome =
-    core.compute_auto_initial_pose(input, output_covariance, gnss_covariance);
+  const auto outcome = core.compute_auto_initial_pose(input, output_covariance, gnss_covariance);
 
   EXPECT_DOUBLE_EQ(outcome.pose.pose.pose.position.x, 1.0);
   EXPECT_DOUBLE_EQ(outcome.pose.pose.pose.position.y, 2.0);
@@ -99,8 +93,8 @@ TEST_F(RclcppFixture, UsesGnssPoseWhenInputEmpty)
   auto node = std::make_shared<rclcpp::Node>("pose_initializer_core_gnss", options);
   GnssModule gnss(node.get());
 
-  auto publisher = node->create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>(
-    "gnss_pose_cov", 1);
+  auto publisher =
+    node->create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>("gnss_pose_cov", 1);
   auto message = make_pose(3.0, 4.0);
   message.header.stamp = node->now();
   publisher->publish(message);
@@ -114,8 +108,7 @@ TEST_F(RclcppFixture, UsesGnssPoseWhenInputEmpty)
   const auto gnss_covariance = make_covariance(0.75);
   std::vector<geometry_msgs::msg::PoseWithCovarianceStamped> input;
 
-  const auto outcome =
-    core.compute_auto_initial_pose(input, output_covariance, gnss_covariance);
+  const auto outcome = core.compute_auto_initial_pose(input, output_covariance, gnss_covariance);
 
   EXPECT_DOUBLE_EQ(outcome.pose.pose.pose.position.x, 3.0);
   EXPECT_DOUBLE_EQ(outcome.pose.pose.pose.position.y, 4.0);
@@ -132,8 +125,8 @@ TEST_F(RclcppFixture, ReportsPoseErrorStatusWhenEnabled)
   GnssModule gnss(node.get());
   PoseErrorCheckModule pose_error_check(node.get());
 
-  auto publisher = node->create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>(
-    "gnss_pose_cov", 1);
+  auto publisher =
+    node->create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>("gnss_pose_cov", 1);
   auto message = make_pose(0.0, 0.0);
   message.header.stamp = node->now();
   publisher->publish(message);
