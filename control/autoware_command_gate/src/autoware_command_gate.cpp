@@ -67,27 +67,6 @@ public:
         autoware::component_interface_specs::get_qos<system::OperationModeState>())),
     gear_pub_(create_publisher<spec::GearCommand::Message>(spec::GearCommand::name, rclcpp::QoS{1}))
   {
-    srv_stop_ = create_service<spec::ChangeToStop::Service>(
-      spec::ChangeToStop::name, [this](
-                                  const spec::ChangeToStop::Service::Request::SharedPtr,
-                                  const spec::ChangeToStop::Service::Response::SharedPtr res) {
-        const builtin_interfaces::msg::Time stamp = now();
-        const auto outputs = mode_builder_.make_stop(stamp);
-        publish(outputs);
-        res->status = outputs.status;
-      });
-
-    srv_auto_ = create_service<spec::ChangeToAutonomous::Service>(
-      spec::ChangeToAutonomous::name,
-      [this](
-        const spec::ChangeToAutonomous::Service::Request::SharedPtr,
-        const spec::ChangeToAutonomous::Service::Response::SharedPtr res) {
-        const builtin_interfaces::msg::Time stamp = now();
-        const auto outputs = mode_builder_.make_autonomous(stamp);
-        publish(outputs);
-        res->status = outputs.status;
-      });
-
     /*
       System layer where the final decision to trigger the mode change is made.
       The state is published to the same topic for simplicity, but it can be separated if needed.
@@ -141,8 +120,6 @@ private:
   rclcpp::Publisher<OperationModeStateMsg>::SharedPtr state_pub_;
   rclcpp::Publisher<OperationModeSystemStateMsg>::SharedPtr system_state_pub_;
   rclcpp::Publisher<GearCommand>::SharedPtr gear_pub_;
-  rclcpp::Service<spec::ChangeToStop::Service>::SharedPtr srv_stop_;
-  rclcpp::Service<spec::ChangeToAutonomous::Service>::SharedPtr srv_auto_;
   rclcpp::Service<SystemChangeOperationMode::Service>::SharedPtr srv_system_mode_;
   CommandGateModeBuilder mode_builder_;
 };
