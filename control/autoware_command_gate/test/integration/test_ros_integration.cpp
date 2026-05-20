@@ -19,7 +19,6 @@
 #include <rclcpp_components/node_instance_wrapper.hpp>
 
 #include <autoware_adapi_v1_msgs/msg/operation_mode_state.hpp>
-#include <autoware_adapi_v1_msgs/srv/change_operation_mode.hpp>
 #include <autoware_system_msgs/srv/change_operation_mode.hpp>
 #include <autoware_vehicle_msgs/msg/gear_command.hpp>
 
@@ -37,7 +36,6 @@
 namespace
 {
 using autoware_adapi_v1_msgs::msg::OperationModeState;
-using autoware_adapi_v1_msgs::srv::ChangeOperationMode;
 using SystemChangeOperationMode = autoware_system_msgs::srv::ChangeOperationMode;
 using autoware_vehicle_msgs::msg::GearCommand;
 
@@ -119,13 +117,14 @@ TEST_F(CommandGateRosIntegrationTest, ChangeToStopPublishesStateAndGear)
     "/control/command/gear_cmd", rclcpp::QoS{1},
     [&gear_msg](const GearCommand::SharedPtr msg) { gear_msg = *msg; });
 
-  auto client =
-    test_node_->create_client<ChangeOperationMode>("/api/operation_mode/change_to_stop");
+  auto client = test_node_->create_client<SystemChangeOperationMode>(
+    "/system/operation_mode/change_operation_mode");
   ASSERT_TRUE(spin_until(
     executor_, [&client]() { return client->wait_for_service(std::chrono::seconds(0)); },
     std::chrono::seconds(2)));
 
-  auto request = std::make_shared<ChangeOperationMode::Request>();
+  auto request = std::make_shared<SystemChangeOperationMode::Request>();
+  request->mode = SystemChangeOperationMode::Request::STOP;
   auto future = client->async_send_request(request);
   ASSERT_TRUE(spin_until(
     executor_,
@@ -168,13 +167,14 @@ TEST_F(CommandGateRosIntegrationTest, ChangeToAutonomousPublishesStateAndGear)
     "/control/command/gear_cmd", rclcpp::QoS{1},
     [&gear_msg](const GearCommand::SharedPtr msg) { gear_msg = *msg; });
 
-  auto client =
-    test_node_->create_client<ChangeOperationMode>("/api/operation_mode/change_to_autonomous");
+  auto client = test_node_->create_client<SystemChangeOperationMode>(
+    "/system/operation_mode/change_operation_mode");
   ASSERT_TRUE(spin_until(
     executor_, [&client]() { return client->wait_for_service(std::chrono::seconds(0)); },
     std::chrono::seconds(2)));
 
-  auto request = std::make_shared<ChangeOperationMode::Request>();
+  auto request = std::make_shared<SystemChangeOperationMode::Request>();
+  request->mode = SystemChangeOperationMode::Request::AUTONOMOUS;
   auto future = client->async_send_request(request);
   ASSERT_TRUE(spin_until(
     executor_,
