@@ -35,9 +35,8 @@ public:
     if (!pose_) {
       autoware_adapi_v1_msgs::msg::ResponseStatus response_status;
       response_status.success = false;
-      response_status.code =
-        autoware::component_interface_specs::localization::Initialize::Service::Response::
-          ERROR_GNSS;
+      response_status.code = autoware::component_interface_specs::localization::Initialize::
+        Service::Response::ERROR_GNSS;
       response_status.message = "The GNSS pose has not arrived.";
       throw response_status;
     }
