@@ -15,9 +15,7 @@
 #ifndef POSE_INITIALIZER_CORE_LOGIC_HPP_
 #define POSE_INITIALIZER_CORE_LOGIC_HPP_
 
-#include "gnss_module.hpp"
-#include "localization_module.hpp"
-#include "pose_error_check_module.hpp"
+#include "pose_initializer_core_interfaces.hpp"
 
 #include <autoware/component_interface_specs/localization.hpp>
 
@@ -43,8 +41,8 @@ class PoseInitializerCore
 {
 public:
   PoseInitializerCore(
-    GnssModule * gnss, LocalizationModule * ndt, LocalizationModule * yabloc,
-    PoseErrorCheckModule * pose_error_check)
+    GnssProvider * gnss, PoseAligner * ndt, PoseAligner * yabloc,
+    PoseErrorChecker * pose_error_check)
   : gnss_(gnss), ndt_(ndt), yabloc_(yabloc), pose_error_check_(pose_error_check)
   {
   }
@@ -94,10 +92,10 @@ public:
   }
 
 private:
-  GnssModule * gnss_;
-  LocalizationModule * ndt_;
-  LocalizationModule * yabloc_;
-  PoseErrorCheckModule * pose_error_check_;
+  GnssProvider * gnss_;
+  PoseAligner * ndt_;
+  PoseAligner * yabloc_;
+  PoseErrorChecker * pose_error_check_;
 };
 }  // namespace autoware::pose_initializer
 

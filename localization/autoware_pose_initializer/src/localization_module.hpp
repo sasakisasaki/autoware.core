@@ -15,6 +15,8 @@
 #ifndef LOCALIZATION_MODULE_HPP_
 #define LOCALIZATION_MODULE_HPP_
 
+#include "pose_initializer_core_interfaces.hpp"
+
 #include <rclcpp/rclcpp.hpp>
 
 #include <autoware_internal_localization_msgs/srv/pose_with_covariance_stamped.hpp>
@@ -25,7 +27,7 @@
 
 namespace autoware::pose_initializer
 {
-class LocalizationModule
+class LocalizationModule : public PoseAligner
 {
 private:
   using PoseWithCovarianceStamped = geometry_msgs::msg::PoseWithCovarianceStamped;
@@ -33,7 +35,8 @@ private:
 
 public:
   LocalizationModule(rclcpp::Node * node, const std::string & service_name);
-  std::tuple<PoseWithCovarianceStamped, bool> align_pose(const PoseWithCovarianceStamped & pose);
+  std::tuple<PoseWithCovarianceStamped, bool> align_pose(
+    const PoseWithCovarianceStamped & pose) override;
 
 private:
   rclcpp::Logger logger_;

@@ -12,29 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef POSE_ERROR_CHECK_MODULE_HPP_
-#define POSE_ERROR_CHECK_MODULE_HPP_
-
-#include "pose_initializer_core_interfaces.hpp"
-
-#include <rclcpp/rclcpp.hpp>
+#ifndef POSE_INITIALIZER_CORE_INTERFACES_HPP_
+#define POSE_INITIALIZER_CORE_INTERFACES_HPP_
 
 #include <geometry_msgs/msg/pose.hpp>
+#include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
+
+#include <tuple>
 
 namespace autoware::pose_initializer
 {
-class PoseErrorCheckModule : public PoseErrorChecker
+class GnssProvider
 {
 public:
-  explicit PoseErrorCheckModule(rclcpp::Node * node);
-  bool check_pose_error(
-    const geometry_msgs::msg::Pose & reference_pose, const geometry_msgs::msg::Pose & result_pose,
-    double & error_2d) override;
+  virtual ~GnssProvider() = default;
+  virtual geometry_msgs::msg::PoseWithCovarianceStamped get_pose() = 0;
+};
 
-private:
-  rclcpp::Node * node_;
-  double pose_error_threshold_;
+class PoseAligner
+{
+public:
+  virtual ~PoseAligner() = default;
+  virtual std::tuple<geometry_msgs::msg::PoseWithCovarianceStamped, bool> align_pose(
+    const geometry_msgs::msg::PoseWithCovarianceStamped & pose) = 0;
+};
+
+class PoseErrorChecker
+{
+public:
+  virtual ~PoseErrorChecker() = default;
+  virtual bool check_pose_error(
+    const geometry_msgs::msg::Pose & reference_pose, const geometry_msgs::msg::Pose & result_pose,
+    double & error_2d) = 0;
 };
 }  // namespace autoware::pose_initializer
 
-#endif  // POSE_ERROR_CHECK_MODULE_HPP_
+#endif  // POSE_INITIALIZER_CORE_INTERFACES_HPP_

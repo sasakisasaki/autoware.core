@@ -16,6 +16,8 @@
 
 #include "copy_vector_to_array.hpp"
 #include "ekf_localization_trigger_module.hpp"
+#include "gnss_module.hpp"
+#include "localization_module.hpp"
 #include "ndt_localization_trigger_module.hpp"
 #include "pose_error_check_module.hpp"
 #include "pose_initializer_core_logic.hpp"

@@ -15,6 +15,8 @@
 #ifndef GNSS_MODULE_HPP_
 #define GNSS_MODULE_HPP_
 
+#include "pose_initializer_core_interfaces.hpp"
+
 #include <autoware/map_height_fitter/map_height_fitter.hpp>
 #include <rclcpp/rclcpp.hpp>
 
@@ -22,14 +24,14 @@
 
 namespace autoware::pose_initializer
 {
-class GnssModule
+class GnssModule : public GnssProvider
 {
 private:
   using PoseWithCovarianceStamped = geometry_msgs::msg::PoseWithCovarianceStamped;
 
 public:
   explicit GnssModule(rclcpp::Node * node);
-  PoseWithCovarianceStamped get_pose();
+  PoseWithCovarianceStamped get_pose() override;
 
 private:
   void on_pose(PoseWithCovarianceStamped::ConstSharedPtr msg);

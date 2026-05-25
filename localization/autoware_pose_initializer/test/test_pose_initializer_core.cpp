@@ -14,25 +14,57 @@
 
 #include "../src/pose_initializer_core_logic.hpp"
 
-#include <rclcpp/rclcpp.hpp>
-
 #include <gmock/gmock.h>
 
 #include <array>
-#include <chrono>
-#include <memory>
+#include <cmath>
+#include <optional>
 #include <vector>
 
 namespace autoware::pose_initializer
 {
 namespace
 {
-class RclcppFixture : public ::testing::Test
+class FakeGnssModule : public GnssProvider
 {
 public:
-  static void SetUpTestSuite() { rclcpp::init(0, nullptr); }
+  void set_pose(const geometry_msgs::msg::PoseWithCovarianceStamped & pose) { pose_ = pose; }
 
-  static void TearDownTestSuite() { rclcpp::shutdown(); }
+  geometry_msgs::msg::PoseWithCovarianceStamped get_pose() override
+  {
+    if (!pose_) {
+      autoware_adapi_v1_msgs::msg::ResponseStatus response_status;
+      response_status.success = false;
+      response_status.code =
+        autoware::component_interface_specs::localization::Initialize::Service::Response::
+          ERROR_GNSS;
+      response_status.message = "The GNSS pose has not arrived.";
+      throw response_status;
+    }
+    return *pose_;
+  }
+
+private:
+  std::optional<geometry_msgs::msg::PoseWithCovarianceStamped> pose_;
+};
+
+class FakePoseErrorCheckModule : public PoseErrorChecker
+{
+public:
+  explicit FakePoseErrorCheckModule(double threshold) : threshold_(threshold) {}
+
+  bool check_pose_error(
+    const geometry_msgs::msg::Pose & reference_pose, const geometry_msgs::msg::Pose & result_pose,
+    double & error_2d) override
+  {
+    const double diff_x = reference_pose.position.x - result_pose.position.x;
+    const double diff_y = reference_pose.position.y - result_pose.position.y;
+    error_2d = std::sqrt(diff_x * diff_x + diff_y * diff_y);
+    return error_2d < threshold_;
+  }
+
+private:
+  double threshold_{0.0};
 };
 
 geometry_msgs::msg::PoseWithCovarianceStamped make_pose(double x, double y)
@@ -52,20 +84,6 @@ std::array<double, 36> make_covariance(double seed)
   return covariance;
 }
 
-void spin_until_gnss_available(
-  GnssModule & gnss, rclcpp::executors::SingleThreadedExecutor & executor)
-{
-  for (int i = 0; i < 10; ++i) {
-    executor.spin_some();
-    try {
-      (void)gnss.get_pose();
-      return;
-    } catch (const autoware_adapi_v1_msgs::msg::ResponseStatus &) {
-      // Keep spinning until GNSS data is ready.
-    }
-  }
-  FAIL() << "GNSS pose did not arrive in time.";
-}
 }  // namespace
 
 TEST(PoseInitializerCore, UsesInputPoseAndSetsOutputCovariance)
@@ -87,21 +105,10 @@ TEST(PoseInitializerCore, UsesInputPoseAndSetsOutputCovariance)
   EXPECT_TRUE(outcome.reliable);
 }
 
-TEST_F(RclcppFixture, UsesGnssPoseWhenInputEmpty)
+TEST(PoseInitializerCore, UsesGnssPoseWhenInputEmpty)
 {
-  auto options = rclcpp::NodeOptions().append_parameter_override("gnss_pose_timeout", 1.0);
-  auto node = std::make_shared<rclcpp::Node>("pose_initializer_core_gnss", options);
-  GnssModule gnss(node.get());
-
-  auto publisher =
-    node->create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>("gnss_pose_cov", 1);
-  auto message = make_pose(3.0, 4.0);
-  message.header.stamp = node->now();
-  publisher->publish(message);
-
-  rclcpp::executors::SingleThreadedExecutor executor;
-  executor.add_node(node);
-  spin_until_gnss_available(gnss, executor);
+  FakeGnssModule gnss;
+  gnss.set_pose(make_pose(3.0, 4.0));
 
   PoseInitializerCore core(&gnss, nullptr, nullptr, nullptr);
   const auto output_covariance = make_covariance(0.25);
@@ -116,24 +123,11 @@ TEST_F(RclcppFixture, UsesGnssPoseWhenInputEmpty)
   EXPECT_TRUE(outcome.reliable);
 }
 
-TEST_F(RclcppFixture, ReportsPoseErrorStatusWhenEnabled)
+TEST(PoseInitializerCore, ReportsPoseErrorStatusWhenEnabled)
 {
-  auto options = rclcpp::NodeOptions()
-                   .append_parameter_override("gnss_pose_timeout", 1.0)
-                   .append_parameter_override("pose_error_threshold", 0.5);
-  auto node = std::make_shared<rclcpp::Node>("pose_initializer_core_pose_error", options);
-  GnssModule gnss(node.get());
-  PoseErrorCheckModule pose_error_check(node.get());
-
-  auto publisher =
-    node->create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>("gnss_pose_cov", 1);
-  auto message = make_pose(0.0, 0.0);
-  message.header.stamp = node->now();
-  publisher->publish(message);
-
-  rclcpp::executors::SingleThreadedExecutor executor;
-  executor.add_node(node);
-  spin_until_gnss_available(gnss, executor);
+  FakeGnssModule gnss;
+  gnss.set_pose(make_pose(0.0, 0.0));
+  FakePoseErrorCheckModule pose_error_check(0.5);
 
   PoseInitializerCore core(&gnss, nullptr, nullptr, &pose_error_check);
   std::vector<geometry_msgs::msg::PoseWithCovarianceStamped> input;
