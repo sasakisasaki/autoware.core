@@ -84,6 +84,35 @@ std::vector<PointXYZ> extract_points_from_cloud(const sensor_msgs::msg::PointClo
   return points;
 }
 
+bool contains_point_near(
+  const std::vector<PointXYZ> & points, const PointXYZ & expected, const float tolerance)
+{
+  for (const auto & point : points) {
+    if (
+      std::fabs(point[0] - expected[0]) <= tolerance &&
+      std::fabs(point[1] - expected[1]) <= tolerance &&
+      std::fabs(point[2] - expected[2]) <= tolerance) {
+      return true;
+    }
+  }
+  return false;
+}
+
+size_t count_point_near(
+  const std::vector<PointXYZ> & points, const PointXYZ & expected, const float tolerance)
+{
+  size_t count = 0;
+  for (const auto & point : points) {
+    if (
+      std::fabs(point[0] - expected[0]) <= tolerance &&
+      std::fabs(point[1] - expected[1]) <= tolerance &&
+      std::fabs(point[2] - expected[2]) <= tolerance) {
+      ++count;
+    }
+  }
+  return count;
+}
+
 class VoxelGridIntegrationHarness
 {
 public:
@@ -263,6 +292,86 @@ TEST(VoxelGridDownsampleFilterIntegrationTest, DoesNotPublishWhenInputTransformI
 
   EXPECT_FALSE(harness.wait_for_output(std::chrono::milliseconds(1000)));
   EXPECT_EQ(harness.received_cloud(), nullptr);
+}
+
+TEST(VoxelGridDownsampleFilterIntegrationTest, EmptyInputResultsInEmptyOutput)
+{
+  rclcpp::NodeOptions options;
+  options.parameter_overrides({
+    {"voxel_size_x", 1.0},
+    {"voxel_size_y", 1.0},
+    {"voxel_size_z", 1.0},
+    {"input_frame", ""},
+    {"output_frame", ""},
+    {"max_queue_size", static_cast<int64_t>(5)},
+  });
+
+  VoxelGridIntegrationHarness harness(options);
+  harness.publish_points({}, "sensor_frame");
+
+  ASSERT_TRUE(harness.wait_for_output(std::chrono::milliseconds(5000)));
+  ASSERT_NE(harness.received_cloud(), nullptr);
+  EXPECT_EQ(harness.received_cloud()->width, 0U);
+  EXPECT_TRUE(harness.received_cloud()->data.empty());
+}
+
+TEST(VoxelGridDownsampleFilterIntegrationTest, KeepsDistinctPointsForMultipleVoxels)
+{
+  rclcpp::NodeOptions options;
+  options.parameter_overrides({
+    {"voxel_size_x", 1.0},
+    {"voxel_size_y", 1.0},
+    {"voxel_size_z", 1.0},
+    {"input_frame", ""},
+    {"output_frame", ""},
+    {"max_queue_size", static_cast<int64_t>(5)},
+  });
+
+  VoxelGridIntegrationHarness harness(options);
+  const std::vector<PointXYZ> input_points = {
+    {0.1f, 0.1f, 0.1f},
+    {0.2f, 0.2f, 0.2f},
+    {1.2f, 1.2f, 1.2f},
+    {1.4f, 1.4f, 1.4f},
+  };
+  harness.publish_points(input_points, "sensor_frame");
+
+  ASSERT_TRUE(harness.wait_for_output(std::chrono::milliseconds(5000)));
+  ASSERT_NE(harness.received_cloud(), nullptr);
+
+  const auto output_points = extract_points_from_cloud(*harness.received_cloud());
+  ASSERT_EQ(output_points.size(), 2U);
+  EXPECT_TRUE(contains_point_near(output_points, PointXYZ{0.15f, 0.15f, 0.15f}, 1.0e-4f));
+  EXPECT_TRUE(contains_point_near(output_points, PointXYZ{1.3f, 1.3f, 1.3f}, 1.0e-4f));
+}
+
+TEST(VoxelGridDownsampleFilterIntegrationTest, BoundaryPointBelongsToExactlyOneVoxelDeterministically)
+{
+  rclcpp::NodeOptions options;
+  options.parameter_overrides({
+    {"voxel_size_x", 1.0},
+    {"voxel_size_y", 1.0},
+    {"voxel_size_z", 1.0},
+    {"input_frame", ""},
+    {"output_frame", ""},
+    {"max_queue_size", static_cast<int64_t>(5)},
+  });
+
+  VoxelGridIntegrationHarness harness(options);
+  const std::vector<PointXYZ> input_points = {
+    {0.2f, 0.0f, 0.0f},
+    {1.0f, 0.0f, 0.0f},
+    {1.0f, 0.0f, 0.0f},
+  };
+  harness.publish_points(input_points, "sensor_frame");
+
+  ASSERT_TRUE(harness.wait_for_output(std::chrono::milliseconds(5000)));
+  ASSERT_NE(harness.received_cloud(), nullptr);
+
+  const auto output_points = extract_points_from_cloud(*harness.received_cloud());
+  ASSERT_EQ(output_points.size(), 2U);
+  EXPECT_EQ(count_point_near(output_points, PointXYZ{1.0f, 0.0f, 0.0f}, 1.0e-6f), 1U);
+  EXPECT_TRUE(contains_point_near(output_points, PointXYZ{0.2f, 0.0f, 0.0f}, 1.0e-6f));
 }
 
 TEST(
