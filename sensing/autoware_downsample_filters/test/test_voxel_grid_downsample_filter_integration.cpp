@@ -346,7 +346,8 @@ TEST(VoxelGridDownsampleFilterIntegrationTest, KeepsDistinctPointsForMultipleVox
   EXPECT_TRUE(contains_point_near(output_points, PointXYZ{1.3f, 1.3f, 1.3f}, 1.0e-4f));
 }
 
-TEST(VoxelGridDownsampleFilterIntegrationTest, BoundaryPointBelongsToExactlyOneVoxelDeterministically)
+TEST(
+  VoxelGridDownsampleFilterIntegrationTest, BoundaryPointBelongsToExactlyOneVoxelDeterministically)
 {
   rclcpp::NodeOptions options;
   options.parameter_overrides({
