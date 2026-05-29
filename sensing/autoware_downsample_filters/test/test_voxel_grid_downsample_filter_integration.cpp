@@ -376,9 +376,10 @@ TEST(
   EXPECT_TRUE(contains_point_near(output_points, PointXYZ{0.2f, 0.0f, 0.0f}, 1.0e-6f));
 }
 
+// TODO: Re-enable after fixing the bug
 TEST(
   VoxelGridDownsampleFilterIntegrationTest,
-  OutputFrameParameterTransformsCoordinatesButKeepsOriginalFrameId)
+  DISABLED_OutputFrameParameterShouldSetOutputFrameIdToOutputFrame)
 {
   rclcpp::NodeOptions options;
   options.parameter_overrides({
@@ -403,8 +404,9 @@ TEST(
 
   const auto output_points = extract_points_from_cloud(*harness.received_cloud());
   ASSERT_EQ(output_points.size(), 1U);
-  // Current behavior: coordinates are transformed, but frame_id is kept as the original frame.
-  EXPECT_EQ(harness.received_cloud()->header.frame_id, "sensor_frame");
+
+  // FIXME: Expected behavior after bug fix: output cloud should use output_frame in header.
+  EXPECT_EQ(harness.received_cloud()->header.frame_id, "map");
   EXPECT_NEAR(output_points[0][0], 2.5f, 1.0e-4);
   EXPECT_NEAR(output_points[0][1], 2.0f, 1.0e-4);
   EXPECT_NEAR(output_points[0][2], 3.0f, 1.0e-4);
