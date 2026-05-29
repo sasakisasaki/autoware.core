@@ -87,6 +87,7 @@ std::vector<PointXYZ> extract_points_from_cloud(const sensor_msgs::msg::PointClo
 class VoxelGridIntegrationHarness
 {
 public:
+  // TODO: refactor to src+lib (src = ROS dependent, lib = application logic), then simplify this test
   explicit VoxelGridIntegrationHarness(const rclcpp::NodeOptions & filter_options)
   {
     executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
