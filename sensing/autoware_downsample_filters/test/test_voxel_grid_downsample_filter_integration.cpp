@@ -23,6 +23,7 @@
 #include <gtest/gtest.h>
 #include <tf2_ros/static_transform_broadcaster.h>
 
+#include <algorithm>
 #include <array>
 #include <atomic>
 #include <chrono>
@@ -30,6 +31,7 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include <tuple>
 #include <vector>
 
 using PointXYZ = std::array<float, 3>;
@@ -84,33 +86,23 @@ std::vector<PointXYZ> extract_points_from_cloud(const sensor_msgs::msg::PointClo
   return points;
 }
 
-bool contains_point_near(
-  const std::vector<PointXYZ> & points, const PointXYZ & expected, const float tolerance)
+void expect_points_near(
+  std::vector<PointXYZ> actual, std::vector<PointXYZ> expected, const float tolerance)
 {
-  for (const auto & point : points) {
-    if (
-      std::fabs(point[0] - expected[0]) <= tolerance &&
-      std::fabs(point[1] - expected[1]) <= tolerance &&
-      std::fabs(point[2] - expected[2]) <= tolerance) {
-      return true;
-    }
-  }
-  return false;
-}
+  ASSERT_EQ(actual.size(), expected.size());
 
-size_t count_point_near(
-  const std::vector<PointXYZ> & points, const PointXYZ & expected, const float tolerance)
-{
-  size_t count = 0;
-  for (const auto & point : points) {
-    if (
-      std::fabs(point[0] - expected[0]) <= tolerance &&
-      std::fabs(point[1] - expected[1]) <= tolerance &&
-      std::fabs(point[2] - expected[2]) <= tolerance) {
-      ++count;
-    }
+  const auto less = [](const PointXYZ & a, const PointXYZ & b) {
+    return std::tie(a[0], a[1], a[2]) < std::tie(b[0], b[1], b[2]);
+  };
+  std::sort(actual.begin(), actual.end(), less);
+  std::sort(expected.begin(), expected.end(), less);
+
+  for (size_t i = 0; i < expected.size(); ++i) {
+    SCOPED_TRACE("point index " + std::to_string(i));
+    EXPECT_NEAR(actual[i][0], expected[i][0], tolerance);
+    EXPECT_NEAR(actual[i][1], expected[i][1], tolerance);
+    EXPECT_NEAR(actual[i][2], expected[i][2], tolerance);
   }
-  return count;
 }
 
 class VoxelGridIntegrationHarness
@@ -258,17 +250,17 @@ TEST(VoxelGridDownsampleFilterIntegrationTest, CollapsesPointsInSameVoxelToSingl
     {0.2f, 0.2f, 0.2f},
     {0.9f, 0.9f, 0.9f},
   };
+  const std::vector<PointXYZ> expected_points = {
+    {0.4f, 0.4f, 0.4f},
+  };
   harness.publish_points(input_points, "sensor_frame");
 
   ASSERT_TRUE(harness.wait_for_output(std::chrono::milliseconds(5000)));
   ASSERT_NE(harness.received_cloud(), nullptr);
 
   const auto output_points = extract_points_from_cloud(*harness.received_cloud());
-  ASSERT_EQ(output_points.size(), 1U);
   EXPECT_EQ(harness.received_cloud()->header.frame_id, "sensor_frame");
-  EXPECT_NEAR(output_points[0][0], 0.4f, 1.0e-4);
-  EXPECT_NEAR(output_points[0][1], 0.4f, 1.0e-4);
-  EXPECT_NEAR(output_points[0][2], 0.4f, 1.0e-4);
+  expect_points_near(output_points, expected_points, 1.0e-4f);
 }
 
 TEST(VoxelGridDownsampleFilterIntegrationTest, DoesNotPublishWhenInputTransformIsMissing)
@@ -335,15 +327,17 @@ TEST(VoxelGridDownsampleFilterIntegrationTest, KeepsDistinctPointsForMultipleVox
     {1.2f, 1.2f, 1.2f},
     {1.4f, 1.4f, 1.4f},
   };
+  const std::vector<PointXYZ> expected_points = {
+    {0.15f, 0.15f, 0.15f},
+    {1.3f, 1.3f, 1.3f},
+  };
   harness.publish_points(input_points, "sensor_frame");
 
   ASSERT_TRUE(harness.wait_for_output(std::chrono::milliseconds(5000)));
   ASSERT_NE(harness.received_cloud(), nullptr);
 
   const auto output_points = extract_points_from_cloud(*harness.received_cloud());
-  ASSERT_EQ(output_points.size(), 2U);
-  EXPECT_TRUE(contains_point_near(output_points, PointXYZ{0.15f, 0.15f, 0.15f}, 1.0e-4f));
-  EXPECT_TRUE(contains_point_near(output_points, PointXYZ{1.3f, 1.3f, 1.3f}, 1.0e-4f));
+  expect_points_near(output_points, expected_points, 1.0e-4f);
 }
 
 TEST(
@@ -359,21 +353,24 @@ TEST(
     {"max_queue_size", static_cast<int64_t>(5)},
   });
 
-  VoxelGridIntegrationHarness harness(options);
   const std::vector<PointXYZ> input_points = {
     {0.2f, 0.0f, 0.0f},
     {1.0f, 0.0f, 0.0f},
     {1.0f, 0.0f, 0.0f},
   };
+  const std::vector<PointXYZ> expected_points = {
+    {0.2f, 0.0f, 0.0f},
+    {1.0f, 0.0f, 0.0f},
+  };
+
+  VoxelGridIntegrationHarness harness(options);
   harness.publish_points(input_points, "sensor_frame");
 
   ASSERT_TRUE(harness.wait_for_output(std::chrono::milliseconds(5000)));
   ASSERT_NE(harness.received_cloud(), nullptr);
 
   const auto output_points = extract_points_from_cloud(*harness.received_cloud());
-  ASSERT_EQ(output_points.size(), 2U);
-  EXPECT_EQ(count_point_near(output_points, PointXYZ{1.0f, 0.0f, 0.0f}, 1.0e-6f), 1U);
-  EXPECT_TRUE(contains_point_near(output_points, PointXYZ{0.2f, 0.0f, 0.0f}, 1.0e-6f));
+  expect_points_near(output_points, expected_points, 0.01f);
 }
 
 // TODO: Re-enable after fixing the bug
@@ -397,19 +394,18 @@ TEST(
   const std::vector<PointXYZ> input_points = {
     {1.0f, 2.0f, 3.0f},
   };
+  const std::vector<PointXYZ> expected_points = {
+    {2.5f, 2.0f, 3.0f},
+  };
   harness.publish_points(input_points, "sensor_frame");
 
   ASSERT_TRUE(harness.wait_for_output(std::chrono::milliseconds(5000)));
   ASSERT_NE(harness.received_cloud(), nullptr);
 
   const auto output_points = extract_points_from_cloud(*harness.received_cloud());
-  ASSERT_EQ(output_points.size(), 1U);
-
   // FIXME: Expected behavior after bug fix: output cloud should use output_frame in header.
   EXPECT_EQ(harness.received_cloud()->header.frame_id, "map");
-  EXPECT_NEAR(output_points[0][0], 2.5f, 1.0e-4);
-  EXPECT_NEAR(output_points[0][1], 2.0f, 1.0e-4);
-  EXPECT_NEAR(output_points[0][2], 3.0f, 1.0e-4);
+  expect_points_near(output_points, expected_points, 1.0e-4f);
 }
 
 int main(int argc, char ** argv)
