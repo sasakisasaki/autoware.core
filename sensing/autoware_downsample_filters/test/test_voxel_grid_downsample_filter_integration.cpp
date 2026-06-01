@@ -108,8 +108,8 @@ void expect_points_near(
 class VoxelGridIntegrationHarness
 {
 public:
-  // TODO: refactor to src+lib (src = ROS dependent, lib = application logic), then simplify this
-  // test
+  // TODO(sasakisasaki): refactor to src+lib (src = ROS dependent, lib = application logic), then
+  // simplify this test
   explicit VoxelGridIntegrationHarness(const rclcpp::NodeOptions & filter_options)
   {
     executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
@@ -373,7 +373,7 @@ TEST(
   expect_points_near(output_points, expected_points, 0.01f);
 }
 
-// TODO: Re-enable after fixing the bug
+// TODO(sasakisasaki): Re-enable after fixing the bug
 TEST(
   VoxelGridDownsampleFilterIntegrationTest,
   DISABLED_OutputFrameParameterShouldSetOutputFrameIdToOutputFrame)
