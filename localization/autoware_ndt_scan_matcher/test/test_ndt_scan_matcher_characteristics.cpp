@@ -281,15 +281,8 @@ TEST(NdtScanMatcherCharacteristics, EmptyScanIsRejectedWithAWarning)
     << "message was: " << diag.message();
 }
 
-/// SUSPICIOUS — the early return for a late scan is commented out on purpose.
-///
-/// `callback_sensor_points_main` reports the latency as a WARN and then *keeps going*; the
-/// `return false;` sits commented out under a four-line comment explaining the choice. Any
-/// reimplementation of "detect the timeout and report it" returns instead, and then NDT stops
-/// publishing exactly when the LiDAR is late — the moment localization matters most.
-///
-/// The witness that execution continued is `is_succeed_transform_sensor_points`, the next key the
-/// callback adds after the latency check.
+/// SUSPICIOUS — a late scan only warns; the early return is commented out on purpose. Continuing
+/// is the behavior pinned here, witnessed by `is_succeed_transform_sensor_points`.
 TEST(NdtScanMatcherCharacteristics, StaleScanWarnsButProcessingContinues)
 {
   // Arrange
@@ -317,11 +310,8 @@ TEST(NdtScanMatcherCharacteristics, StaleScanWarnsButProcessingContinues)
     << ::testing::PrintToString(diag.keys_in_order());
 }
 
-/// A scan whose frame has no transform to `base_link` is an ERROR, and the callback stops there.
-///
-/// The "missing TF" that `WrongFrameIdOnInitialPoseIsErrorNotWarn`'s severity split names, pinned
-/// on the scan side. The lookup is `TimePointZero` with no timeout, so an unknown frame fails at
-/// once. `absent("sensor_points_max_distance")` is the witness for the stop.
+/// A scan whose frame has no transform to `base_link` is an ERROR, and the callback stops there —
+/// `sensor_points_max_distance` is absent.
 TEST(NdtScanMatcherCharacteristics, ScanWithoutATransformIsAnError)
 {
   // Arrange
@@ -348,12 +338,8 @@ TEST(NdtScanMatcherCharacteristics, ScanWithoutATransformIsAnError)
     << ::testing::PrintToString(diag.keys_in_order());
 }
 
-/// The near-field gate runs *before* the activation check.
-///
-/// Hoisting the cheap `is_activated_` boolean above the O(n) distance scan is a tempting
-/// optimization, and it is behavior-changing because of
-/// `SensorPointsAreStoredEvenWhileDeactivated` below. `absent("is_activated")` is the only
-/// evidence of the current order.
+/// The near-field gate runs *before* the activation check; the absent `is_activated` is the only
+/// evidence of that order.
 TEST(NdtScanMatcherCharacteristics, NearFieldScanIsRejectedBeforeActivationCheck)
 {
   // Arrange
@@ -381,15 +367,9 @@ TEST(NdtScanMatcherCharacteristics, NearFieldScanIsRejectedBeforeActivationCheck
     << ::testing::PrintToString(diag.keys_in_order());
 }
 
-/// SUSPICIOUS — the scan is stored one line *before* the activation gate rejects it.
-///
-/// `sensor_points_in_baselink_frame_` is assigned inside the `ndt_ptr_` lock and immediately
-/// before `if (!is_activated_) return false;`. In the deactivated path that assignment looks like
-/// dead work, so the natural "gate first, then mutate state" extraction moves it below the gate.
-///
-/// That would break vehicle initialization: `service_ndt_align_main` requires a stored scan, and
-/// the node is *not* activated while the initial pose is being estimated. Nothing else in the
-/// repository guards this ordering — the pre-existing tests all activate first.
+/// SUSPICIOUS — the scan is stored one line *before* the activation gate rejects it. Moving it
+/// below the gate breaks initialization: `ndt_align_srv` needs a stored scan, and the node is not
+/// activated while the initial pose is estimated.
 TEST(NdtScanMatcherCharacteristics, SensorPointsAreStoredEvenWhileDeactivated)
 {
   // Arrange
@@ -417,15 +397,8 @@ TEST(NdtScanMatcherCharacteristics, SensorPointsAreStoredEvenWhileDeactivated)
   EXPECT_TRUE(response->success);
 }
 
-/// Without two bracketing poses the scan aborts before the map is consulted.
-///
-/// Nothing but the scan is published, so *both* gates would fail: with no initial pose the map
-/// anchor stays unset, and the 1 Hz timer therefore never loads a map either. Only the order
-/// decides which diagnostic a stalled startup shows — today "Couldn't interpolate pose.", which
-/// names the cause (no EKF), rather than "Map points is not set.", which names a consequence.
-///
-/// Hoisting the cheap `hasTarget()` above the interpolation is the tempting rewrite, and
-/// `absent("is_set_map_points")` is the only witness of the current order.
+/// Without two bracketing poses the scan aborts before the map is consulted, so a stalled startup
+/// names the cause and not "Map points is not set." — `is_set_map_points` is absent.
 TEST(NdtScanMatcherCharacteristics, MissingInitialPoseAbortsBeforeMapCheck)
 {
   // Arrange
@@ -446,11 +419,7 @@ TEST(NdtScanMatcherCharacteristics, MissingInitialPoseAbortsBeforeMapCheck)
     << ::testing::PrintToString(diag.keys_in_order());
 }
 
-/// With no map loaded, the scan aborts before any alignment happens.
-///
-/// The poses sit at (-100, -100), where `StubMapLoader` answers with nothing. The load fails once;
-/// a failed load still records the position (`map_update_module.cpp:176`), so the timer does not
-/// try again until the vehicle moves `update_distance`. `absent("iteration_num")` is the witness
+/// With no map loaded the scan aborts before alignment — the absent `iteration_num` witnesses
 /// that `ndt_ptr->align` was never called.
 TEST(NdtScanMatcherCharacteristics, MissingMapAbortsBeforeAlignment)
 {
@@ -587,13 +556,8 @@ TEST(NdtScanMatcherCharacteristics, UnknownConvergedParamTypeIsAnErrorAfterAlign
   EXPECT_EQ(points_aligned->count(), 0U);
 }
 
-/// A non-converged scan withholds the pose but still broadcasts the TF.
-///
-/// SUSPICIOUS -- the convergence gate sits inside `publish_pose`, and `publish_tf` has none.
-///
-/// The asymmetry reads like a misplaced check, but both repairs are harmful: moving the gate to
-/// the call site drops the TF whenever the score is poor, and deleting it sends a bad pose to the
-/// EKF. Pinned as-is so that either change stays a deliberate, separate decision.
+/// SUSPICIOUS — a non-converged scan withholds the pose but still broadcasts the TF: the
+/// convergence gate sits inside `publish_pose`, and `publish_tf` has none. Both repairs harm.
 TEST(NdtScanMatcherCharacteristics, NonConvergedScanSuppressesPoseButStillBroadcastsTf)
 {
   // Arrange
@@ -717,13 +681,8 @@ TEST(NdtScanMatcherCharacteristics, ExecutionTimeOverBoundWarnsButStillPublishes
   expect_scan_warns_but_still_publishes(*harness, "NDT exe time is too long");
 }
 
-/// Reaching `validation.skipping_publish_num` appends the "exceed limit" WARN, and the comparison
-/// is inclusive.
-///
-/// The counter is a function-local `static` shared by every node this binary builds, so the case
-/// zeroes it first: a rejected scan while deactivated takes the `!is_activated_` arm. One rejected
-/// scan while activated then reads 1, which against a threshold of 1 is the boundary -- `>=` warns
-/// where `>` would not.
+/// Reaching `validation.skipping_publish_num` appends the "exceed limit" WARN — the comparison is
+/// `>=`, so the threshold value itself warns. The counter is a `static` shared by the binary.
 TEST(NdtScanMatcherCharacteristics, SkipCounterWarnsWhenItReachesTheThreshold)
 {
   // Arrange
@@ -895,14 +854,8 @@ TEST(NdtScanMatcherCharacteristics, ConvergedScanPublishesTheseTopicsAndNotThose
   EXPECT_EQ(multi_initial_pose->count(), 0U);
 }
 
-/// The estimate overwrites only 4 of the 36 covariance entries.
-///
-/// SUSPICIOUS -- the two off-diagonal writes are transposed.
-///
-/// `covariance` is row-major, so index 1 is element (0,1) and index 6 is (1,0), but the node
-/// writes `adj(1,0)` into 1 and `adj(0,1)` into 6. Nothing observes it today because every
-/// estimator returns a symmetric matrix; straightening it changes what the EKF receives the
-/// moment one does not.
+/// SUSPICIOUS — the estimate overwrites only 4 of the 36 covariance entries, and the two
+/// off-diagonal writes are transposed. Harmless only while estimators return symmetric matrices.
 TEST(NdtScanMatcherCharacteristics, EstimatedCovarianceOverwritesOnlyFourOfThirtySixEntries)
 {
   // Arrange
@@ -1119,12 +1072,8 @@ TEST(NdtScanMatcherCharacteristics, OutOfMapRangeIsAWarnOnTheScanAndAnErrorOnThe
   EXPECT_EQ(loads.back().value("is_updated_map"), "True");
 }
 
-/// Activating the node clears the initial-pose buffer.
-///
-/// `service_trigger_node` reaches into buffer state that the extraction will move into the core
-/// object, and this `clear()` is a side effect nothing else in the world observes. The control
-/// arm proves the sequence would otherwise have interpolated successfully, so the assertion
-/// cannot pass for an unrelated reason.
+/// Activating the node clears the initial-pose buffer — a side effect nothing else observes. The
+/// control arm proves the sequence would otherwise have interpolated successfully.
 TEST(NdtScanMatcherCharacteristics, ActivatingClearsTheInitialPoseBuffer)
 {
   {
@@ -1166,11 +1115,8 @@ TEST(NdtScanMatcherCharacteristics, ActivatingClearsTheInitialPoseBuffer)
 // Initial-pose subscriber: validation order and severity.
 // ---------------------------------------------------------------------------------------------
 
-/// An initial pose arriving while the node is deactivated is dropped before its frame is checked.
-///
-/// The ordering is pure convention and reverses trivially in a rewrite, and it decides which
-/// diagnostic an operator sees during startup: "Node is not activated." (WARN) rather than a
-/// frame-id ERROR. `absent("is_expected_frame_id")` is the only witness.
+/// An initial pose arriving while deactivated is dropped before its frame is checked, so startup
+/// shows "Node is not activated." and not a frame-id ERROR — `is_expected_frame_id` is absent.
 TEST(NdtScanMatcherCharacteristics, InitialPoseIsRejectedBeforeTheFrameCheckWhenNotActivated)
 {
   // Arrange
@@ -1193,14 +1139,8 @@ TEST(NdtScanMatcherCharacteristics, InitialPoseIsRejectedBeforeTheFrameCheckWhen
     << ::testing::PrintToString(diag->keys_in_order());
 }
 
-/// A wrong `frame_id` on the initial pose is an ERROR, not a WARN.
-///
-/// Severity splits by whether the condition can resolve itself: WARN for transient states -- not
-/// activated, no pose to interpolate, no map yet, a poor score -- and ERROR for configuration that
-/// never will, a missing TF and this. (`map_update_status` has one that does not fit.) Whoever
-/// publishes `ekf_pose_with_covariance` in the wrong frame keeps doing so, so ERROR is consistent,
-/// not an outlier. The split is nowhere stated in code, so normalizing severities into one helper
-/// would flatten it -- and WARN silently disarms whatever supervises the node.
+/// A wrong `frame_id` on the initial pose is an ERROR, not a WARN: severity splits by whether the
+/// condition can resolve itself, and a publisher using the wrong frame keeps using it.
 TEST(NdtScanMatcherCharacteristics, WrongFrameIdOnInitialPoseIsErrorNotWarn)
 {
   // Arrange
@@ -1220,12 +1160,8 @@ TEST(NdtScanMatcherCharacteristics, WrongFrameIdOnInitialPoseIsErrorNotWarn)
   EXPECT_EQ(diag->value("is_expected_frame_id"), "False");
 }
 
-/// A rejected initial pose updates neither the interpolation buffer nor the map anchor.
-///
-/// `push_back` and the `latest_ekf_position_` write are two side effects sitting behind one early
-/// return. An extraction that computes "should I buffer this?" separately from "where should the
-/// map be centered?" can easily hoist one of them above the frame check, and nothing else
-/// observes either.
+/// A rejected initial pose updates neither the interpolation buffer nor the map anchor — two side
+/// effects behind one early return, and nothing else observes either.
 TEST(NdtScanMatcherCharacteristics, RejectedInitialPoseUpdatesNeitherBufferNorMapAnchor)
 {
   // Arrange
